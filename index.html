@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+    <!--Create By Maxime Tournier-->
+<head>
+
+	<meta charset="utf-8">							
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="module/iziToast.min.css">
+    <script src="module/iziToast.min.js" type="text/javascript"></script>
+
+    <link rel="stylesheet" href="module/index.css">
+    <script src="module/titlebar.js"></script>
+
+</head>
+
+<body>
+
+	<div class="login-page">
+        <div class="form">       
+            <h2>Compte Useritium</h2> 
+                <input type="text" placeholder="Pseudonyme" id="username" />
+                <input type="password" placeholder="Mot de passe" id="password" />
+                <button id="play">Jouer</button>
+        </div>
+    </div>
+
+    <script>
+        const ipc = require("electron").ipcRenderer;
+
+        var playbtn = document.getElementById("play");
+
+            playbtn.addEventListener("click", e => {
+                let username = document.getElementById("username").value
+                let pass = document.getElementById("password").value
+
+                if(username && pass){
+                    ipc.send("login", { u: username, p: pass})
+                    playbtn.disabled = true;
+                }
+            });
+
+            ipc.on("err", (event, data) => {
+                iziToast.error({
+                    title: 'Erreur',
+                    message: 'Mauvais mot de passe/ Trop de Requêtes',
+                })
+                playbtn.disabled = false;
+            });
+
+            ipc.on("done", () => {
+                iziToast.success({
+                    title: 'OK',
+                    message: 'Vous êtes connecté',
+                });
+            });
+
+            ipc.on("progression", (event, data) => {
+                
+            })
+
+    </script>
+</body>
+
+</html>
