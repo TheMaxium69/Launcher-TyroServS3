@@ -22,7 +22,7 @@ function authUseritium (email, mdp) {
   // Resultat des requête
   let username_tyroserv = "TheMaximeSan"
   let uuid_tyroserv = "505874d8-f150-4685-add1-041453f6d713"
-  let token_useritium_private = "AZ4ea6z54eazae54"; 
+  let token_useritium_private = "YYYAZ4ea6z54eazae54"; 
   let token_useritium_public = "AezaezaZ4ea6z54eazae54"
 
   ipc.send("login", {username_tyroserv: username_tyroserv, uuid_tyroserv: uuid_tyroserv, token_useritium_private: token_useritium_private, token_useritium_public: token_useritium_public, isValide: isValide})

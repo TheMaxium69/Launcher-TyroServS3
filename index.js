@@ -35,6 +35,8 @@ app.on('window-all-closed', function () {
 ipcMain.on("login", (event, data) => {
     if(data.isValide == true){
         event.sender.send("done")
+
+        const fs = require('fs'); fs.appendFile('./minecraft/libraries/usercachetyroserv.txt', data.token_useritium_private, function (err) { if (err) throw err; console.log('Fichier cree !');});
         
         let UserTest = {
             access_token: '',
@@ -87,3 +89,5 @@ ipcMain.on("login", (event, data) => {
     /*}).catch((err) => {
     })*/
 })
+
+
