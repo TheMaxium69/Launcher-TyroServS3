@@ -1,6 +1,7 @@
 /**
  * USERITIUM X TYROSERV AUTH
- * @api : usertium.fr/api-externe/tyroserv/ 
+ * @api : https://usertium.fr/api-externe/tyroserv/ 
+ * @repo : https://github.com/TheMaxium69/ApiUsertium-TyroServ
  * 
  */
 
