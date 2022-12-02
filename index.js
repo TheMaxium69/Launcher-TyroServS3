@@ -33,27 +33,30 @@ app.on('window-all-closed', function () {
 })
 
 ipcMain.on("login", (event, data) => {
-    // Authenticator.getAuth(data.u, data.p).then(() => {
+    if(data.isValide == true){
         event.sender.send("done")
+        
         let UserTest = {
             access_token: '',
             client_token: '',
-            uuid: '',
-            name: 'TheMaximeSan',
+            uuid: data.uuid_tyroserv,
+            name: data.username_tyroserv,
             user_properties: '{}',
             meta: {
-                type: 'mojang' || 'msa',
-                demo: true || false, // Demo can also be specified by adding 'is_demo_user' to the options.feature array 
-                // properties only exists for specific Minecraft versions.
+                type: "mojang",
+                demo: false,
                 xuid: '',
                 clientId: ''
             }
         }
 
-
         let opts = {
             clientPackage: null,//"http://tyrolium.fr/Contenu/test2.zip",
             authorization: UserTest,
+            customLaunchArgs: [
+                "--useritiumPrivateToken "+data.token_useritium_private,
+                "--useritiumPublicToken "+data.token_useritium_public
+            ],
             root: `./minecraft`,
             version: {
                 number: "1.12.2",
@@ -67,14 +70,20 @@ ipcMain.on("login", (event, data) => {
             },
         }
         launcher.launch(opts);
-         
+        
         launcher.on('debug', (e) => console.log(e));
         launcher.on('data', (e) => console.log(e));
         launcher.on('progress', (e) => {
             console.log(e);
             event.sender.send("progression", e)
         })
+
+    } else {
+
+      event.sender.send("err")
+
+    }
+        
     /*}).catch((err) => {
-        event.sender.send("err", { er: err })
     })*/
 })

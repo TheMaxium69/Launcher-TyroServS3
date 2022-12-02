@@ -25,6 +25,8 @@
         </div>
     </div>
 
+    <script src="authUseritium.js"></script>
+
     <script>
         const ipc = require("electron").ipcRenderer;
 
@@ -35,7 +37,8 @@
                 let pass = document.getElementById("password").value
 
                 if(username && pass){
-                    ipc.send("login", { u: username, p: pass})
+
+                    authUseritium(username, pass);
                     playbtn.disabled = true;
                 }
             });
@@ -58,6 +61,7 @@
             ipc.on("progression", (event, data) => {
                 
             })
+            
 
     </script>
 </body>
