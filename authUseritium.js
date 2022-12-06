@@ -15,7 +15,6 @@ function authUseritium (email, mdp) {
     myRequest.onload = () => {
 
         var reponse = JSON.parse(myRequest.responseText);
-        console.log(reponse);
 
         if(reponse['status'] == "true"){
           
@@ -63,13 +62,47 @@ function startMinecraft (userTyroServLoad){
 function firstConnexion(pseudo, email, mdp){
 
   const form = document.querySelector('#form');
-  form.innerHTML = '<h2>Compte Useritium</h2> <p>Première connexion</p> <input type="hidden" id="type" value="first" />  <input type="hidden" placeholder="Email" id="email" value"'+ email +'" /> <input type="hidden" placeholder="Mot de passe" id="password" value"'+ mdp +'" /> <input type="text" placeholder="Pseudo" id="pseudo" value"'+ pseudo +'" /> <button id="play">Jouer</button>';
+  form.innerHTML = '<h2>Compte Useritium</h2> <p>Première connexion</p> <input type="hidden" id="type" value="first" />  <input type="hidden" placeholder="Email" id="email" value="'+ email +'" /> <input type="hidden" placeholder="Mot de passe" id="password" value="'+ mdp +'" /> <input type="text" placeholder="Pseudo" id="pseudo" value="'+ pseudo +'" /> <button id="play" onclick="formFirst()">Jouer</button>';
 
-  console.log('firstconnexion');
 }
 
 function authFirstConnexion(pseudo, email, mdp){
 
   console.log(pseudo, email, mdp);
+  paramFirst = "email_useritium="+email+"&mdp_useritium="+mdp+"&pseudo_tyroserv="+pseudo
+
+    let myRequestFirst = new XMLHttpRequest();
+    myRequestFirst.open('POST', 'http://localhost/ApiUsertium-TyroServ/index.php?controller=TyroServ&task=connect');
+    myRequestFirst.onload = () => {
+
+        var reponseFirst = JSON.parse(myRequestFirst.responseText);
+
+        if(reponseFirst['status'] == "true"){
+          
+          messagePseudo = "Votre pseudo à bien été enregistrez"
+
+          notif("true", messagePseudo);
+
+          if(reponseFirst['why'] == "account created successfully"){
+              
+            var userTyroServLoadFirst = reponseFirst['result'];
+
+            startMinecraft(userTyroServLoadFirst);
+
+          } else {
+
+              notif("err", "Veuillez rédémarré le launcher");
+
+          }
+
+
+
+        } else { notif(reponseFirst['status'], reponseFirst['why']); }
+
+
+
+      };
+    myRequestFirst.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    myRequestFirst.send(paramFirst);
 
 }

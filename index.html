@@ -19,7 +19,6 @@
 	<div class="login-page">
         <div class="form" id="form">       
             <h2>Compte Useritium</h2>
-                <input type="hidden" id="type" value="connect" /> 
                 <input type="text" placeholder="Email" id="email" />
                 <input type="password" placeholder="Mot de passe" id="password" />
                 <button id="play">Jouer</button>
@@ -28,38 +27,33 @@
 
     <script src="authUseritium.js"></script>
 
-    <script>
+    <script>      
+
         const ipc = require("electron").ipcRenderer;
 
         var playbtn = document.getElementById("play");
 
         playbtn.addEventListener("click", e => {
-            let type = document.getElementById("type").value
             let email = document.getElementById("email").value
             let pass = document.getElementById("password").value
 
-            console.log('ici');
-
-            if(type == "connect"){
-
-                if(email && pass){
-                    authUseritium(email, pass);
-                }
-
-            } else if(type == "first"){
-                
-                console.log('ici2');
-
-                let pseudo = document.getElementById("pseudo").value 
-
-                if(email && pass && pseudo){ 
-                    authFirstConnexion(pseudo, email, pass); 
-                }
-                
+            if(email && pass){
+                authUseritium(email, pass);
             }
             
 
         });
+
+        function formFirst(){
+
+            let email = document.getElementById("email").value
+            let pass = document.getElementById("password").value
+            let pseudo = document.getElementById("pseudo").value 
+
+            if(email && pass && pseudo){ 
+                authFirstConnexion(pseudo, email, pass); 
+            }
+        }
 
         function notif(status, why){
             if(status == "true"){
