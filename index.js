@@ -33,7 +33,7 @@ app.on('window-all-closed', function () {
 })
 
 ipcMain.on("login", (event, data) => {
-        event.sender.send("done")
+        // event.sender.send("done")
 
         const fs = require('fs'); 
         fs.appendFile('./minecraft/usercachetyroserv.json', data.token_tyroserv, function (err) { if (err) throw err; console.log('Fichier cree !');});
@@ -80,8 +80,4 @@ ipcMain.on("login", (event, data) => {
             console.log(e);
             event.sender.send("progression", e)
         })
-    /*}).catch((err) => {
-    })*/
 })
-
-

@@ -19,7 +19,7 @@
 	<div class="login-page">
         <div class="form">       
             <h2>Compte Useritium</h2> 
-                <input type="text" placeholder="Pseudonyme" id="username" />
+                <input type="text" placeholder="Email" id="email" />
                 <input type="password" placeholder="Mot de passe" id="password" />
                 <button id="play">Jouer</button>
         </div>
@@ -33,34 +33,65 @@
         var playbtn = document.getElementById("play");
 
             playbtn.addEventListener("click", e => {
-                let username = document.getElementById("username").value
+                let email = document.getElementById("email").value
                 let pass = document.getElementById("password").value
 
-                if(username && pass){
+                if(email && pass){
 
-                    authUseritium(username, pass);
+                    authUseritium(email, pass);
                     playbtn.disabled = true;
                 }
             });
 
-            ipc.on("err", (event, data) => {
-                iziToast.error({
-                    title: 'Erreur',
-                    message: 'Mauvais mot de passe/ Trop de Requêtes',
-                })
-                playbtn.disabled = false;
-            });
+            // ipc.on("err", (event, data) => {
 
-            ipc.on("done", () => {
-                iziToast.success({
-                    title: 'OK',
-                    message: 'Vous êtes connecté',
-                });
-            });
+            //     console.log(data);
 
-            ipc.on("progression", (event, data) => {
+            //     iziToast.error({
+            //         title: 'Erreur',
+            //         message: 'Mauvais mot de passe/ Trop de Requêtes',
+            //     })
+            //     playbtn.disabled = false;
+            // });
+
+            // ipc.on("done", (event, data) => {
+            //     iziToast.success({
+            //         title: 'OK',
+            //         message: 'Vous êtes connecté',
+            //     });
+            // });
+
+            // ipc.on("progression", (event, data) => {
                 
-            })
+            // })
+
+            function notif(status, why){
+                if(status == "true"){
+
+                    iziToast.success({
+                        title: 'OK',
+                        message: why,
+                    });
+
+                }
+                if(status == "err"){
+
+                    iziToast.error({
+                        title: 'Erreur',
+                        message: why,
+                    })
+                    playbtn.disabled = false;
+
+                }
+                if(status == "info"){
+
+                    iziToast.info({
+                        title: 'Info',
+                        message: why,
+                    })
+
+                }
+            }
             
 
     </script>
