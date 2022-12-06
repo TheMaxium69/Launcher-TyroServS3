@@ -38,7 +38,7 @@ function isConnect (reponse, email, mdp){
       info = "Il s'agit de votre première connexion"
       notif("info", info);
 
-      firstConnexion();
+      firstConnexion(reponse['keep'] ,email, mdp);
   }
 
   if(reponse['why'] == "successfully connected"){
@@ -60,9 +60,16 @@ function startMinecraft (userTyroServLoad){
     
 }
 
-function firstConnexion(){
+function firstConnexion(pseudo, email, mdp){
 
-  
+  const form = document.querySelector('#form');
+  form.innerHTML = '<h2>Compte Useritium</h2> <p>Première connexion</p> <input type="hidden" id="type" value="first" />  <input type="hidden" placeholder="Email" id="email" value"'+ email +'" /> <input type="hidden" placeholder="Mot de passe" id="password" value"'+ mdp +'" /> <input type="text" placeholder="Pseudo" id="pseudo" value"'+ pseudo +'" /> <button id="play">Jouer</button>';
 
   console.log('firstconnexion');
+}
+
+function authFirstConnexion(pseudo, email, mdp){
+
+  console.log(pseudo, email, mdp);
+
 }

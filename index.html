@@ -17,8 +17,9 @@
 <body>
 
 	<div class="login-page">
-        <div class="form">       
-            <h2>Compte Useritium</h2> 
+        <div class="form" id="form">       
+            <h2>Compte Useritium</h2>
+                <input type="hidden" id="type" value="connect" /> 
                 <input type="text" placeholder="Email" id="email" />
                 <input type="password" placeholder="Mot de passe" id="password" />
                 <button id="play">Jouer</button>
@@ -32,68 +33,65 @@
 
         var playbtn = document.getElementById("play");
 
-            playbtn.addEventListener("click", e => {
-                let email = document.getElementById("email").value
-                let pass = document.getElementById("password").value
+        playbtn.addEventListener("click", e => {
+            let type = document.getElementById("type").value
+            let email = document.getElementById("email").value
+            let pass = document.getElementById("password").value
+
+            console.log('ici');
+
+            if(type == "connect"){
 
                 if(email && pass){
-
                     authUseritium(email, pass);
-                    playbtn.disabled = true;
                 }
-            });
 
-            // ipc.on("err", (event, data) => {
-
-            //     console.log(data);
-
-            //     iziToast.error({
-            //         title: 'Erreur',
-            //         message: 'Mauvais mot de passe/ Trop de Requêtes',
-            //     })
-            //     playbtn.disabled = false;
-            // });
-
-            // ipc.on("done", (event, data) => {
-            //     iziToast.success({
-            //         title: 'OK',
-            //         message: 'Vous êtes connecté',
-            //     });
-            // });
-
-            // ipc.on("progression", (event, data) => {
+            } else if(type == "first"){
                 
-            // })
+                console.log('ici2');
 
-            function notif(status, why){
-                if(status == "true"){
+                let pseudo = document.getElementById("pseudo").value 
 
-                    iziToast.success({
-                        title: 'OK',
-                        message: why,
-                    });
-
+                if(email && pass && pseudo){ 
+                    authFirstConnexion(pseudo, email, pass); 
                 }
-                if(status == "err"){
-
-                    iziToast.error({
-                        title: 'Erreur',
-                        message: why,
-                    })
-                    playbtn.disabled = false;
-
-                }
-                if(status == "info"){
-
-                    iziToast.info({
-                        title: 'Info',
-                        message: why,
-                    })
-
-                }
+                
             }
             
 
+        });
+
+        function notif(status, why){
+            if(status == "true"){
+
+                iziToast.success({
+                    title: 'OK',
+                    message: why,
+                });
+                
+                // playbtn.disabled = true;
+
+            }
+            if(status == "err"){
+
+                iziToast.error({
+                    title: 'Erreur',
+                    message: why,
+                })
+                // playbtn.disabled = false;
+
+            }
+            if(status == "info"){
+
+                iziToast.info({
+                    title: 'Info',
+                    message: why,
+                })
+                
+                // playbtn.disabled = false;
+
+            }
+        }    
     </script>
 </body>
 
