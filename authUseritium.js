@@ -95,11 +95,7 @@ function authFirstConnexion(pseudo, email, mdp){
 
           }
 
-
-
         } else { notif(reponseFirst['status'], reponseFirst['why']); }
-
-
 
       };
     myRequestFirst.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
