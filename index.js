@@ -33,10 +33,11 @@ app.on('window-all-closed', function () {
 })
 
 ipcMain.on("login", (event, data) => {
-    if(data.isValide == true){
         event.sender.send("done")
 
-        const fs = require('fs'); fs.appendFile('./minecraft/libraries/usercachetyroserv.txt', data.token_useritium_private, function (err) { if (err) throw err; console.log('Fichier cree !');});
+        const fs = require('fs'); 
+        fs.appendFile('./minecraft/usercachetyroserv.json', data.token_tyroserv, function (err) { if (err) throw err; console.log('Fichier cree !');});
+        fs.appendFile('./minecraft/usercachetyroserva2f.json', data.token_tyroserv_a2f, function (err) { if (err) throw err; console.log('Fichier cree !');});
         
         let UserTest = {
             access_token: '',
@@ -56,8 +57,8 @@ ipcMain.on("login", (event, data) => {
             clientPackage: null,//"http://tyrolium.fr/Contenu/test2.zip",
             authorization: UserTest,
             customLaunchArgs: [
-                "--useritiumPrivateToken "+data.token_useritium_private,
-                "--useritiumPublicToken "+data.token_useritium_public
+                "--useritiumTokenPrivate "+data.token_tyroserv,
+                "--useritiumTokenA2F "+data.token_tyroserv_a2f
             ],
             root: `./minecraft`,
             version: {
@@ -79,13 +80,6 @@ ipcMain.on("login", (event, data) => {
             console.log(e);
             event.sender.send("progression", e)
         })
-
-    } else {
-
-      event.sender.send("err")
-
-    }
-        
     /*}).catch((err) => {
     })*/
 })
