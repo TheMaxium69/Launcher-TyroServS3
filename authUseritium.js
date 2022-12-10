@@ -31,7 +31,7 @@ function authUseritium (email, mdp) {
 function isConnect (reponse, email, mdp){
 
   message = "Vous êtes bien connectez à votre compte Useritium !"
-  notif("true", message);
+  notif("info", message);
 
   if(reponse['why'] == "first connexion"){
       info = "Il s'agit de votre première connexion"
