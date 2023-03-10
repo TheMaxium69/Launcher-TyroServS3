@@ -6,14 +6,15 @@ const launcher = new Client();
 
 function createWindow () {
   const mainWindow = new BrowserWindow({
-    frame: false,  
+    frame: false, 
     title: "Tyrolium Launcher",
     width: 800,
     height: 600,
+    icon: path.join(__dirname, "/asset/logo.png"),
     webPreferences: {
       nodeIntegration: true,
       enableRemoteModule: true,
-      preload: path.join(__dirname, 'preload.js'),
+      // preload: path.join(__dirname, 'preload.js'),
     }
   })
 
@@ -54,19 +55,20 @@ ipcMain.on("login", (event, data) => {
         }
 
         let opts = {
-            clientPackage: null,//"http://tyrolium.fr/Contenu/test2.zip",
+            clientPackage: "http://tyrolium.fr/Download/TyroServS3/instance.zip", //null,
             authorization: UserTest,
             customLaunchArgs: [
                 "--useritiumTokenPrivate "+data.token_tyroserv,
                 "--useritiumTokenA2F "+data.token_tyroserv_a2f
             ],
-            root: `./minecraft`,
+            root: path.join(app.getPath("appData"), "/.TyroServBeta/"),
+            // javaPath: `C:/Users/mxmto/AppData/Roaming/.minecraft/runtime/jre-legacy/windows/jre-legacy/bin/javaw.exe`,
             version: {
-                number: "1.12.2",
-                type: "release"
+                number: "1.16.5",
+                type: "release",
+                // custom: "1.16.5-forge-36.2.34"
             },
-            forge: `./minecraft/versions/1.12.2-forge-14.23.5.2854/1.12.2-forge-14.23.5.2854.jar`,
-            forge: `./minecraft/forge.jar`,
+            forge:path.join(app.getPath("appData"), "/.TyroServBeta/forge-1.16.5-36.2.34-installer.jar"),
             memory: {
                 max: "2G",
                 min: "1G"

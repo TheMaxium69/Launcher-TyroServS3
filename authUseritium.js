@@ -5,13 +5,12 @@
  * 
  */
 
-
 function authUseritium (email, mdp) {
 
     param = "email_useritium="+email+"&mdp_useritium="+mdp
 
     let myRequest = new XMLHttpRequest();
-    myRequest.open('POST', 'http://localhost/ApiUsertium-TyroServ/index.php?controller=TyroServ&task=connect');
+    myRequest.open('POST', 'http://useritium.fr/api-externe/index.php?controller=TyroServ&task=connect');
     myRequest.onload = () => {
 
         var reponse = JSON.parse(myRequest.responseText);
@@ -72,9 +71,10 @@ function authFirstConnexion(pseudo, email, mdp){
   paramFirst = "email_useritium="+email+"&mdp_useritium="+mdp+"&pseudo_tyroserv="+pseudo
 
     let myRequestFirst = new XMLHttpRequest();
-    myRequestFirst.open('POST', 'http://localhost/ApiUsertium-TyroServ/index.php?controller=TyroServ&task=connect');
+    myRequestFirst.open('POST', 'http://useritium.fr/api-externe/index.php?controller=TyroServ&task=connect');
     myRequestFirst.onload = () => {
 
+        console.log(myRequestFirst.responseText);
         var reponseFirst = JSON.parse(myRequestFirst.responseText);
 
         if(reponseFirst['status'] == "true"){
