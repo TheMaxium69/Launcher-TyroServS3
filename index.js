@@ -33,12 +33,16 @@ app.on('window-all-closed', function () {
   if (process.platform !== 'darwin') app.quit()
 })
 
+
 ipcMain.on("login", (event, data) => {
         // event.sender.send("done")
 
+        let usercachetyroservFile = path.join(app.getPath("appData"), "/.TyroServBeta/usercachetyroserv.json");
+        let usercachetyroserva2fFile = path.join(app.getPath("appData"), "/.TyroServBeta/usercachetyroserva2f.json");
+
         const fs = require('fs'); 
-        fs.appendFile('./minecraft/usercachetyroserv.json', data.token_tyroserv, function (err) { if (err) throw err; console.log('Fichier cree !');});
-        fs.appendFile('./minecraft/usercachetyroserva2f.json', data.token_tyroserv_a2f, function (err) { if (err) throw err; console.log('Fichier cree !');});
+        fs.appendFile(usercachetyroservFile, data.token_tyroserv, function (err) { if (err) throw err; console.log('Fichier cree !');});
+        fs.appendFile(usercachetyroserva2fFile, data.token_tyroserv_a2f, function (err) { if (err) throw err; console.log('Fichier cree !');});
         
         let UserTest = {
             access_token: '',
