@@ -7,7 +7,7 @@ const launcher = new Client();
 function createWindow () {
   const mainWindow = new BrowserWindow({
     // frame: false, 
-    title: "Tyrolium Launcher",
+    title: "TyroServ Launcher - 0.1.2",
     width: 800,
     height: 600,
     icon: path.join(__dirname, "/asset/logo.png"),
