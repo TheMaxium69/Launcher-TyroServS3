@@ -1,7 +1,7 @@
 {
-  "name": "launcher",
-  "version": "1.0.0",
-  "description": "Lanceur tyrolium",
+  "name": "launchertyroserv",
+  "version": "0.1.2",
+  "description": "Launcher TyroServ",
   "main": "index.js",
   "scripts": {
     "start": "electron ."

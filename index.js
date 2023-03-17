@@ -6,7 +6,7 @@ const launcher = new Client();
 
 function createWindow () {
   const mainWindow = new BrowserWindow({
-    frame: false, 
+    // frame: false, 
     title: "Tyrolium Launcher",
     width: 800,
     height: 600,
