@@ -1,2 +1,2 @@
-# Launcher-TyroServS3
-Launcher de la S3 de TyroServ
+# Setup-TyroServS3
+Le Setup du Launcher de TyroServS3 utilise "Inno Setup Compiler"
