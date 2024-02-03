@@ -51,6 +51,7 @@ ipcMain.on("login", (event, data) => {
             name: data.username_tyroserv,
             user_properties: '{}',
             meta: {
+                // type: "msa",
                 type: "mojang",
                 demo: false,
                 xuid: '',
@@ -76,8 +77,8 @@ ipcMain.on("login", (event, data) => {
             // forge:path.join(app.getPath("appData"), "/.TyroServBeta/forge-1.16.5-36.2.41-installer.jar"),
             forge:path.join(app.getPath("appData"), "/.TyroServBeta/forge-1.16.5-36.2.34-installer.jar"),
             memory: {
-                max: "2G",
-                min: "1G"
+                max: "4G",
+                min: "2G"
             },
         }
         launcher.launch(opts);
