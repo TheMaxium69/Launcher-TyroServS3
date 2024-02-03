@@ -59,7 +59,7 @@ ipcMain.on("login", (event, data) => {
         }
 
         let opts = {
-            clientPackage: "http://tyrolium.fr/Download/TyroServS3/instance.zip", //null,
+            // clientPackage: "http://tyrolium.fr/Download/TyroServS3/instance.zip", //null,
             authorization: UserTest,
             customLaunchArgs: [
                 "--useritiumTokenPrivate "+data.token_tyroserv,
@@ -67,11 +67,13 @@ ipcMain.on("login", (event, data) => {
             ],
             root: path.join(app.getPath("appData"), "/.TyroServBeta/"),
             // javaPath: `C:/Users/mxmto/AppData/Roaming/.minecraft/runtime/jre-legacy/windows/jre-legacy/bin/javaw.exe`,
+            // javaPath: `C:/Users/mxmto/AppData/Roaming/.minecraft/runtime/java-runtime-gamma/windows/java-runtime-gamma/bin/javaw.exe`,
             version: {
                 number: "1.16.5",
                 type: "release",
                 // custom: "1.16.5-forge-36.2.34"
             },
+            // forge:path.join(app.getPath("appData"), "/.TyroServBeta/forge-1.16.5-36.2.41-installer.jar"),
             forge:path.join(app.getPath("appData"), "/.TyroServBeta/forge-1.16.5-36.2.34-installer.jar"),
             memory: {
                 max: "2G",
