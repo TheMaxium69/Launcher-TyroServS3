@@ -8,8 +8,8 @@ function createWindow () {
   const mainWindow = new BrowserWindow({
     // frame: false, 
     title: "TyroServ Launcher - 0.1.2",
-    width: 800,
-    height: 600,
+    width: 830,
+    height: 660,
     icon: path.join(__dirname, "/asset/logo.png"),
     webPreferences: {
       nodeIntegration: true,
