@@ -1,0 +1,33 @@
+#up-panel{
+    width: 100%;
+    height: 69px;
+    background-color: #121212;
+
+    position: fixed;
+    top: 35px;
+}
+
+#middle-panel{
+
+    background-image: url(http://tyrolium.fr/Contenu/Image/Background6.png);
+    /*background-image: url(https://tyrolium.fr/Contenu/Image/launcher/Launcher.png);*/
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    background-attachment: fixed;
+
+    width: 100%;
+    height: 100vh;
+
+    padding: 0;
+    margin: 0;
+
+}
+
+#down-panel{
+    width: 100%;
+    height: 69px;
+    background-color: #121212;
+    position: fixed;
+    bottom: 0;
+}
