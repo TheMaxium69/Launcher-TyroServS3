@@ -1,20 +1,25 @@
 @import url(https://fonts.googleapis.com/css?family=Roboto:300);
 
         .login-page {
-        width: 360px;
+        /*width: 360px;*/
+        width: 441px;
         padding: 8% 0 0;
         margin: auto;
         }
 
         .form {
+                height: 278px;
         position: relative;
         z-index: 1;
         background: #FFFFFF;
         max-width: 360px;
-        margin: 0 auto 100px;
-        padding: 45px;
+        /*margin: 0 auto 100px;*/
+        /*padding: 45px;*/
+                padding: 63px;
         text-align: center;
-        box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
+        /*box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);*/
+
+                /*width: 100%; height: 100%;*/ background: rgba(255, 255, 255, 0.25); box-shadow: 4px 9px 50px -1px rgba(0, 0, 0, 0.25); border-radius: 31px; border: 2px white solid; backdrop-filter: blur(60px)
         }
 
         .form input {
@@ -27,13 +32,15 @@
         padding: 15px;
         box-sizing: border-box;
         font-size: 14px;
+                border-radius: 7px;
+                margin: 11px 0px;
         }
 
         .form button {
         font-family: "Roboto", sans-serif;
         text-transform: uppercase;
         outline: 0;
-        background: #4CAF50;
+        background: rgba(22, 20, 143, 1);
         width: 100%;
         border: 0;
         padding: 15px;
@@ -42,10 +49,12 @@
         -webkit-transition: all 0.3 ease;
         transition: all 0.3 ease;
         cursor: pointer;
+                margin-top: 12px;
+                border-radius: 5px;
         }
 
         .form button:hover,.form button:active,.form button:focus {
-        background: #43A047;
+        background: #001AFF;
         }
 
         .form .message {
@@ -55,7 +64,7 @@
         }
 
         .form .message a {
-        color: #4CAF50;
+        color: #001AFF;
         text-decoration: none;
         }
 
@@ -89,6 +98,15 @@
         color: #1a1a1a;
         }
 
+        .form h2 {
+        color: #001AFF!important;
+                font-weight: 700;
+                margin-top: -9px;
+                margin-bottom: 28px;
+                font-size: 28px;
+        }
+        
+
         .container .info span {
         color: #4d4d4d;
         font-size: 12px;
@@ -104,13 +122,33 @@
         }
 
         body {
-        background-image: url(http://tyrolium.fr/Contenu/Image/Background6.png);
-        /*background: #76b852; /* fallback for old browsers 
+        /*background-image: url(http://tyrolium.fr/Contenu/Image/Background6.png);*/
+        background-image: url(https://tyrolium.fr/Contenu/Image/Launcher.png);
+                background-repeat: no-repeat;
+                background-position: center;
+                background-size: cover;
+                background-attachment: fixed;
+
+
+        /*background: #76b852; /* fallback for old browsers
         background: -webkit-linear-gradient(right, #76b852, #8DC26F);
         background: -moz-linear-gradient(right, #76b852, #8DC26F);
         background: -o-linear-gradient(right, #76b852, #8DC26F);
         background: linear-gradient(to left, #76b852, #8DC26F);*/
         font-family: "Roboto", sans-serif;
         -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;      
+        -moz-osx-font-smoothing: grayscale;
+
+        }
+
+        .down-form{
+                margin-top: 27px;
+        }
+
+        .down-form a:first-child {
+                text-decoration: unset;
+        }
+        .down-form a{
+                color: #001AFF;
+                font-weight: 700;
         }
