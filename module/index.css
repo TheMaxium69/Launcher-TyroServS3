@@ -121,24 +121,31 @@
         color: #EF3B3A;
         }
 
-        body {
-        /*background-image: url(http://tyrolium.fr/Contenu/Image/Background6.png);*/
-        background-image: url(https://tyrolium.fr/Contenu/Image/launcher/Launcher.png);
+        body#login {
+                /*background-image: url(http://tyrolium.fr/Contenu/Image/Background6.png);*/
+                background-image: url(https://tyrolium.fr/Contenu/Image/launcher/Launcher.png);
                 background-repeat: no-repeat;
                 background-position: center;
                 background-size: cover;
                 background-attachment: fixed;
 
 
-        /*background: #76b852; /* fallback for old browsers
-        background: -webkit-linear-gradient(right, #76b852, #8DC26F);
-        background: -moz-linear-gradient(right, #76b852, #8DC26F);
-        background: -o-linear-gradient(right, #76b852, #8DC26F);
-        background: linear-gradient(to left, #76b852, #8DC26F);*/
+                /*background: #76b852; /* fallback for old browsers
+                background: -webkit-linear-gradient(right, #76b852, #8DC26F);
+                background: -moz-linear-gradient(right, #76b852, #8DC26F);
+                background: -o-linear-gradient(right, #76b852, #8DC26F);
+                background: linear-gradient(to left, #76b852, #8DC26F);*/
+        }
+        body {
+
         font-family: "Roboto", sans-serif;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
 
+                background-color: #121212;
+                color: #ededed;
+                padding: 0;
+                margin: 0;
         }
 
         .down-form{
@@ -153,15 +160,31 @@
                 font-weight: 700;
         }
 
-        .block-rodonite{
-                width: 120px;
-                height: 120px;
-                margin-left: 139px;
-                margin-top: -87px;
-                transform: rotate(-16.38deg);
-                transform-origin: 0 0;
-                position: absolute;
+.block-rodonite {
+        width: 120px;
+        height: 120px;
+        margin-left: 139px;
+        margin-top: -87px;
+        transform: rotate(-16.38deg);
+        transform-origin: 0 0;
+        position: absolute;
+
+        /* Animation */
+        animation: moveUpDown1 2s ease-in-out infinite alternate; /* Nom de l'animation, durée, fonction de temporisation, itération */
+
+        /* Assurer que l'image est affichée en tant que bloc */
+        /*display: block;*/
+}
+
+/* Définir l'animation */
+@keyframes moveUpDown1 {
+        0% {
+                transform: rotate(-16.38deg) translateY(0); /* Position de départ - aucune translation */
         }
+        100% {
+                transform: rotate(-16.38deg) translateY(10px); /* Position finale - déplacer de 20px vers le bas */
+        }
+}
 
         .block-tyrolium{
                 margin-left: -242px;
@@ -171,4 +194,16 @@
                 height: 130px;
                 transform: rotate(20.43deg);
                 transform-origin: 0 0;
+
+                animation: moveUpDown2 2s ease-in-out infinite alternate;
         }
+
+/* Définir l'animation */
+@keyframes moveUpDown2 {
+        0% {
+                transform: rotate(20.43deg) translateY(0); /* Position de départ - aucune translation */
+        }
+        100% {
+                transform: rotate(20.43deg) translateY(10px); /* Position finale - déplacer de 20px vers le bas */
+        }
+}

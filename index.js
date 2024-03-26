@@ -3,35 +3,70 @@ const path = require('path')
 const { Client, Authenticator } = require('minecraft-launcher-core');
 const launcher = new Client();
 
-
+global.userConnected = undefined;
+let mainWindow;
 function createWindow () {
-  const mainWindow = new BrowserWindow({
-    // frame: false, 
+   mainWindow = new BrowserWindow({
+    frame: false,
     title: "TyroServ Launcher - 0.1.2",
     width: 830,
     height: 660,
     icon: path.join(__dirname, "/asset/logo.png"),
     webPreferences: {
       nodeIntegration: true,
+      contextIsolation: false,
       enableRemoteModule: true,
       // preload: path.join(__dirname, 'preload.js'),
     }
   })
 
   mainWindow.loadFile('index.html')
+  mainWindow.setMenuBarVisibility(false);
+
 }
 
 app.whenReady().then(() => {
   createWindow()
   
   app.on('activate', function () {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow()
+    if (BrowserWindow.getAllWindows().length === 0){
+        createWindow()
+    }
   })
 })
 
-app.on('window-all-closed', function () {
-  if (process.platform !== 'darwin') app.quit()
-})
+let maximizeToggle=false;
+ipcMain.on("manualMinimize", () => {
+    mainWindow.minimize();
+});
+ipcMain.on("manualMaximize", () => {
+    if (maximizeToggle) {
+        mainWindow.unmaximize();
+    } else {
+        mainWindow.maximize();
+    }
+    maximizeToggle=!maximizeToggle;
+});
+ipcMain.on("manualClose", () => {
+    app.quit();
+//   if (process.platform !== 'darwin') app.quit()
+});
+
+ipcMain.on("connected", (event, data) => {
+    global.userConnected = data.userTyroServLoad;
+    console.log("Connection avec : ", data.userTyroServLoad.pseudo)
+
+    mainWindow.loadFile('panel.html')
+
+    mainWindow.webContents.on('dom-ready', () => {
+        mainWindow.webContents.executeJavaScript(`
+            let welcomeP = document.getElementById("welcome");
+            if (welcomeP) {
+                welcomeP.innerText = "Bienvenue : " + "${data.userTyroServLoad.pseudo}";
+            }
+        `);
+    });
+});
 
 
 ipcMain.on("login", (event, data) => {

@@ -42,7 +42,8 @@ function isConnect (reponse, email, mdp){
   if(reponse['why'] == "successfully connected"){
     var userTyroServLoad = reponse['result'];
 
-    startMinecraft(userTyroServLoad);
+    ipc.send("connected", {userTyroServLoad: userTyroServLoad})
+    // startMinecraft(userTyroServLoad);
   }
 
 }

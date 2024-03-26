@@ -1,0 +1,40 @@
+
+nav {
+    border: 1px solid #2c2c2c;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    background: #1c1c1c;
+}
+#title {
+    user-select: none;
+    font-size: 15px;
+    margin-left: 10px;
+    -webkit-app-region: drag;
+}
+:not(nav) {
+    -webkit-app-region: no-drag;
+}
+.nav-buttons {
+    margin-left: auto;
+    height: 100%;
+    display: flex;
+}
+.nav-buttons > button {
+    transition: background .2s ease;
+    background: #1c1c1c;
+    border: none;
+    height: 100%;
+    margin: 0;
+    aspect-ratio: 1;
+    color: #ededed;
+    font-size: 17px;
+}
+.nav-buttons > button:hover {
+    transition: .2s ease;
+    background: #2c2c2c;
+    cursor: pointer;
+}
+.nav-buttons > button:active {
+    background: #4c4c4c;
+}

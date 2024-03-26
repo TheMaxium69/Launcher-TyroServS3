@@ -9,19 +9,32 @@
     <link rel="stylesheet" href="module/iziToast.min.css">
     <script src="module/iziToast.min.js" type="text/javascript"></script>
 
+
+    <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v6.4.2/css/all.css">
+
     <link rel="stylesheet" href="module/index.css">
-    <!-- <script src="module/titlebar.js"></script> -->
+    <link rel="stylesheet" href="module/navbar.css">
 
 </head>
 
-<body>
+<body id="login">
+    <nav style="-webkit-app-region: drag">
+        <img src="asset/logo.png" width="20px" style="margin-left: 10px">
+        <p id="title">TyroServ Launcher</p>
+        <div class="nav-buttons">
+            <button id="minimize"><i class="fa-light fa-window-minimize"></i></button>
+            <button id="maximize"><i class="fa-light fa-square"></i></button>
+            <button id="close"><i class="fa-light fa-xmark"></i></button>
+        </div>
+    </nav>
+
 	<div class="login-page">
         <div class="form" id="form">
             <img class="block-rodonite" src="https://tyrolium.fr/Contenu/Image/launcher/rhodonite.png"/>
             <h2>Compte Useritium</h2>
                 <input type="text" placeholder="Email" id="email" />
                 <input type="password" placeholder="Mot de passe" id="password" />
-                <button id="play">Jouer</button>
+                <button id="connection">Se connecter</button>
             <div class="down-form">
                 <a href="">Mots de passe oublier</a>
                 <a href="">S'inscrire</a>
@@ -36,9 +49,9 @@
 
         const ipc = require("electron").ipcRenderer;
 
-        var playbtn = document.getElementById("play");
+        var connectionbtn = document.getElementById("connection");
 
-        playbtn.addEventListener("click", e => {
+        connectionbtn.addEventListener("click", e => {
             let email = document.getElementById("email").value
             let pass = document.getElementById("password").value
 
@@ -90,8 +103,10 @@
                 // playbtn.disabled = false;
 
             }
-        }    
+        }
     </script>
+
+    <script src="module/navbar.js"></script>
 </body>
 
 </html>
