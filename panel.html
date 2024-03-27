@@ -116,8 +116,11 @@
     ipcRenderer.on('progression', (event, data) => {
         // console.log("Data : ", data)
         const progressBar = document.getElementById('progressBar');
+
+        let pourcentage = (data.task / data.total) * 100;
+        let pourcentageAffiche = Math.floor((data.task / data.total) * 100);
         // progressBar.innerHTML = "<p> Type : " + data.type  + " | Task : " + data.task + " | total : " + data.total + "</p>"
-        progressBar.innerHTML = '<div id="slide" style="width:' + data.task + '%!important;"><p>' + data.task + '%</p></div>'
+        progressBar.innerHTML = '<div id="slide" style="width:' + pourcentage + '%!important;"><p>' + pourcentageAffiche + '%</p></div>'
 
     });
 
