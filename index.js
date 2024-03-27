@@ -108,23 +108,36 @@ ipcMain.on("login", (event, data) => {
             // javaPath: `C:/Users/mxmto/AppData/Roaming/.minecraft/runtime/jre-legacy/windows/jre-legacy/bin/javaw.exe`,
             // javaPath: `C:/Users/mxmto/AppData/Roaming/.minecraft/runtime/java-runtime-gamma/windows/java-runtime-gamma/bin/javaw.exe`,
             version: {
-                number: "1.16.5",
+                number: "1.12.2",
                 type: "release",
                 // custom: "1.16.5-forge-36.2.34"
             },
             // forge:path.join(app.getPath("appData"), "/.TyroServBeta/forge-1.16.5-36.2.41-installer.jar"),
-            forge:path.join(app.getPath("appData"), "/.TyroServBeta/forge-1.16.5-36.2.34-installer.jar"),
+            // forge:path.join(app.getPath("appData"), "/.TyroServBeta/forge-1.16.5-36.2.34-installer.jar"),
+            forge:path.join(app.getPath("appData"), "/.TyroServBeta/forge-1.12.2-14.23.5.2860-universal.jar"),
             memory: {
                 max: "4G",
                 min: "2G"
             },
         }
         launcher.launch(opts);
-        
-        // launcher.on('debug', (e) => console.log(e));
-        // launcher.on('data', (e) => console.log(e));
+
+        launcher.on('debug', (e) => console.log("debug", e));
+        launcher.on('data', (e) => {
+            console.log("data", e)
+
+            mainWindow.hide();
+            if (e.includes('Stopping!')) {
+                console.log("Minecraft Stop");
+
+                setTimeout(() => {
+                    mainWindow.show();
+                    event.sender.send("stopping")
+                }, 1000);
+            }
+        });
         launcher.on('progress', (e) => {
-            console.log(e);
+            console.log("progress", e);
             event.sender.send("progression", e)
         })
 })

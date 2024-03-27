@@ -47,7 +47,7 @@
 
         <h1 id="play">Jouer</h1>
 
-        <div id="progressBar" style=" height: 40px; border: 2px solid white; margin: 50px; color: white"></div>
+        <div id="progressBar"><div id="slide"><p>0%</p></div></div>
 
     </section>
 </main>
@@ -69,7 +69,13 @@
 
     playbtn.addEventListener("click", e => {
 
-        startMinecraft(userConnected);
+        if (playbtn.innerText === "JOUER"){
+
+            startMinecraft(userConnected);
+
+            playbtn.innerText = "LANCEMENT";
+        }
+
 
     });
 
@@ -108,13 +114,20 @@
     const { ipcRenderer } = require('electron');
 
     ipcRenderer.on('progression', (event, data) => {
-        console.log("Data : ", data)
+        // console.log("Data : ", data)
         const progressBar = document.getElementById('progressBar');
-        if (data.type == "assets"){
-            progressBar.innerHTML = "<p> Final </p>"
-        } else {
-            progressBar.innerHTML = "<p> Type : " + data.type  + " | Task : " + data.task + " | total : " + data.total + "</p>"
-        }
+        // progressBar.innerHTML = "<p> Type : " + data.type  + " | Task : " + data.task + " | total : " + data.total + "</p>"
+        progressBar.innerHTML = '<div id="slide" style="width:' + data.task + '%!important;"><p>' + data.task + '%</p></div>'
+
+    });
+
+    ipcRenderer.on('stopping', (event, data) => {
+        // console.log("Data : ", data)
+        const progressBar = document.getElementById('progressBar');
+        progressBar.innerHTML = "<p> </p>"
+
+        playbtn.innerText = "JOUER";
+
     });
 
 </script>
