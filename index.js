@@ -9,8 +9,11 @@ function createWindow () {
    mainWindow = new BrowserWindow({
     frame: false,
     title: "TyroServ Launcher - 0.1.2",
-    width: 830,
-    height: 660,
+    // width: 830,
+    // height: 660,
+    width: 1318,
+    height: 710,
+    resizable: false,
     icon: path.join(__dirname, "/asset/logo.png"),
     webPreferences: {
       nodeIntegration: true,
@@ -118,8 +121,8 @@ ipcMain.on("login", (event, data) => {
         }
         launcher.launch(opts);
         
-        launcher.on('debug', (e) => console.log(e));
-        launcher.on('data', (e) => console.log(e));
+        // launcher.on('debug', (e) => console.log(e));
+        // launcher.on('data', (e) => console.log(e));
         launcher.on('progress', (e) => {
             console.log(e);
             event.sender.send("progression", e)

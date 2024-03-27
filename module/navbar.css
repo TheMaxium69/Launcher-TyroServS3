@@ -5,6 +5,9 @@ nav {
     display: flex;
     align-items: center;
     background: #1c1c1c;
+
+    margin: 4px;
+    border-radius: 6px;
 }
 #title {
     user-select: none;

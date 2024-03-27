@@ -1,4 +1,5 @@
 @import url(https://fonts.googleapis.com/css?family=Roboto:300);
+@import url(https://fonts.googleapis.com/css?family=Poppins:500);
 
         .login-page {
         /*width: 360px;*/
@@ -136,6 +137,16 @@
                 background: -o-linear-gradient(right, #76b852, #8DC26F);
                 background: linear-gradient(to left, #76b852, #8DC26F);*/
         }
+
+body#panel {
+        /*background-image: url(http://tyrolium.fr/Contenu/Image/Background6.png);*/
+        background-image: url(https://tyrolium.fr/Contenu/Image/launcher/Launcher.png);
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: cover;
+        background-attachment: fixed;
+}
+
         body {
 
         font-family: "Roboto", sans-serif;
