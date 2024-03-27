@@ -63,9 +63,9 @@ ipcMain.on("connected", (event, data) => {
 
     mainWindow.webContents.on('dom-ready', () => {
         mainWindow.webContents.executeJavaScript(`
-            let welcomeP = document.getElementById("welcome");
-            if (welcomeP) {
-                welcomeP.innerText = "Bienvenue : " + "${data.userTyroServLoad.pseudo}";
+            let pseudoP = document.getElementById("pseudo");
+            if (pseudoP) {
+                pseudoP.innerText = "${data.userTyroServLoad.pseudo}";
             }
         `);
     });
