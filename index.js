@@ -113,10 +113,10 @@ ipcMain.on("login", (event, data) => {
                 // custom: "Forge 1.12.2"
             },
             windows: {
-                width: "1318",
-                height: "710"
+                width: "1500",
+                height: "900"
             },
-            forge:path.join(app.getPath("appData"), "/.TyroServBeta/forge-1.12.2-14.23.5.2860-installer.jar"),
+            forge:path.join(app.getPath("appData"), "/.TyroServBeta/Launch.jar"),
             memory: {
                 max: "4G",
                 min: "2G"

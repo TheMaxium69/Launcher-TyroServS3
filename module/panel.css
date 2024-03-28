@@ -1,33 +1,158 @@
 /************************************
 
-            UP PANEL
+            UP LEFT
 
 *************************************/
-
-#up-panel{
-    width: 100%;
-    /*height: 73px;*/
-    /*background-color: #121212;*/
-    position: fixed;
-    top: 46px;
-
-    display: flex;
-    flex-direction: column;
-    /*align-items: start;*/
-    justify-content: flex-start;
-}
 
 #PP{
     width: 114px;
     height: 114px;
+    left: 29px;
+    top: 80px;
+    position: absolute;
+    box-shadow: 0px 4px 83px rgba(0, 0, 0, 0.25);
+    border-radius: 133px;
     background-size: contain;
-    border-radius: 100%;
+}
+
+#pseudo{
+    left: 163px;
+    top: 113px;
+    position: absolute;
+    color: white;
+    font-size: 34px;
+    font-family: Poppins;
+    font-weight: 400;
+    letter-spacing: 0.85px;
+    word-wrap: break-word;
+
+    margin-block-start: 0px;
+    margin-block-end: 0px;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+}
+
+#useritium-pseudo{
+    left: 164px;
+    top: 91px;
+    position: absolute;
+    color: white;
+    font-size: 14px;
+    font-family: Poppins;
+    font-weight: 400;
+    letter-spacing: 0.35px;
+    word-wrap: break-word
+}
+
+/************************************
+
+            UP RIGHT
+
+*************************************/
+#name-serv{
+    left: 937px;
+    top: 100px;
+    position: absolute;
+    color: #1400FF;
+    font-size: 27px;
+    font-family: Poppins;
+    font-weight: 700;
+    letter-spacing: 0.68px;
+    word-wrap: break-word
+}
+
+#type-serv{
+    left: 839px;
+    top: 130px;
+    position: absolute;
+    color: white;
+    font-size: 34px;
+    font-family: Poppins;
+    font-weight: 700;
+    letter-spacing: 0.85px;
+    word-wrap: break-word
+}
+
+#img-serv{
+    width: 151px;
+    height: 151px;
+    left: 1104px;
+    top: 59px;
+    position: absolute;
 }
 
 
 
+/************************************
 
+            SELECT SERV
 
+*************************************/
+
+#selectplay{
+
+}
+
+#selectplay #barChoose{
+    width: 11px;
+    height: 58px;
+    left: 1182px;
+    top: 280px;
+    position: absolute;
+    background: #1400FF;
+    border-radius: 14px;
+}
+
+#selectplay #backServAll{
+    width: 91px;
+    height: 298px;
+    left: 1199px;
+    top: 243px;
+    position: absolute;
+    background: #1C1C1C;
+    box-shadow: 0px 4px 57px rgba(0, 0, 0, 0.25);
+    border-radius: 14px;
+}
+
+#selectplay img{
+    width: 49px;
+    height: 49px;
+}
+
+#selectplay #serv-faction{
+    width: 71px;
+    height: 71px;
+    left: 1209px;
+    top: 273px;
+    position: absolute;
+    background: #4E4E4E;
+    border-radius: 14px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#selectplay #serv-game{
+    width: 71px;
+    height: 71px;
+    left: 1209px;
+    top: 356px;
+    position: absolute;
+    background: #4E4E4E;
+    border-radius: 14px;display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#selectplay #serv-vanilla{
+    width: 71px;
+    height: 71px;
+    left: 1209px;
+    top: 439px;
+    position: absolute;
+    background: #4E4E4E;
+    border-radius: 14px;display: flex;
+    justify-content: center;
+    align-items: center;
+}
 
 
 
