@@ -340,6 +340,61 @@
         arrow.classList.toggle('ri-arrow-up-s-line');
         arrow.classList.toggle('ri-arrow-down-s-line');
 
+        getInfoServer(userConnected.pseudo)
+            .then(function(infoServUser) {
+                console.log(infoServUser);
+
+
+                var level_div = document.getElementById("level-user");
+                var level_text = document.getElementById("level-user-text");
+
+                // VERIFICATION DE L'EXISTANCE DE L'UTILISATEUR
+                if (infoServUser['result']['player'] !== "no player"){
+
+                    // FACTION
+                    if (infoServUser['result']['roles'] !== "no roles"){
+                        var grade_div = document.getElementById("grade-user");
+                        grade_div.classList.add("show-tag");
+
+                        let allRoles = infoServUser['result']['roles'];
+                        allRoles.forEach(oneRoles =>{
+
+                            if (oneRoles['name'] !== "default"){
+                                var grade_text = document.getElementById("grade-user-text");
+                                grade_text.innerText +=  oneRoles['displayName'];
+                            }
+
+                        })
+
+                    }
+
+                    // FACTION
+                    if (infoServUser['result']['faction']['id'] !== "0"){
+                        var faction_div = document.getElementById("faction-user");
+                        faction_div.classList.add("show-tag");
+                        var faction_text = document.getElementById("faction-user-text");
+                        faction_text.innerText = "Faction : " + infoServUser['result']['faction']['name'];
+                    }
+
+                    // MONEY
+                    var money_div = document.getElementById("money-user");
+                    money_div.classList.add("show-tag");
+                    var money_text = document.getElementById("money-user-text");
+                    money_text.innerText = infoServUser['result']['money']['wallet'] + " $";
+
+                } else {
+
+                    level_div.classList.add("show-tag");
+                    level_text.innerText = "Première connexion";
+
+
+                }
+
+            })
+            .catch(function(error) {
+                console.log(error);
+            });
+
     });
 
     // LANCEMENT DE SITE
