@@ -19,6 +19,9 @@
 </head>
 
 <body id="panel">
+
+
+<!--NAVBAR -->
 <nav style="-webkit-app-region: drag">
     <img src="asset/logo.png" width="20px" style="margin-left: 10px">
     <p id="title">TyroServ Launcher</p>
@@ -28,13 +31,16 @@
         <button id="close"><i class="fa-light fa-xmark"></i></button>
     </div>
 </nav>
+
+
+
 <main>
 <!--  UP LEFT  -->
     <section id="up-left">
 
-        <div id="PP" style="background-image: url('https://minotar.net/avatar/TheMaximeSan')"></div>
+        <div id="PP"></div>
 
-        <div id="useritium-pseudo" style="">Maxime Tournier</div>
+        <div id="useritium-pseudo"></div>
 
         <h2 id="pseudo"></h2>
 
@@ -61,7 +67,7 @@
 
     <section id="icone-left">
 
-        <img id="useritium-account" src="https://tyrolium.fr/generate-pp/?l=l&c=4ab238">
+        <img id="useritium-account" src="https://tyrolium.fr/generate-pp/">
 
         <div id="setting" class="btnleft">
 <!--            <i class="ri-settings-fill icone-left"></i>-->
@@ -176,23 +182,45 @@
 
 </script>
 
-<script src="authUseritium.js"></script>
 
+<!-- NAVBAR ET AUTH -->
+<script src="module/navbar.js"></script>
+<script src="authUseritium.js"></script>
 <script>
 
     const { remote } = require('electron');
-
-    let userConnected = remote.getGlobal('userConnected');
-
+    const { ipcRenderer } = require('electron');
     const ipc = require("electron").ipcRenderer;
 
+
+    // RECUPERATION DE L'UTILISATEUR
+    let userConnected = remote.getGlobal('userConnected');
+
+    if (userConnected){
+
+        console.log(userConnected);
+        var pseudo = document.getElementById("pseudo");
+        var PP = document.getElementById("PP");
+        var useritium_pseudo = document.getElementById("useritium-pseudo");
+        var useritium_account = document.getElementById("useritium-account");
+
+        pseudo.innerText = userConnected.pseudo;
+        useritium_pseudo.innerText = "Pseudo useritium";
+        PP.style.backgroundImage = "url('https://minotar.net/avatar/" + userConnected.pseudo + "')"
+        useritium_account.src = "https://tyrolium.fr/generate-pp/?l=" + userConnected.pseudo.charAt(0);;
+
+    }
+
+
+
+    // BTN DE LANCEMENT DU JEUX
     var playbtn = document.getElementById("play");
 
     playbtn.addEventListener("click", e => {
 
         if (playbtn.innerText === "JOUER"){
 
-            // startMinecraft(userConnected);
+            startMinecraft(userConnected);
 
             playbtn.innerText = "LANCEMENT";
         }
@@ -200,40 +228,7 @@
 
     });
 
-    function notif(status, why){
-        if(status == "true"){
-
-            iziToast.success({
-                title: 'OK',
-                message: why,
-            });
-
-            playbtn.disabled = true;
-
-        }
-        if(status == "err"){
-
-            iziToast.error({
-                title: 'Erreur',
-                message: why,
-            })
-            // playbtn.disabled = false;
-
-        }
-        if(status == "info"){
-
-            iziToast.info({
-                title: 'Info',
-                message: why,
-            })
-
-            // playbtn.disabled = false;
-
-        }
-    }
-
-    const { ipcRenderer } = require('electron');
-
+    // BAR DE CHARGEMENT
     ipcRenderer.on('progression', (event, data) => {
         // console.log("Data : ", data)
         const progressBar = document.getElementById('progressBar');
@@ -245,6 +240,7 @@
 
     });
 
+    // ARRET DU JEUX (RETOUR A LA NORMAL)
     ipcRenderer.on('stopping', (event, data) => {
         // console.log("Data : ", data)
         const progressBar = document.getElementById('progressBar');
@@ -262,9 +258,37 @@
 
     });
 
+    // NOTIFICATION
+    function notif(status, why){
+        if(status == "true"){
+
+            iziToast.success({
+                title: 'OK',
+                message: why,
+            });
+
+            playbtn.disabled = true;
+
+        }
+        if(status == "err"){
+
+            iziToast.error({
+                title: 'Erreur',
+                message: why,
+            })
+
+        }
+        if(status == "info"){
+
+            iziToast.info({
+                title: 'Info',
+                message: why,
+            })
+
+        }
+    }
 </script>
 
-<script src="module/navbar.js"></script>
 </body>
 
 </html>

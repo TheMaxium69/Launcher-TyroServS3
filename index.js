@@ -59,16 +59,16 @@ ipcMain.on("connected", (event, data) => {
     global.userConnected = data.userTyroServLoad;
     console.log("Connection avec : ", data.userTyroServLoad.pseudo)
 
-    mainWindow.loadFile('panel.html')
-
-    mainWindow.webContents.on('dom-ready', () => {
-        mainWindow.webContents.executeJavaScript(`
-            let pseudoP = document.getElementById("pseudo");
-            if (pseudoP) {
-                pseudoP.innerText = "${data.userTyroServLoad.pseudo}";
-            }
-        `);
-    });
+    mainWindow.loadFile('panel.html');
+    //
+    // mainWindow.webContents.on('dom-ready', () => {
+    //     mainWindow.webContents.executeJavaScript(`
+    //         let pseudoP = document.getElementById("pseudo");
+    //         if (pseudoP) {
+    //             pseudoP.innerText = "${data.userTyroServLoad.pseudo}";
+    //         }
+    //     `);
+    // });
 });
 
 
