@@ -44,18 +44,33 @@
 
         <h2 id="pseudo"></h2>
 
-        <div id="level-user" style="width: 66px; height: 26px; left: 163px; top: 168px; position: absolute; background: #850000; border-radius: 9px"></div>
-        <div id="level-user-text" style="left: 174px; top: 171px; position: absolute; color: white; font-size: 16px; font-family: Ubuntu; font-weight: 400; letter-spacing: 0.40px; word-wrap: break-word">Lvl 10</div>
+        <div id="stats-perso">
 
-        <div id="faction-user" style="width: 161px; height: 26px; left: 240px; top: 168px; position: absolute; background: #030085; border-radius: 9px"></div>
-        <div id="faction-user-text" style="left: 251px; top: 171px; position: absolute; color: white; font-size: 16px; font-family: Ubuntu; font-weight: 400; letter-spacing: 0.40px; word-wrap: break-word">Faction : TyroStaff</div>
+            <div id="grade-user" class="perso-tag">
+                <p id="grade-user-text" class="perso-tag-text"></p>
+            </div>
+
+            <div id="level-user" class="perso-tag">
+                <p id="level-user-text" class="perso-tag-text"></p>
+            </div>
+
+            <div id="money-user" class="perso-tag">
+                <p id="money-user-text" class="perso-tag-text"></p>
+            </div>
+
+            <div id="faction-user" class="perso-tag">
+                <p id="faction-user-text" class="perso-tag-text"></p>
+            </div>
+
+
+        </div>
 
     </section>
 
 <!--  UP RIGHT  -->
     <section id="up-right">
 
-        <div id="name-serv" >TYROSERV</div>
+        <div id="name-serv" onclick="launchSite('https://tyroserv.fr')">TYROSERV</div>
         <div id="type-serv" >PVP/FACTION</div>
 
         <img id="img-serv" src="https://tyrolium.fr/Contenu/Image/Tyrolium%20ServerMC%20Sword%203D.png">
@@ -189,6 +204,7 @@
 <script>
 
     const { remote } = require('electron');
+    const { shell } = require('electron');
     const { ipcRenderer } = require('electron');
     const ipc = require("electron").ipcRenderer;
 
@@ -198,7 +214,7 @@
 
     if (userConnected){
 
-        console.log(userConnected);
+        // console.log(userConnected);
         var pseudo = document.getElementById("pseudo");
         var PP = document.getElementById("PP");
         var useritium_pseudo = document.getElementById("useritium-pseudo");
@@ -209,9 +225,77 @@
         PP.style.backgroundImage = "url('https://minotar.net/avatar/" + userConnected.pseudo + "')"
         useritium_account.src = "https://tyrolium.fr/generate-pp/?l=" + userConnected.pseudo.charAt(0);;
 
+        getInfoServer(userConnected.pseudo)
+            .then(function(infoServUser) {
+                console.log(infoServUser);
+
+
+                var level_div = document.getElementById("level-user");
+                var level_text = document.getElementById("level-user-text");
+
+                // VERIFICATION DE L'EXISTANCE DE L'UTILISATEUR
+                if (infoServUser['result']['player'] !== "no player"){
+
+                    // FACTION
+                    if (infoServUser['result']['roles'] !== "no roles"){
+                        var grade_div = document.getElementById("grade-user");
+                        grade_div.classList.add("show-tag");
+
+                        let allRoles = infoServUser['result']['roles'];
+                        allRoles.forEach(oneRoles =>{
+
+                            if (oneRoles['name'] !== "default"){
+                                var grade_text = document.getElementById("grade-user-text");
+                                grade_text.innerText +=  oneRoles['displayName'];
+                            }
+
+                        })
+
+                    }
+
+                    // FACTION
+                    if (infoServUser['result']['faction']['id'] !== "0"){
+                        var faction_div = document.getElementById("faction-user");
+                        faction_div.classList.add("show-tag");
+                        var faction_text = document.getElementById("faction-user-text");
+                        faction_text.innerText = "Faction : " + infoServUser['result']['faction']['name'];
+                    }
+
+                    // MONEY
+                    var money_div = document.getElementById("money-user");
+                    money_div.classList.add("show-tag");
+                    var money_text = document.getElementById("money-user-text");
+                    money_text.innerText = infoServUser['result']['money']['wallet'] + " $";
+
+                } else {
+
+                    level_div.classList.add("show-tag");
+                    level_text.innerText = "Première connexion";
+
+
+                }
+
+            })
+            .catch(function(error) {
+                console.log(error);
+            });
     }
 
-
+    // RECUPERATION INFO SERVEUR
+    function getInfoServer(pseudo) {
+        return new Promise((resolve, reject) => {
+            fetch('http://vps207.tyrolium.fr/api/?pseudo=' + pseudo)
+                .then(function(response) {
+                    return response.json();
+                })
+                .then(function(data) {
+                    resolve(data);
+                })
+                .catch(function(error) {
+                    reject(error);
+                });
+        });
+    }
 
     // BTN DE LANCEMENT DU JEUX
     var playbtn = document.getElementById("play");
@@ -257,6 +341,11 @@
         arrow.classList.toggle('ri-arrow-down-s-line');
 
     });
+
+    // LANCEMENT DE SITE
+    function launchSite(url){
+        shell.openExternal(url);
+    }
 
     // NOTIFICATION
     function notif(status, why){

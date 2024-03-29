@@ -45,6 +45,51 @@
     word-wrap: break-word
 }
 
+#stats-perso{
+    height: 27px;
+    width: 500px;
+    /*background-color: red;*/
+    left: 163px;
+    top: 168px;
+    position: absolute;
+    display: flex;
+    gap: 6px;
+}
+
+#up-left .perso-tag{
+    border-radius: 9px;
+    display: none;
+}
+
+#up-left .perso-tag-text{
+    color: white;
+    font-size: 16px;
+    font-family: Ubuntu;
+    font-weight: 400;
+    padding: 4px;
+    margin: 0;
+}
+
+#grade-user{
+    background: #850000;
+}
+
+#level-user{
+    background: #268500;
+}
+
+#money-user{
+    background: #c28c04;
+}
+
+#faction-user{
+    background: #030085;
+}
+
+.show-tag{
+    display: initial!important;
+}
+
 /************************************
 
             UP RIGHT

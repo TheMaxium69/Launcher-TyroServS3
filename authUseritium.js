@@ -62,7 +62,26 @@ function startMinecraft (userTyroServLoad){
 function firstConnexion(pseudo, email, mdp){
 
   const form = document.querySelector('#form');
-  form.innerHTML = '<h2>Compte Useritium</h2> <p>Première connexion</p> <input type="hidden" id="type" value="first" />  <input type="hidden" placeholder="Email" id="email" value="'+ email +'" /> <input type="hidden" placeholder="Mot de passe" id="password" value="'+ mdp +'" /> <input type="text" placeholder="Pseudo" id="pseudo" value="'+ pseudo +'" /> <button id="play" onclick="formFirst()">Jouer</button>';
+  // form.innerHTML = '<h2>Compte Useritium</h2> <p>Première connexion</p> <input type="hidden" id="type" value="first" />  <input type="hidden" placeholder="Email" id="email" value="'+ email +'" /> <input type="hidden" placeholder="Mot de passe" id="password" value="'+ mdp +'" /> <input type="text" placeholder="Pseudo" id="pseudo" value="'+ pseudo +'" /> <button id="play" onclick="formFirst()">Jouer</button>';
+  form.innerHTML = `
+
+            <img class="block-rodonite" src="https://tyrolium.fr/Contenu/Image/launcher/rhodonite.png"/>
+            <h2>Compte Useritium</h2>
+                <p style="color: black">Première connexion</p> 
+                
+                <input type="hidden" id="type" value="first" />  
+                <input type="hidden" placeholder="Email" id="email" value="`+ email +`" /> 
+                <input type="hidden" placeholder="Mot de passe" id="password" value="`+ mdp +`" /> 
+                <input type="text" placeholder="Pseudo" id="pseudo" value="`+ pseudo +`" /> 
+<!--                <button>Se connecter</button>-->
+                <button onclick="formFirst()">Envoyé</button>
+            <div class="down-form">
+                <p style="color: black">Ne pourra pas être modifier</p> 
+            </div>
+            <img class="block-tyrolium" src="https://tyrolium.fr/Contenu/Image/launcher/tyrolium.png"/>
+
+
+`;
 
 }
 
@@ -88,7 +107,9 @@ function authFirstConnexion(pseudo, email, mdp){
               
             var userTyroServLoadFirst = reponseFirst['result'];
 
-            startMinecraft(userTyroServLoadFirst);
+
+              ipc.send("connected", {userTyroServLoad: userTyroServLoadFirst})
+              // startMinecraft(userTyroServLoadFirst);
 
           } else {
 
