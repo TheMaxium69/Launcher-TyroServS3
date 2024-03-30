@@ -34,7 +34,7 @@
 
 
 
-<main>
+<main id="panel-faction">
 <!--  UP LEFT  -->
     <section id="up-left">
 
@@ -127,7 +127,142 @@
         <div id="backServAll"></div>
 
         <div id="serv-faction"><img src="asset/logo3d.png"></div>
-        <div id="serv-game"><img src="asset/logo3d.png"></div>
+        <div id="serv-game" onclick="switchLauncher('faction', 'minigame')"><img src="asset/logominigame.png"></div>
+        <div id="serv-vanilla"><img src="asset/minecraft.png"></div>
+
+    </section>
+
+<!-- DOWN PANEL -->
+    <section id="down-panel">
+
+        <div id="downbar">
+
+            <h3 id="player" class="btn" onclick="launchSite('https://fr.namemc.com/server/mc.tyrolium.fr')">
+                JOUEUR
+            </h3>
+
+            <h3 id="ping" class="btn" onclick="launchSite('https://stats.uptimerobot.com/7z9o3SEnWX')">
+                STATUS <div id="cercle"></div>
+            </h3>
+
+            <button id="toggleButton">
+                <i id="arrow" class="ri-arrow-up-s-line"></i>
+                <h1 id="play">
+                    Jouer
+                </h1>
+            </button>
+
+            <h3 id="mods" class="btn" onclick="launchOnglet('mods')">
+                MODS
+            </h3>
+
+            <h3 id="shop" class="btn" onclick="launchSite('https://tyrolium.tebex.io')">
+                BOUTIQUE
+            </h3>
+
+        </div>
+
+
+        <div class="bar">
+            <div id="progressBar"><!--<div id="slide"><p>0%</p></div>--></div>
+        </div>
+
+    </section>
+</main>
+<main id="panel-minigame" style="display: none">
+<!--  UP LEFT  -->
+    <section id="up-left">
+
+        <div id="PP"></div>
+
+        <div id="useritium-pseudo"></div>
+
+        <h2 id="pseudo"></h2>
+
+        <div id="stats-perso">
+
+            <div id="grade-user" class="perso-tag">
+                <p id="grade-user-text" class="perso-tag-text"></p>
+            </div>
+
+            <div id="level-user" class="perso-tag">
+                <p id="level-user-text" class="perso-tag-text"></p>
+            </div>
+
+            <div id="money-user" class="perso-tag">
+                <p id="money-user-text" class="perso-tag-text"></p>
+            </div>
+
+            <div id="faction-user" class="perso-tag">
+                <p id="faction-user-text" class="perso-tag-text"></p>
+            </div>
+
+
+        </div>
+
+    </section>
+
+<!--  UP RIGHT  -->
+    <section id="up-right">
+
+        <div id="name-serv" onclick="launchSite('https://tyroserv.fr')">TYROSERV</div>
+        <div id="type-serv" >MINI-JEUX</div>
+
+        <img id="img-serv" src="asset/logominigame.png">
+
+    </section>
+
+
+<!--  ICONE LEFT  -->
+
+    <section id="icone-left">
+
+        <img id="useritium-account" src="https://tyrolium.fr/generate-pp/">
+
+        <div id="setting" class="btnleft" onclick="launchOnglet('settings')">
+<!--            <i class="ri-settings-fill icone-left"></i>-->
+            <i class="ri-settings-3-fill icone-left"></i>
+        </div>
+
+        <div id="separebar"></div>
+
+        <div id="link" class="btnleft" onclick="launchSite('https://tyroserv.fr')">
+<!--            <i class="ri-global-line icone-left"></i>-->
+            <i class="ri-links-line icone-left"></i>
+        </div>
+        <div id="discord" class="btnleft" onclick="launchSite('https://discord.gg/km8h5jHezt')">
+            <i class="ri-discord-fill icone-left"></i>
+        </div>
+        <div id="instagram" class="btnleft" onclick="launchSite('https://www.instagram.com/tyroliumserver/')">
+            <i class="ri-instagram-line icone-left"></i>
+        </div>
+        <div id="twitter" class="btnleft" onclick="launchSite('https://twitter.com/tyrolium')">
+            <i class="ri-twitter-x-line icone-left"></i>
+        </div>
+        <div id="youtube" class="btnleft" onclick="launchSite('https://www.youtube.com/@TyroServ')">
+            <i class="ri-youtube-fill icone-left"></i>
+        </div>
+        <div id="tiktok" class="btnleft" onclick="launchSite('https://www.tiktok.com/@tyroserv?')">
+            <i class="ri-tiktok-fill icone-left"></i>
+        </div>
+        <div id="linkedin" class="btnleft" onclick="launchSite('https://www.linkedin.com/company/tyroserv')">
+            <i class="ri-linkedin-box-fill icone-left"></i>
+        </div>
+
+        <img id="tyroliumsite" onclick="launchSite('https://tyrolium.fr')" src="asset/tyroliumwite.png">
+
+    </section>
+
+<!--  SELECT SERV  -->
+
+    <section id="selectplay">
+
+        <div id="barChoose"></div>
+
+        <div id="backServAll"></div>
+
+        <div id="serv-faction" onclick="switchLauncher('minigame', 'faction')"><img src="asset/logo3d.png"></div>
+        <div id="serv-game"><img src="asset/logominigame.png"></div>
         <div id="serv-vanilla"><img src="asset/minecraft.png"></div>
 
     </section>
@@ -208,6 +343,18 @@
     const { ipcRenderer } = require('electron');
     const ipc = require("electron").ipcRenderer;
 
+    // CHANGESERV
+    function switchLauncher(here, futur){
+
+        var main = {
+            "faction": document.getElementById("panel-faction"),
+            "minigame": document.getElementById("panel-minigame")
+        };
+
+        main[here].style.display = "none";
+        main[futur].style.display = "block";
+
+    }
 
     // RECUPERATION DE L'UTILISATEUR
     let userConnected = remote.getGlobal('userConnected');
