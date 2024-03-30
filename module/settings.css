@@ -1,0 +1,14 @@
+/******************
+      GENERAL
+*******************/
+
+body#setting main {
+    font-family: Poppins;
+    padding-right: 30px;
+    padding-bottom: 30px;
+    padding-left: 30px;
+}
+h2.up-title{
+    font-size: 19px;
+    margin: 25px;
+}
