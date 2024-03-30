@@ -9,6 +9,211 @@ body#setting main {
     padding-left: 30px;
 }
 h2.up-title{
+    color: white;
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+h3.sub-title{
+    color: white;
+    font-size: 18px;
+    font-weight: 300;
+    word-wrap: break-word;
+    margin: 0 0 25px;
+}
+
+/******************
+      PARAM
+*******************/
+
+.param{
+    margin-bottom: 25px;
+    display: flex;
+}
+.param-block{
+    margin-bottom: 25px;
+    display: block;
+}
+
+.param-name{
+    margin: 0;
+    font-weight: 700;
     font-size: 19px;
-    margin: 25px;
+}
+.param-name i{
+    margin: 0;
+    color: red;
+}
+
+.param-sub-name{
+    margin: 0 0 0 26px;
+    font-weight: 300;
+    font-size: 13px;
+}
+
+.param-sub-name i{
+    color: red;
+}
+
+/*BTN*/
+.btn-param {
+    /*background: red;*/
+    margin-left: auto;
+    display: flex;
+}
+
+.btn-param.subligne{
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.btn-param .champ-btn-param {
+
+    background: #292929;
+    border: 0;
+    width: 100px;
+    height: 50px;
+    display: flex;
+    margin-right: 10px;
+    font-size: 25px;
+    text-align: center;
+    color: white;
+    border-radius: 10px;
+}
+
+.btn-param .champ-btn-param:active,
+.btn-param .champ-btn-param:focus {
+    outline: 0;
+    border: 0;
+}
+
+.ram-info{
+     /*color: #001AFF;*/
+     font-size: 20px;
+     margin-right: 10px;
+     margin-top: 11px;
+ }
+
+#resolution-X{
+    color: #001AFF;
+    font-size: 20px;
+    margin-right: 10px;
+    margin-top: 11px;
+}
+
+.btn-param .socle-btn-param{
+    margin-right: 10px;
+    background: #292929;
+
+    /*width: 275px;*/
+    /*height: 70px;*/
+    width: 213px;
+    height: 50px;
+
+    border-radius: 10px;
+    display: flex;
+}
+
+.btn-param .socle-btn-param button{
+    width: 50%;
+    font-size: 18px;
+    background: transparent;
+    border: none;
+    color: white;
+    font-weight: 500;
+}
+
+.btn-param .socle-btn-param button.desactive{
+    text-decoration: line-through;
+    color: #7E7E7E;
+}
+
+.btn-param .socle-btn-param button.active:first-child{
+    background: #4b2222;
+    color: #ff4c4c;
+    font-weight: 600;
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+}
+
+.btn-param .socle-btn-param button.active:last-child{
+    background: #13452d;
+    color: #05d057;
+    font-weight: 600;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
+.btn-param .socle-btn-param button:focus,
+.btn-param .socle-btn-param button:active {
+    outline: unset;
+}
+
+.btn-param .btn-classic.btn-deco {
+    background-color: #953535;
+}
+.btn-param .btn-classic.btn-deco:hover {
+    background-color: #6b2424;
+}
+
+.btn-param .btn-classic{
+    width: 213px;
+    height: 50px;
+    font-size: 18px;
+    border: none;
+    color: white;
+    font-weight: 500;
+    border-radius: 10px;
+    background-color: #292929;
+    margin-right: 10px;
+}
+
+.btn-param .btn-classic:hover{
+    background-color: #3f3f3f;
+}
+
+.btn-param .btn-classic:focus,
+.btn-param .btn-classic:active {
+    outline: unset;
+}
+
+/******************
+      LEGAL
+*******************/
+
+.btn-legal{
+    display: flex;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    margin-top: 35px;
+    margin-bottom: 35px;
+    gap: 50px;
+}
+
+.btn-legal button{
+    background-color: #292929;
+    color: white;
+    border-radius: 5px;
+    border: 0;
+    padding: 10px 90px;
+    font-size: 15px;
+}
+.btn-legal button:hover{
+    background-color: #3f3f3f;
+}
+
+.btn-legal button:focus,
+.btn-legal button:active {
+    outline: unset;
+}
+
+#end-info{
+    text-align: center;
+    margin: 0;
+    font-size: 10px;
+    color: #e0e0e0;
 }
