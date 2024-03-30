@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<!--Create By Maxime Tournier-->
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="../module/iziToast.min.css">
+    <script src="../module/iziToast.min.js" type="text/javascript"></script>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.min.css">
+    <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v6.4.2/css/all.css">
+
+    <link rel="stylesheet" href="../module/index.css">
+    <link rel="stylesheet" href="../module/navbar.css">
+    <link rel="stylesheet" href="../module/panel.css">
+
+</head>
+
+<body id="mods">
+
+<!--NAVBAR -->
+<nav style="-webkit-app-region: drag">
+    <img src="../asset/logo.png" width="20px" style="margin-left: 10px">
+    <p id="title">TyroServ Launcher - Mods</p>
+    <div class="nav-buttons">
+        <button id="closeOnglet"><i class="fa-light fa-xmark"></i></button>
+    </div>
+</nav>
+
+<main>
+
+
+
+</main>
+
+<script>
+    // Navbar
+    document.querySelector("#closeOnglet").addEventListener("click", () => {
+        ipc.send("manualCloseOnglet");
+    });
+
+
+    const { remote } = require('electron');
+    const { shell } = require('electron');
+    const { ipcRenderer } = require('electron');
+    const ipc = require("electron").ipcRenderer;
+
+    // NOTIFICATION
+    function notif(status, why){
+        if(status == "true"){
+
+            iziToast.success({
+                title: 'OK',
+                message: why,
+            });
+
+            playbtn.disabled = true;
+
+        }
+        if(status == "err"){
+
+            iziToast.error({
+                title: 'Erreur',
+                message: why,
+            })
+
+        }
+        if(status == "info"){
+
+            iziToast.info({
+                title: 'Info',
+                message: why,
+            })
+
+        }
+    }
+
+</script>
+
+</body>
+</html>

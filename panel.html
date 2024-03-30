@@ -84,7 +84,7 @@
 
         <img id="useritium-account" src="https://tyrolium.fr/generate-pp/">
 
-        <div id="setting" class="btnleft">
+        <div id="setting" class="btnleft" onclick="launchOnglet('settings')">
 <!--            <i class="ri-settings-fill icone-left"></i>-->
             <i class="ri-settings-3-fill icone-left"></i>
         </div>
@@ -152,7 +152,7 @@
                 </h1>
             </button>
 
-            <h3 id="mods" class="btn">
+            <h3 id="mods" class="btn" onclick="launchOnglet('mods')">
                 MODS
             </h3>
 
@@ -401,6 +401,25 @@
     function launchSite(url){
         shell.openExternal(url);
     }
+
+    // LANCEMENT D'ONGLET
+    function launchOnglet(onglet) {
+
+        if (onglet === 'mods'){
+            ipc.send("launchMods");
+        }
+
+        if (onglet === 'settings'){
+            ipc.send("launchSettings");
+        }
+
+        if (onglet === 'version'){
+            ipc.send("launchVersion");
+        }
+
+    }
+
+
 
     // NOTIFICATION
     function notif(status, why){

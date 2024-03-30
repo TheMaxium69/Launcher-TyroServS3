@@ -5,6 +5,8 @@ const launcher = new Client();
 
 global.userConnected = undefined;
 let mainWindow;
+
+// INITIALISATION DE L'ONGLET PRINCIPAL
 function createWindow () {
    mainWindow = new BrowserWindow({
     frame: false,
@@ -28,6 +30,7 @@ function createWindow () {
 
 }
 
+// CREATION DE L'ONGLET PRINCIPAL
 app.whenReady().then(() => {
   createWindow()
   
@@ -38,10 +41,15 @@ app.whenReady().then(() => {
   })
 })
 
-let maximizeToggle=false;
+
+// METTRE EN PETIT L'ONGLET PRINCIPAL
 ipcMain.on("manualMinimize", () => {
     mainWindow.minimize();
 });
+
+
+// MAXIMIZE DE L'ONGLET PRINCIPAL
+let maximizeToggle=false;
 ipcMain.on("manualMaximize", () => {
     if (maximizeToggle) {
         mainWindow.unmaximize();
@@ -50,11 +58,14 @@ ipcMain.on("manualMaximize", () => {
     }
     maximizeToggle=!maximizeToggle;
 });
+
+// FERMETURE DE L'ONGLET PRINCIPAL
 ipcMain.on("manualClose", () => {
     app.quit();
 //   if (process.platform !== 'darwin') app.quit()
 });
 
+// CONNECTION ET LANCEMENT DU PANEL
 ipcMain.on("connected", (event, data) => {
     global.userConnected = data.userTyroServLoad;
     console.log("Connection avec : ", data.userTyroServLoad.pseudo)
@@ -71,7 +82,7 @@ ipcMain.on("connected", (event, data) => {
     // });
 });
 
-
+// LANCEMENT DU JEUX
 ipcMain.on("login", (event, data) => {
         // event.sender.send("done")
 
@@ -143,3 +154,96 @@ ipcMain.on("login", (event, data) => {
             event.sender.send("progression", e)
         })
 })
+
+// ONGLET SETTINGS
+ipcMain.on("launchSettings", () => {
+
+    let settingsWindow = new BrowserWindow({
+        frame: false,
+        title: "TyroServ - Paramètres",
+        width: 830,
+        height: 660,
+        resizable: false,
+        icon: path.join(__dirname, "/asset/logo.png"),
+        webPreferences: {
+            nodeIntegration: true,
+            contextIsolation: false,
+            enableRemoteModule: true,
+        }
+    })
+
+    settingsWindow.loadFile('onglet/settings.html');
+
+    settingsWindow.on('closed', () => {
+        settingsWindow = null;
+    });
+
+    ipcMain.on("manualCloseOnglet", () => {
+        if (settingsWindow) {
+            settingsWindow.close();
+        }
+    });
+})
+
+
+// ONGLET MODS
+ipcMain.on("launchMods", () => {
+
+    let modsWindow = new BrowserWindow({
+        frame: false,
+        title: "TyroServ - MODS",
+        width: 830,
+        height: 660,
+        resizable: false,
+        icon: path.join(__dirname, "/asset/logo.png"),
+        webPreferences: {
+            nodeIntegration: true,
+            contextIsolation: false,
+            enableRemoteModule: true,
+        }
+    })
+
+    modsWindow.loadFile('onglet/mods.html');
+
+    modsWindow.on('closed', () => {
+        modsWindow = null;
+    });
+
+    ipcMain.on("manualCloseOnglet", () => {
+        if (modsWindow) {
+            modsWindow.close();
+        }
+    });
+})
+
+// ONGLET VERSION
+
+ipcMain.on("launchVersion", () => {
+
+    let versionWindow = new BrowserWindow({
+        frame: false,
+        title: "TyroServ - Version",
+        width: 830,
+        height: 660,
+        resizable: false,
+        icon: path.join(__dirname, "/asset/logo.png"),
+        webPreferences: {
+            nodeIntegration: true,
+            contextIsolation: false,
+            enableRemoteModule: true,
+        }
+    })
+
+    versionWindow.loadFile('onglet/version.html');
+
+    versionWindow.on('closed', () => {
+        versionWindow = null;
+    });
+
+    ipcMain.on("manualCloseOnglet", () => {
+        if (versionWindow) {
+            versionWindow.close();
+        }
+    });
+})
+
