@@ -190,6 +190,7 @@
     position: absolute;
     background: #1400FF;
     border-radius: 14px;
+    transition: top 0.3s ease-in-out;
 }
 
 #selectplay #backServAll{

@@ -144,6 +144,7 @@
 body#panel {
         /*background-image: url(http://tyrolium.fr/Contenu/Image/Background6.png);*/
         background-image: url(https://tyrolium.fr/Contenu/Image/launcher/Launcher.png);
+        transition: background 0.5s ease-in-out;
         background-repeat: no-repeat;
         background-position: center;
         background-size: cover;
