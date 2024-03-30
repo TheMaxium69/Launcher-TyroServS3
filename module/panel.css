@@ -324,7 +324,8 @@
     height: 50px; /*border: 2px solid white; */
     margin: 0px 50px;
     color: white;
-    background: rgba(217, 217, 217, 0.16); border-radius: 11px
+    background: rgba(217, 217, 217, 0.16);
+    border-radius: 11px;
 }
 
 #progressBar div#slide{
@@ -333,12 +334,17 @@
     color: black;
     background: white;
     border-radius: 11px;
+
+    position: absolute;
 }
 
 #progressBar div#slide p{
     font-size: 25px;
     padding-top: 10px;
     font-weight: 800;
+
+    position: absolute;
+    top: -24px;
 }
 
 
@@ -352,4 +358,8 @@
     border-radius: 100%;
     width: 22px;
     height: 22px;
+}
+
+.iziToast-wrapper-topCenter{
+    margin-top: 40px;
 }

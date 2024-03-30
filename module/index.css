@@ -127,7 +127,7 @@
 
         body#login {
                 /*background-image: url(http://tyrolium.fr/Contenu/Image/Background6.png);*/
-                background-image: url(https://tyrolium.fr/Contenu/Image/launcher/Launcher.png);
+                background-image: url('../asset/back/Launcher.png');
                 background-repeat: no-repeat;
                 background-position: center;
                 background-size: cover;

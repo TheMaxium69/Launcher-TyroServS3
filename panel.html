@@ -186,13 +186,17 @@
 </style>
 <script>
     document.getElementById('toggleButton').addEventListener('click', function() {
-        var bar = document.querySelector('.bar');
-        bar.classList.toggle('show');
-        var downpanel = document.getElementById('down-panel');
-        downpanel.classList.toggle('up');
-        var arrow = document.getElementById('arrow');
-        arrow.classList.toggle('ri-arrow-up-s-line');
-        arrow.classList.toggle('ri-arrow-down-s-line');
+
+        if (document.getElementById('play').innerText !== "SOON" && document.getElementById('play').innerText !== "EN COURS"){
+            var bar = document.querySelector('.bar');
+            bar.classList.toggle('show');
+            var downpanel = document.getElementById('down-panel');
+            downpanel.classList.toggle('up');
+            var arrow = document.getElementById('arrow');
+            arrow.classList.toggle('ri-arrow-up-s-line');
+            arrow.classList.toggle('ri-arrow-down-s-line');
+        }
+
     });
 
 </script>
@@ -312,16 +316,92 @@
     });
 
     // BAR DE CHARGEMENT
+    let finalInsta = "en cours";
     ipcRenderer.on('progression', (event, data) => {
+
+        finalInsta = "fini";
         // console.log("Data : ", data)
         const progressBar = document.getElementById('progressBar');
 
         let pourcentage = (data.task / data.total) * 100;
         let pourcentageAffiche = Math.floor((data.task / data.total) * 100);
+        let affichage = convertPercentageToCustomScale(pourcentageAffiche);
+        console.log("affichage", affichage)
         // progressBar.innerHTML = "<p> Type : " + data.type  + " | Task : " + data.task + " | total : " + data.total + "</p>"
-        progressBar.innerHTML = '<div id="slide" style="width:' + pourcentage + '%!important;"><p>' + pourcentageAffiche + '%</p></div>'
+        progressBar.innerHTML = '<div id="slide" style="width:' + affichage + '%!important;"><p>' + pourcentageAffiche + '%</p></div>'
 
     });
+    function convertPercentageToCustomScale(percentage) {
+        // Assurez-vous que le pourcentage est compris entre 0 et 100
+        percentage = Math.max(0, Math.min(100, percentage));
+
+        // Convertir le pourcentage en échelle personnalisée
+        const customScale = (percentage * (92.5 - 1) / 100) + 1;
+
+        return customScale;
+    }
+
+    // BAR D'INSTALLATION
+
+    ipcRenderer.on('progressionInsta', (event, data) => {
+
+        console.log(data)
+
+        if (data === "[MCLC]: Extracting client package to C:\\Users\\mxmto\\AppData\\Roaming\\.TyroServBeta"){
+
+            console.log("Installation du client");
+
+            updateProgressBar();
+        }
+
+        if (data === "[MCLC]: Set launch options"){
+
+            var btnPlay = document.getElementById("play");
+
+            btnPlay.innerText = "EN COURS";
+
+            const progressBar = document.getElementById('progressBar');
+            progressBar.innerHTML = null;
+
+            var bar = document.querySelector('.bar');
+            bar.classList.remove('show');
+            var downpanel = document.getElementById('down-panel');
+            downpanel.classList.remove('up');
+            var arrow = document.getElementById('arrow');
+            arrow.classList.add('ri-arrow-up-s-line');
+            arrow.classList.remove('ri-arrow-down-s-line');
+
+        }
+
+
+    });
+
+    let n = 1;
+    const delay = 25;
+    function updateProgressBar() {
+        const progressBar = document.getElementById('progressBar');
+
+        let affichage = 1;
+        if (n < 93) {
+            affichage = n;
+        } else if (n === 93){
+            affichage = 92.5;
+        } else if (n > 93){
+            n = 1
+            affichage = n;
+        }
+
+        console.log("Itération", affichage + "%");
+
+        progressBar.innerHTML = '<div id="slide" style="width:' + affichage + '%!important;"><p></p></div>';
+
+        n++;
+
+        if (finalInsta === "en cours") {
+            setTimeout(updateProgressBar, delay); // Call updateProgressBar function after delay
+        }
+    }
+
 
     // ARRET DU JEUX (RETOUR A LA NORMAL)
     ipcRenderer.on('stopping', (event, data) => {
@@ -332,12 +412,12 @@
         playbtn.innerText = "JOUER";
 
         var bar = document.querySelector('.bar');
-        bar.classList.toggle('show');
+        bar.classList.remove('show');
         var downpanel = document.getElementById('down-panel');
-        downpanel.classList.toggle('up');
+        downpanel.classList.remove('up');
         var arrow = document.getElementById('arrow');
-        arrow.classList.toggle('ri-arrow-up-s-line');
-        arrow.classList.toggle('ri-arrow-down-s-line');
+        arrow.classList.add('ri-arrow-up-s-line');
+        arrow.classList.remove('ri-arrow-down-s-line');
 
         getInfoServer(userConnected.pseudo)
             .then(function(infoServUser) {
@@ -423,7 +503,9 @@
     let hereServer = "faction"
     function switchLauncher(futur){
 
-        if (futur !== hereServer){
+        var playBtn = document.getElementById("play");
+
+        if (futur !== hereServer && playBtn.innerText !== "LANCEMENT"){
 
             var bodyPanel = document.getElementById("panel");
             var nameServer = document.getElementById("name-serv");
@@ -447,6 +529,8 @@
                 barChoose.style.background = "#1400FF";
                 statsPerso.style.display = "flex";
 
+                playBtn.innerText = "JOUER";
+
                 hereServer = futur;
 
             }
@@ -460,10 +544,11 @@
                 typeServer.style.left = "897px"
                 imgServer.src = "asset/logominigame.png";
 
-
                 barChoose.style.top = "363px";
                 barChoose.style.background = "#FF0000";
                 statsPerso.style.display = "none";
+
+                playBtn.innerText = "SOON";
 
                 hereServer = futur;
 
@@ -482,6 +567,8 @@
                 barChoose.style.background = "#0ABE06";
                 statsPerso.style.display = "none";
 
+                playBtn.innerText = "SOON";
+
                 hereServer = futur;
             }
 
@@ -497,6 +584,7 @@
             iziToast.success({
                 title: 'OK',
                 message: why,
+                position: "topCenter",
             });
 
             playbtn.disabled = true;
@@ -507,6 +595,7 @@
             iziToast.error({
                 title: 'Erreur',
                 message: why,
+                position: "topCenter",
             })
 
         }
@@ -515,6 +604,7 @@
             iziToast.info({
                 title: 'Info',
                 message: why,
+                position: "topCenter",
             })
 
         }

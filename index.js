@@ -4,6 +4,7 @@ const { Client, Authenticator } = require('minecraft-launcher-core');
 const launcher = new Client();
 
 global.userConnected = undefined;
+global.showLauncher = false;
 let mainWindow;
 
 // INITIALISATION DE L'ONGLET PRINCIPAL
@@ -86,12 +87,23 @@ ipcMain.on("connected", (event, data) => {
 ipcMain.on("login", (event, data) => {
         // event.sender.send("done")
 
+        const fs = require('fs');
+
+        const UrlInstanceMC = app.getPath("appData") + "/.TyroServBeta";
+
+        fs.mkdir(UrlInstanceMC, (err) => {
+            if (err) {
+                if (err.code === "EEXIST")
+                console.log("Le fiche a deja ete cree");
+            } else {
+                console.log("Repertoire cree avec succes.");
+            }
+        });
         let usercachetyroservFile = path.join(app.getPath("appData"), "/.TyroServBeta/usercachetyroserv.json");
         let usercachetyroserva2fFile = path.join(app.getPath("appData"), "/.TyroServBeta/usercachetyroserva2f.json");
 
-        const fs = require('fs'); 
-        fs.appendFile(usercachetyroservFile, data.token_tyroserv, function (err) { if (err) throw err; console.log('Fichier cree !');});
-        fs.appendFile(usercachetyroserva2fFile, data.token_tyroserv_a2f, function (err) { if (err) throw err; console.log('Fichier cree !');});
+        fs.appendFile(usercachetyroservFile, data.token_tyroserv, function (err) { if (err) throw err; console.log('Fichier usercachetyroserv.json cree !');});
+        fs.appendFile(usercachetyroserva2fFile, data.token_tyroserv_a2f, function (err) { if (err) throw err; console.log('Fichier usercachetyroserva2f cree !');});
         
         let UserTest = {
             access_token: '',
@@ -135,11 +147,16 @@ ipcMain.on("login", (event, data) => {
         }
         launcher.launch(opts);
 
-        launcher.on('debug', (e) => console.log("debug", e));
+        launcher.on('debug', (e) => {
+            console.log("debug", e)
+            event.sender.send("progressionInsta", e)
+        });
         launcher.on('data', (e) => {
             console.log("data", e)
 
-            mainWindow.hide();
+            if (showLauncher === false){
+                mainWindow.hide();
+            }
             if (e.includes('Stopping!')) {
                 console.log("Minecraft Stop");
 
