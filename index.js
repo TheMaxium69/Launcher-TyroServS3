@@ -157,6 +157,24 @@ ipcMain.on("connected", (event, data) => {
         console.log('Le fichier Launcher_Mods.json existe deja.');
     }
 
+    let saveLauncher =
+    {
+        "username": data.userTyroServLoad.useritium.username,
+        "token": data.userTyroServLoad.token
+    }
+
+    let cacheFile = path.join(app.getPath("appData"), urlInstanceLauncher + "Launcher_Cache.json");
+
+    if (!fs.existsSync(cacheFile)) {
+        fs.appendFile(cacheFile, JSON.stringify(saveLauncher), function (err) {
+            if (err)
+                throw err;
+            console.log('Fichier Launcher_Cache.json cree !');
+        });
+    } else {
+        console.log('Le fichier Launcher_Cache.json existe deja.');
+    }
+
 
 });
 
@@ -393,6 +411,7 @@ ipcMain.on("launchVersion", () => {
     });
 })
 
+//  RECUPERATION DE FICHIER
 ipcMain.on("getSettingsFile", (event) =>{
 
     let settingFile = path.join(app.getPath("appData"), urlInstanceLauncher + "Launcher_Setting.json");
@@ -405,6 +424,47 @@ ipcMain.on("getSettingsFile", (event) =>{
         }
 
         event.reply("settingsFile", JSON.parse(data));
+    });
+
+});
+
+ipcMain.on("getCacheFile", (event) =>{
+
+    let cacheFile = path.join(app.getPath("appData"), urlInstanceLauncher + "Launcher_Cache.json");
+
+    fs.readFile(cacheFile, 'utf8', (err, data) => {
+        if (err) {
+            console.error('Erreur lors de la lecture du fichier:', err);
+            event.reply("cacheFile", null);
+            return;
+        }
+
+        event.reply("cacheFile", JSON.parse(data));
+    });
+
+});
+
+// Deconnexion User
+ipcMain.on("deconnexionUser", (event) =>{
+
+    let cacheFile = path.join(app.getPath("appData"), urlInstanceLauncher + "Launcher_Cache.json");
+
+    fs.unlink(cacheFile, (err) => {
+        if (err) {
+            console.error('Erreur lors de la suppression du fichier :', err);
+            return;
+        }
+        console.log('Le fichier a été supprimé avec succès.');
+    });
+
+    const { exec } = require('child_process');
+
+    exec('npm restart', (error, stdout, stderr) => {
+        if (error) {
+            console.error(`Erreur lors du redémarrage : ${error}`);
+            return;
+        }
+        console.log(`Redémarrage réussi : ${stdout}`);
     });
 
 });

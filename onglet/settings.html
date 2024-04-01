@@ -105,7 +105,7 @@
             </div>
 
             <div class="btn-param">
-                <button class="btn-classic btn-deco">Déconnexion <i class="ri-shut-down-line"></i></button>
+                <button id="decoUser" class="btn-classic btn-deco">Déconnexion <i class="ri-shut-down-line"></i></button>
             </div>
         </article>
 
@@ -165,12 +165,21 @@
     const { ipcRenderer } = require('electron');
     const ipc = require("electron").ipcRenderer;
 
+    // DECONNEXION
+    document.getElementById("decoUser").addEventListener("click", () => {
+        ipc.send("deconnexionUser");
+    });
+
+
+
+    // GET SETTING FILE
     ipcRenderer.send("getSettingsFile");
     ipcRenderer.on("settingsFile", (event, settingsFile) => {
         console.log(settingsFile);
         setActualyValeur(settingsFile);
     });
 
+    // MISE IN FORM SETTING FILE
     function setActualyValeur(settingsFile){
 
         var RamMin = document.getElementById("RamMin")

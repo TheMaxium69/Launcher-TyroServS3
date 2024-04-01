@@ -27,6 +27,34 @@ function authUseritium (email, mdp) {
 
 }
 
+function authUseritiumToken (username, token) {
+
+    param = "username_useritium="+username+"&token_useritium="+token
+    console.log(param)
+
+    let myRequest = new XMLHttpRequest();
+    myRequest.open('POST', 'http://useritium.fr/api-externe/index.php?controller=TyroServ&task=connectToken');
+    myRequest.onload = () => {
+
+        var reponse = JSON.parse(myRequest.responseText);
+
+        if(reponse['status'] === "true"){
+
+            if(reponse['why'] === "successfully connected"){
+
+                var userTyroServLoad = reponse['result'];
+
+                ipc.send("connected", {userTyroServLoad: userTyroServLoad})
+            }
+
+        } else { notif(reponse['status'], reponse['why']); }
+
+    };
+    myRequest.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    myRequest.send(param);
+
+}
+
 function isConnect (reponse, email, mdp){
 
   message = "Vous êtes bien connectez à votre compte Useritium !"

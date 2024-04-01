@@ -45,9 +45,18 @@
 
     <script src="authUseritium.js"></script>
 
-    <script>      
+    <script>
 
         const ipc = require("electron").ipcRenderer;
+        const { ipcRenderer } = require('electron');
+
+        // RECONNECTION AUTOMATIQUE
+
+        ipcRenderer.send("getCacheFile");
+        ipcRenderer.on("cacheFile", (event, cacheFile) => {
+            console.log(cacheFile);
+            authUseritiumToken(cacheFile.username, cacheFile.token);
+        });
 
         var connectionbtn = document.getElementById("connection");
 
