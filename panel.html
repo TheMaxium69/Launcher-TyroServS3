@@ -435,11 +435,13 @@
                         var grade_div = document.getElementById("grade-user");
                         grade_div.classList.add("show-tag");
 
+                        var grade_text = document.getElementById("grade-user-text");
+                        grade_text.innerText = null
+
                         let allRoles = infoServUser['result']['roles'];
                         allRoles.forEach(oneRoles =>{
 
                             if (oneRoles['name'] !== "default"){
-                                var grade_text = document.getElementById("grade-user-text");
                                 grade_text.innerText +=  oneRoles['displayName'];
                             }
 
@@ -505,7 +507,7 @@
 
         var playBtn = document.getElementById("play");
 
-        if (futur !== hereServer && playBtn.innerText !== "LANCEMENT"){
+        if (futur !== hereServer && playBtn.innerText !== "LANCEMENT" && playBtn.innerText !== "EN COURS"){
 
             var bodyPanel = document.getElementById("panel");
             var nameServer = document.getElementById("name-serv");
