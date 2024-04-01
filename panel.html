@@ -217,20 +217,40 @@
 
     if (userConnected){
 
-        // console.log(userConnected);
+        console.log(userConnected);
         var pseudo = document.getElementById("pseudo");
         var PP = document.getElementById("PP");
         var useritium_pseudo = document.getElementById("useritium-pseudo");
         var useritium_account = document.getElementById("useritium-account");
 
         pseudo.innerText = userConnected.pseudo;
-        useritium_pseudo.innerText = "Pseudo useritium";
-        PP.style.backgroundImage = "url('https://minotar.net/avatar/" + userConnected.pseudo + "')"
-        useritium_account.src = "https://tyrolium.fr/generate-pp/?l=" + userConnected.pseudo.charAt(0);;
+        if (userConnected.useritium.pp){
+            useritium_account.src = "https://useritium.fr/uploads/pp/" + userConnected.useritium.pp;
+        } else {
+            useritium_account.src = "https://tyrolium.fr/generate-pp/?l=" + userConnected.pseudo.charAt(0);
+        }
+
+        if (userConnected.useritium.displayname){
+            useritium_pseudo.innerText = userConnected.useritium.displayname;
+        } else {
+
+            if (userConnected.useritium.username !== userConnected.pseudo){
+                useritium_pseudo.innerText = userConnected.useritium.username;
+            } else {
+                useritium_pseudo.innerText = " ";
+            }
+
+        }
+
+        if (userConnected.skin){
+            PP.style.backgroundImage = "url('https://useritium.fr/uploads/pp/" + userConnected.skin + "')";
+        } else {
+            PP.style.backgroundImage = "url('https://minotar.net/helm/" + userConnected.pseudo + "')";
+        }
 
         getInfoServer(userConnected.pseudo)
             .then(function(infoServUser) {
-                console.log(infoServUser);
+                // console.log(infoServUser);
 
 
                 var level_div = document.getElementById("level-user");
