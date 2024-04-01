@@ -94,7 +94,7 @@
             </div>
 
             <div class="btn-param">
-                <button class="btn-classic">Votre Compte <i class="ri-user-line"></i></button>
+                <button onclick="launchSite('https://useritium.fr/connect.php')" class="btn-classic">Votre Compte <i class="ri-user-line"></i></button>
             </div>
         </article>
 
@@ -165,33 +165,89 @@
     const { ipcRenderer } = require('electron');
     const ipc = require("electron").ipcRenderer;
 
-    // DECONNEXION
-    document.getElementById("decoUser").addEventListener("click", () => {
-        ipc.send("manualCloseOnglet");
-        ipc.send("deconnexionUser");
+    var RamMin = document.getElementById("RamMin")
+    var RamMax = document.getElementById("RamMax")
+    var ResoWidth = document.getElementById("ResoWidth")
+    var ResoHeight = document.getElementById("ResoHeight")
+    var showLauncherFalse = document.getElementById("showLauncherFalse")
+    var showLauncherTrue = document.getElementById("showLauncherTrue")
+    var DiscordFalse = document.getElementById("DiscordFalse")
+    var DiscordTrue = document.getElementById("DiscordTrue")
+
+
+    /*
+    *
+    * BTN SET
+    *
+    * */
+
+    // RAM
+    RamMin.addEventListener('input', (event) => {
+        settingsContenu.RamMin = +event.target.value;
+        ipcRenderer.send("setSettingsFile", {newJson: settingsContenu});
+    });
+
+    RamMax.addEventListener('input', (event) => {
+        settingsContenu.RamMax = +event.target.value;
+        ipcRenderer.send("setSettingsFile", {newJson: settingsContenu});
+    });
+
+    // Resolution
+    ResoWidth.addEventListener('input', (event) => {
+        settingsContenu.width = +event.target.value;
+        ipcRenderer.send("setSettingsFile", {newJson: settingsContenu});
+    });
+
+    ResoHeight.addEventListener('input', (event) => {
+        settingsContenu.height = +event.target.value;
+        ipcRenderer.send("setSettingsFile", {newJson: settingsContenu});
     });
 
 
+    // showLauncher
+    showLauncherFalse.addEventListener("click", () => {
+        showLauncherTrue.classList.remove("active");
+        showLauncherFalse.classList.add("active");
+        settingsContenu.showLauncher = false;
+        ipcRenderer.send("setSettingsFile", {newJson: settingsContenu});
+    });
+
+    showLauncherTrue.addEventListener("click", () => {
+        showLauncherTrue.classList.add("active");
+        showLauncherFalse.classList.remove("active");
+        settingsContenu.showLauncher = true;
+        ipcRenderer.send("setSettingsFile", {newJson: settingsContenu});
+    });
+
+    // discordReachPresence
+    DiscordFalse.addEventListener("click", () => {
+        DiscordTrue.classList.remove("active");
+        DiscordFalse.classList.add("active");
+        settingsContenu.discordReachPresence = false;
+        ipcRenderer.send("setSettingsFile", {newJson: settingsContenu});
+    });
+
+    DiscordTrue.addEventListener("click", () => {
+        console.log(settingsContenu)
+        DiscordTrue.classList.add("active");
+        DiscordFalse.classList.remove("active");
+        settingsContenu.discordReachPresence = true;
+        ipcRenderer.send("setSettingsFile", {newJson: settingsContenu});
+    });
+
+
+    let settingsContenu;
 
     // GET SETTING FILE
     ipcRenderer.send("getSettingsFile");
     ipcRenderer.on("settingsFile", (event, settingsFile) => {
         console.log(settingsFile);
         setActualyValeur(settingsFile);
+        settingsContenu = settingsFile;
     });
 
     // MISE IN FORM SETTING FILE
     function setActualyValeur(settingsFile){
-
-        var RamMin = document.getElementById("RamMin")
-        var RamMax = document.getElementById("RamMax")
-        var ResoWidth = document.getElementById("ResoWidth")
-        var ResoHeight = document.getElementById("ResoHeight")
-        var showLauncherFalse = document.getElementById("showLauncherFalse")
-        var showLauncherTrue = document.getElementById("showLauncherTrue")
-        var DiscordFalse = document.getElementById("DiscordFalse")
-        var DiscordTrue = document.getElementById("DiscordTrue")
-
 
         RamMin.value = settingsFile.RamMin
         RamMax.value = settingsFile.RamMax
@@ -215,6 +271,12 @@
         }
 
     }
+
+    // DECONNEXION
+    document.getElementById("decoUser").addEventListener("click", () => {
+        ipc.send("manualCloseOnglet");
+        ipc.send("deconnexionUser");
+    });
 
     // LANCEMENT DE SITE
     function launchSite(url){

@@ -261,8 +261,8 @@ ipcMain.on("login", (event, data) => {
                     settingsContenu.width,
                     "--height",
                     settingsContenu.height,
-                    // "--server",
-                    // "vps207.tyrolium.fr"
+                    "--server",
+                    "vps207.tyrolium.fr"
                 ],
                 root: path.join(app.getPath("appData"), instanceChoose),
                 // javaPath: `C:/Users/mxmto/AppData/Roaming/.minecraft/runtime/jre-legacy/windows/jre-legacy/bin/javaw.exe`,
@@ -426,6 +426,25 @@ ipcMain.on("getSettingsFile", (event) =>{
         event.reply("settingsFile", JSON.parse(data));
     });
 
+});
+
+ipcMain.on("setSettingsFile", (event, data) =>{
+
+    let settingFile = path.join(app.getPath("appData"), urlInstanceLauncher + "Launcher_Setting.json");
+
+    fs.unlink(settingFile   , (err) => {
+        if (err) {
+            console.error('Erreur lors de la suppression du fichier :', err);
+            return;
+        }
+        console.log('Le fichier a ete supprime avec succes.');
+    });
+
+        fs.appendFile(settingFile, JSON.stringify(data.newJson), function (err) {
+            if (err)
+                throw err;
+            console.log('Fichier Launcher_Setting.json cree !');
+        });
 });
 
 ipcMain.on("getCacheFile", (event) =>{
