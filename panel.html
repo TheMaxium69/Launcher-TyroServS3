@@ -327,7 +327,7 @@
 
         if (playbtn.innerText === "JOUER"){
 
-            startMinecraft(userConnected);
+            startMinecraft(userConnected, hereServer);
 
             playbtn.innerText = "LANCEMENT";
         }
@@ -336,11 +336,8 @@
     });
 
     // BAR DE CHARGEMENT
-    let finalInsta = "en cours";
     ipcRenderer.on('progression', (event, data) => {
 
-        finalInsta = "fini";
-        // console.log("Data : ", data)
         const progressBar = document.getElementById('progressBar');
 
         let pourcentage = (data.task / data.total) * 100;
@@ -351,6 +348,21 @@
         progressBar.innerHTML = '<div id="slide" style="width:' + affichage + '%!important;"><p>' + pourcentageAffiche + '%</p></div>'
 
     });
+
+    // BAR D'INSTALLATION
+    ipcRenderer.on('progressionDownload', (event, data) => {
+
+        const progressBar = document.getElementById('progressBar');
+
+        let pourcentage = (data.current / data.total) * 100;
+        let pourcentageAffiche = Math.floor((data.current / data.total) * 100);
+        let affichage = convertPercentageToCustomScale(pourcentageAffiche);
+        console.log("affichage", affichage)
+        // progressBar.innerHTML = "<p> Type : " + data.type  + " | Task : " + data.task + " | total : " + data.total + "</p>"
+        progressBar.innerHTML = '<div id="slide" style="width:' + affichage + '%!important;"><p>' + pourcentageAffiche + '%</p></div>'
+
+    });
+
     function convertPercentageToCustomScale(percentage) {
         // Assurez-vous que le pourcentage est compris entre 0 et 100
         percentage = Math.max(0, Math.min(100, percentage));
@@ -361,18 +373,8 @@
         return customScale;
     }
 
-    // BAR D'INSTALLATION
-
-    ipcRenderer.on('progressionInsta', (event, data) => {
-
-        console.log(data)
-
-        if (data === "[MCLC]: Extracting client package to C:\\Users\\mxmto\\AppData\\Roaming\\.TyroServBeta"){
-
-            console.log("Installation du client");
-
-            updateProgressBar();
-        }
+    // BAR AU LANCEMENT
+    ipcRenderer.on('lancement', (event, data) => {
 
         if (data === "[MCLC]: Set launch options"){
 
@@ -393,34 +395,7 @@
 
         }
 
-
     });
-
-    let n = 1;
-    const delay = 25;
-    function updateProgressBar() {
-        const progressBar = document.getElementById('progressBar');
-
-        let affichage = 1;
-        if (n < 93) {
-            affichage = n;
-        } else if (n === 93){
-            affichage = 92.5;
-        } else if (n > 93){
-            n = 1
-            affichage = n;
-        }
-
-        console.log("Itération", affichage + "%");
-
-        progressBar.innerHTML = '<div id="slide" style="width:' + affichage + '%!important;"><p></p></div>';
-
-        n++;
-
-        if (finalInsta === "en cours") {
-            setTimeout(updateProgressBar, delay); // Call updateProgressBar function after delay
-        }
-    }
 
 
     // ARRET DU JEUX (RETOUR A LA NORMAL)
@@ -535,6 +510,7 @@
             var imgServer = document.getElementById("img-serv");
             var barChoose = document.getElementById("barChoose");
             var statsPerso = document.getElementById("stats-perso");
+            var btnMods = document.getElementById("mods");
 
 
             if (futur === "faction"){
@@ -552,6 +528,7 @@
                 statsPerso.style.display = "flex";
 
                 playBtn.innerText = "JOUER";
+                btnMods.innerText = "MODS";
 
                 hereServer = futur;
 
@@ -571,6 +548,7 @@
                 statsPerso.style.display = "none";
 
                 playBtn.innerText = "SOON";
+                btnMods.innerText = "MODS";
 
                 hereServer = futur;
 
@@ -590,6 +568,7 @@
                 statsPerso.style.display = "none";
 
                 playBtn.innerText = "SOON";
+                btnMods.innerText = "VERSION";
 
                 hereServer = futur;
             }

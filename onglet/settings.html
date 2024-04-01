@@ -46,9 +46,9 @@
 
             <div class="btn-param subligne">
                 <div class="ram-info">min :</div>
-                <input style="width: 73px;" type="text" class="champ-btn-param" placeholder="1000" value="1000">
+                <input id="RamMin" style="width: 73px;" type="text" class="champ-btn-param" placeholder="1000" value="1000">
                 <div class="ram-info">max :</div>
-                <input style="width: 73px;" type="text" class="champ-btn-param" placeholder="2000" value="2000">
+                <input id="RamMax" style="width: 73px;" type="text" class="champ-btn-param" placeholder="2000" value="2000">
             </div>
         </article>
 
@@ -59,9 +59,9 @@
             </div>
 
             <div class="btn-param subligne">
-                <input type="text" class="champ-btn-param" placeholder="854" value="854">
+                <input id="ResoWidth" type="text" class="champ-btn-param" placeholder="854" value="854">
                 <div id="resolution-X">X</div>
-                <input type="text" class="champ-btn-param" placeholder="480" value="480">
+                <input id="ResoHeight" type="text" class="champ-btn-param" placeholder="480" value="480">
             </div>
 
         </article>
@@ -75,8 +75,8 @@
 
             <div class="btn-param">
                 <div class="socle-btn-param">
-                    <button class="active">Caché</button>
-                    <button class="">Affiché</button>
+                    <button id="showLauncherFalse" class="active">Caché</button>
+                    <button id="showLauncherTrue" class="">Affiché</button>
                 </div>
             </div>
 
@@ -94,7 +94,7 @@
             </div>
 
             <div class="btn-param">
-                <button class="btn-classic btn-deco">Déconnexion <i class="ri-shut-down-line"></i></button>
+                <button class="btn-classic">Votre Compte <i class="ri-user-line"></i></button>
             </div>
         </article>
 
@@ -105,7 +105,7 @@
             </div>
 
             <div class="btn-param">
-                <button class="btn-classic">Votre Compte <i class="ri-user-line"></i></button>
+                <button class="btn-classic btn-deco">Déconnexion <i class="ri-shut-down-line"></i></button>
             </div>
         </article>
 
@@ -122,8 +122,8 @@
 
             <div class="btn-param">
                 <div class="socle-btn-param">
-                    <button class="">Désactivé</button>
-                    <button class="active">Activé</button>
+                    <button id="DiscordFalse" class="">Désactivé</button>
+                    <button id="DiscordTrue" class="active">Activé</button>
                 </div>
             </div>
 
@@ -134,19 +134,19 @@
     <section id="setting-legal">
         <h3 class="sub-title">Légal</h3>
         <p class="param-sub-name" style="margin: 0"><i class="ri-corner-down-right-fill"></i> TyroServ Saison : 3.0</p>
-        <p class="param-sub-name" style="margin: 0"><i class="ri-corner-down-right-fill"></i> TyroServ Launcher : 1.2.1</p>
+        <p class="param-sub-name" style="margin: 0"><i class="ri-corner-down-right-fill"></i> TyroServ Launcher : 0.2.1</p>
         <p class="param-sub-name" style="margin: 0"><i class="ri-corner-down-right-fill"></i> Useritium Version : V1.0</p>
         <p class="param-sub-name" style="margin: 0"><i class="ri-corner-down-right-fill"></i> TyroMod Version : S3-0.2.0</p>
 
         <div class="btn-legal">
-            <button>CGU</button>
-            <button>GCV</button>
-            <button>LEGAL</button>
+            <button onclick="launchSite('https://tyroserv.fr/cqu.php')">CGU</button>
+            <button onclick="launchSite('https://tyroserv.fr/cqv.php')">GCV</button>
+            <button onclick="launchSite('https://tyroserv.fr/legal.php')">LEGAL</button>
         </div>
 
         <p id="end-info">
-            Copyright © 2017-2024 All Rights Reserved by Tyrolium.<br>
-            Non afflié à Mojang ou Microsoft
+            Copyright © 2017-2024 All Rights Reserved by <b onclick="launchSite('https://tyrolium.fr')">Tyrolium</b>.<br>
+            Non afflié à <span onclick="launchSite('https://www.minecraft.net')">Mojang</span> ou <span onclick="launchSite('https://www.microsoft.com/')">Microsoft</span>
         </p>
     </section>
 
@@ -164,6 +164,52 @@
     const { shell } = require('electron');
     const { ipcRenderer } = require('electron');
     const ipc = require("electron").ipcRenderer;
+
+    ipcRenderer.send("getSettingsFile");
+    ipcRenderer.on("settingsFile", (event, settingsFile) => {
+        console.log(settingsFile);
+        setActualyValeur(settingsFile);
+    });
+
+    function setActualyValeur(settingsFile){
+
+        var RamMin = document.getElementById("RamMin")
+        var RamMax = document.getElementById("RamMax")
+        var ResoWidth = document.getElementById("ResoWidth")
+        var ResoHeight = document.getElementById("ResoHeight")
+        var showLauncherFalse = document.getElementById("showLauncherFalse")
+        var showLauncherTrue = document.getElementById("showLauncherTrue")
+        var DiscordFalse = document.getElementById("DiscordFalse")
+        var DiscordTrue = document.getElementById("DiscordTrue")
+
+
+        RamMin.value = settingsFile.RamMin
+        RamMax.value = settingsFile.RamMax
+        ResoWidth.value = settingsFile.width
+        ResoHeight.value = settingsFile.height
+
+        if (settingsFile.showLauncher === true){
+            showLauncherTrue.classList.add("active");
+            showLauncherFalse.classList.remove("active");
+        } else {
+            showLauncherTrue.classList.remove("active");
+            showLauncherFalse.classList.add("active");
+        }
+
+        if (settingsFile.discordReachPresence === true){
+            DiscordTrue.classList.add("active");
+            DiscordFalse.classList.remove("active");
+        } else {
+            DiscordTrue.classList.remove("active");
+            DiscordFalse.classList.add("active");
+        }
+
+    }
+
+    // LANCEMENT DE SITE
+    function launchSite(url){
+        shell.openExternal(url);
+    }
 
     // NOTIFICATION
     function notif(status, why){
