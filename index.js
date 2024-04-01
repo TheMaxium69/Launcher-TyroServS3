@@ -434,7 +434,7 @@ ipcMain.on("getCacheFile", (event) =>{
 
     fs.readFile(cacheFile, 'utf8', (err, data) => {
         if (err) {
-            console.error('Erreur lors de la lecture du fichier:', err);
+            console.error('PAS DE CACHE USER');
             event.reply("cacheFile", null);
             return;
         }
@@ -454,18 +454,11 @@ ipcMain.on("deconnexionUser", (event) =>{
             console.error('Erreur lors de la suppression du fichier :', err);
             return;
         }
-        console.log('Le fichier a été supprimé avec succès.');
+        console.log('Le fichier a ete supprime avec succes.');
     });
 
-    const { exec } = require('child_process');
+    mainWindow.loadFile('index.html');
 
-    exec('npm restart', (error, stdout, stderr) => {
-        if (error) {
-            console.error(`Erreur lors du redémarrage : ${error}`);
-            return;
-        }
-        console.log(`Redémarrage réussi : ${stdout}`);
-    });
 
 });
 

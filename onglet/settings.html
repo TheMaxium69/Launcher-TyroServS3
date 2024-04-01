@@ -167,6 +167,7 @@
 
     // DECONNEXION
     document.getElementById("decoUser").addEventListener("click", () => {
+        ipc.send("manualCloseOnglet");
         ipc.send("deconnexionUser");
     });
 
