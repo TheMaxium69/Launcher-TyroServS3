@@ -36,47 +36,7 @@
     <section id="mods-unlock">
         <h2 class="mods-title"><i class="ri-corner-left-down-line"></i> MODS OPTIONNEL</h2>
 
-        <div>
-
-            <article class="article-mods">
-                <div class="pp-mod" style="background-image: url('https://media.forgecdn.net/avatars/12/131/635515937130946937.png')"></div>
-                <div class="info-mod">
-
-                    <h2 class="mods-name">Schematica <span>(1.8.0.169)</span></h2>
-                    <p><i class="ri-corner-down-right-line"></i> By Lunatrius</p>
-                    <div class="link-mod">
-                        <div class="btn-link-mod">CurseForge <i class="ri-external-link-line"></i></div>
-                        <div class="btn-link-mod">GitHub <i class="ri-external-link-line"></i></div>
-                    </div>
-
-                </div>
-                <div class="btn-mod">
-                    <div class="socle-btn-mod">
-                        <button>Désactivé</button>
-                        <button class="active">Activé</button>
-                    </div>
-                </div>
-            </article>
-
-            <article class="article-mods">
-                <div class="pp-mod" style="background-image: url('https://media.forgecdn.net/avatars/588/684/637958998850280257.png')"></div>
-                <div class="info-mod">
-
-                    <h2 class="mods-name">Neat <span>(1.4-12)</span></h2>
-                    <p><i class="ri-corner-down-right-line"></i> By Vazkii</p>
-                    <div class="link-mod">
-                        <div class="btn-link-mod">CurseForge <i class="ri-external-link-line"></i></div>
-                        <div class="btn-link-mod">GitHub <i class="ri-external-link-line"></i></div>
-                    </div>
-
-                </div>
-                <div class="btn-mod">
-                    <div class="socle-btn-mod">
-                        <button class="active">Désactivé</button>
-                        <button>Activé</button>
-                    </div>
-                </div>
-            </article>
+        <div id="allMods">
 
         </div>
 
@@ -131,6 +91,175 @@
     const { shell } = require('electron');
     const { ipcRenderer } = require('electron');
     const ipc = require("electron").ipcRenderer;
+
+
+    function changeStateMods(modsID, state){
+
+        var btnDesactivé = document.getElementById("mods-desactivate-" + modsID)
+        var btnActivé = document.getElementById("mods-activate-" + modsID);
+
+        if (state === "desactive"){
+            modsFileContenu[modsID-1].activate = false
+
+            btnDesactivé.classList.add("active");
+            btnActivé.classList.remove("active");
+        }
+
+        if (state === "active"){
+            modsFileContenu[modsID-1].activate = true
+
+            btnActivé.classList.add("active");
+            btnDesactivé.classList.remove("active");
+        }
+
+        ipcRenderer.send("setModsFile", {newJson: modsFileContenu});
+
+    }
+
+
+
+    // SET MOTS
+    var modsData = [
+        {
+            id:1,
+            nom: "Schematica",
+            version: "1.8.0.169",
+            auteur: "Lunatrius",
+            imageUrl: "../asset/mods/shematica.png",
+            btnInfo: {
+                curseforge:"https://www.curseforge.com/minecraft/mc-mods/schematica",
+                github:"https://github.com/Lunatrius/Schematica"
+            }
+        },
+        {
+            id:2,
+            nom: "Neat",
+            version: "1.4-17",
+            auteur: "Vazkii",
+            imageUrl: "../asset/mods/neat.png",
+            btnInfo: {
+                curseforge:"https://www.curseforge.com/minecraft/mc-mods/neat",
+                github:"https://github.com/VazkiiMods/Neat"
+            }
+        },
+        {
+            id:3,
+            nom: "Optifine",
+            version: "HD_U_E3",
+            auteur: "Optifine Team",
+            imageUrl: "../asset/mods/OptiFine.webp",
+            btnInfo: {
+                link:"https://optifine.net/home",
+            }
+        },
+        {
+            id:4,
+            nom: "Just Enough Items",
+            version: "4.16.1.1012",
+            auteur: "Mezz",
+            imageUrl: "../asset/mods/jei.jpeg",
+            btnInfo: {
+                curseforge:"https://www.curseforge.com/minecraft/mc-mods/jei",
+                github:"https://github.com/mezz/JustEnoughItems"
+            }
+        },
+    ];
+
+    // Sélectionnez l'élément HTML où vous souhaitez ajouter vos articles
+    var conteneurMods = document.getElementById("allMods");
+
+    // Boucle forEach pour générer les articles dynamiquement
+    modsData.forEach(function(mod) {
+        // Créez un nouvel élément d'article
+        var nouvelArticle = document.createElement("article");
+        nouvelArticle.className = "article-mods";
+        nouvelArticle.id = "mods-" + mod.id;
+
+        // Créez l'élément de l'image du mod
+        var ppMod = document.createElement("div");
+        ppMod.className = "pp-mod";
+        ppMod.style.backgroundImage = "url('" + mod.imageUrl + "')";
+        nouvelArticle.appendChild(ppMod);
+
+        // Créez l'élément d'informations du mod
+        var infoMod = document.createElement("div");
+        infoMod.className = "info-mod";
+
+        // Ajoutez le nom et la version du mod
+        var nomEtVersion = document.createElement("h2");
+        nomEtVersion.className = "mods-name";
+        nomEtVersion.innerHTML = mod.nom + " <span>(" + mod.version + ")</span>";
+        infoMod.appendChild(nomEtVersion);
+
+        // Ajoutez l'auteur du mod
+        var auteur = document.createElement("p");
+        auteur.innerHTML = '<i class="ri-corner-down-right-line"></i> By ' + mod.auteur;
+        infoMod.appendChild(auteur);
+
+        // Ajoutez les liens du mod
+        var linkMod = document.createElement("div");
+        linkMod.className = "link-mod";
+        if (mod.id === 3){
+            linkMod.innerHTML = `<div onclick="launchSite('`+ mod.btnInfo.link +`')" class="btn-link-mod">Site Web <i class="ri-external-link-line"></i></div>`;
+        } else {
+            linkMod.innerHTML = `<div onclick="launchSite('`+ mod.btnInfo.curseforge +`')" class="btn-link-mod">CurseForge <i class="ri-external-link-line"></i></div><div onclick="launchSite('`+ mod.btnInfo.github +`')" class="btn-link-mod">GitHub <i class="ri-external-link-line"></i></div>`;
+        }
+         infoMod.appendChild(linkMod);
+
+        nouvelArticle.appendChild(infoMod);
+
+        var btnMod = document.createElement("div");
+        btnMod.className = "btn-mod";
+        btnMod.innerHTML = `<div class="socle-btn-mod">
+                                <button id="mods-desactivate-` + mod.id + `" onclick="changeStateMods(`+ mod.id +`, 'desactive')" class="active">Désactivé</button>
+                                <button id="mods-activate-` + mod.id + `" onclick="changeStateMods(`+ mod.id +`, 'active')">Activé</button>
+                            </div>`;
+        nouvelArticle.appendChild(btnMod);
+
+        // Ajoutez l'article au conteneur
+        conteneurMods.appendChild(nouvelArticle);
+    });
+
+    // GET SETTING FILE
+    let modsFileContenu;
+    ipcRenderer.send("getModsFile");
+    ipcRenderer.on("modsFile", (event, modsFile) => {
+        console.log(modsFile);
+        modsFileContenu = modsFile;
+        updateActivateMods(modsFileContenu);
+    });
+
+    function updateActivateMods(modsFileContenu){
+
+        modsFileContenu.forEach(oneMod =>{
+
+            // console.log(oneMod);
+
+            var btnDesactivé = document.getElementById("mods-desactivate-" + oneMod.id)
+            var btnActivé = document.getElementById("mods-activate-" + oneMod.id);
+
+            if (oneMod.activate === true){
+                btnActivé.classList.add("active");
+                btnDesactivé.classList.remove("active");
+            } else {
+                btnDesactivé.classList.add("active");
+                btnActivé.classList.remove("active");
+            }
+
+        });
+
+    }
+
+
+
+
+
+
+
+    // LANCEMENT DE SITE
+    function launchSite(url){
+        shell.openExternal(url);
+    }
 
     // NOTIFICATION
     function notif(status, why){

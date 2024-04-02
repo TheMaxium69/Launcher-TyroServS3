@@ -131,17 +131,30 @@ ipcMain.on("connected", (event, data) => {
 
     let optionnalMods = [
         {
-            "name":"jei",
+            "id":1,
+            "jar":"Schematica[1.8.0.169]",
+            "activate":false,
+            "dependence":[
+                "LunatriusCore[1.2.0.42]",
+            ]
+        },
+        {
+            "id":2,
+            "jar":"Neat[1.4-17]",
+            "activate":true,
+        },
+        {
+            "id":3,
+            "jar":"OptiFine[HD_U_E3]",
+            "activate":true,
+        },
+        {
+            "id":4,
             "jar":"Jei[4.16.1.1012]",
             "activate":true,
             "dependence":[
                 "GeckolibForge[3.0.31]",
             ]
-        },
-        {
-            "name":"optifine",
-            "jar":"OptiFine[HD_U_E3]",
-            "activate":true,
         }
     ]
 
@@ -461,6 +474,41 @@ ipcMain.on("getCacheFile", (event) =>{
         event.reply("cacheFile", JSON.parse(data));
     });
 
+});
+
+ipcMain.on("getModsFile", (event) =>{
+
+    let settingFile = path.join(app.getPath("appData"), urlInstanceLauncher + "Launcher_Mods.json");
+
+    fs.readFile(settingFile, 'utf8', (err, data) => {
+        if (err) {
+            console.error('Erreur lors de la lecture du fichier:', err);
+            event.reply("settingFile", null);
+            return;
+        }
+
+        event.reply("modsFile", JSON.parse(data));
+    });
+
+});
+
+ipcMain.on("setModsFile", (event, data) =>{
+
+    let modsFile = path.join(app.getPath("appData"), urlInstanceLauncher + "Launcher_Mods.json");
+
+    fs.unlink(modsFile   , (err) => {
+        if (err) {
+            console.error('Erreur lors de la suppression du fichier :', err);
+            return;
+        }
+        console.log('Le fichier a ete supprime avec succes.');
+    });
+
+    fs.appendFile(modsFile, JSON.stringify(data.newJson), function (err) {
+        if (err)
+            throw err;
+        console.log('Fichier Launcher_Mods.json cree !');
+    });
 });
 
 // Deconnexion User
