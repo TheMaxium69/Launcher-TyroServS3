@@ -481,7 +481,7 @@
     // LANCEMENT D'ONGLET
     function launchOnglet(onglet) {
 
-        if (onglet === 'mods'){
+        if (onglet === 'mods' && hereServer === "faction"){
             ipc.send("launchMods");
         }
 
@@ -489,7 +489,7 @@
             ipc.send("launchSettings");
         }
 
-        if (onglet === 'version'){
+        if (onglet === 'version' && hereServer === "faction"){
             ipc.send("launchVersion");
         }
 

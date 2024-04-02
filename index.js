@@ -351,8 +351,8 @@ ipcMain.on("login", (event, data) => {
                         settingsContenu.width,
                         "--height",
                         settingsContenu.height,
-                        "--server",
-                        "vps207.tyrolium.fr"
+                        // "--server",
+                        // "vps207.tyrolium.fr"
                     ],
                     root: path.join(app.getPath("appData"), instanceChoose),
                     // javaPath: `C:/Users/mxmto/AppData/Roaming/.minecraft/runtime/jre-legacy/windows/jre-legacy/bin/javaw.exe`,
@@ -368,7 +368,7 @@ ipcMain.on("login", (event, data) => {
                         min: settingsContenu.RamMin + "M",
                     },
                 }
-                // launcher.launch(options);
+                launcher.launch(options);
 
                 launcher.on('debug', (e) => {
                     console.log("debug", e)
