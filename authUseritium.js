@@ -30,7 +30,7 @@ function authUseritium (email, mdp) {
 function authUseritiumToken (username, token) {
 
     param = "username_useritium="+username+"&token_useritium="+token
-    console.log(param)
+    // console.log(param)
 
     let myRequest = new XMLHttpRequest();
     myRequest.open('POST', 'http://useritium.fr/api-externe/index.php?controller=TyroServ&task=connectToken');

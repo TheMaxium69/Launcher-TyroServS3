@@ -59,6 +59,7 @@
 #up-left .perso-tag{
     border-radius: 9px;
     display: none;
+    text-transform: capitalize;
 }
 
 #up-left .perso-tag-text{
@@ -284,17 +285,30 @@
     align-items: flex-end;
     justify-content: flex-end;
     margin-bottom: 35px;
-    gap: 120px;
+    gap: 41px;
 
+}
+
+#player,
+#minecraft{
+    margin-right: 30px;
+}
+#shop{
+    margin-left: 30px;
+}
+
+#downbar h3{
+    width: 148px;
 }
 
 
 #downbar .btn:hover {
 
-    /*text-decoration: underline;    */
-    border-bottom: 1px solid white;
+    text-decoration: underline;
+    /*border-bottom: 1px solid white;*/
 
 }
+
 
 #toggleButton{
     background: transparent;
@@ -348,8 +362,10 @@
 }
 
 
-#ping{
-    display: flex
+#ping,
+#player{
+    display: flex;
+    justify-content: center;
 }
 
 #ping #cercle{
@@ -358,6 +374,39 @@
     border-radius: 100%;
     width: 22px;
     height: 22px;
+}
+
+
+.menu {
+    position: absolute;
+    top: 53px;
+    left: 337px;
+    background-color: #121212;
+    /*border: 1px solid #ccc;*/
+    border-radius: 5px;
+    padding: 5px;
+    display: none;
+    z-index: 1;
+    color: white;
+}
+
+#ping:hover #menu {
+    display: block;
+}
+#player #joueur{
+    border-radius: 9px;
+    background-color: #002D85;
+    width: 71px;
+    /*width: 58px;*/
+    height: 23px;
+    margin-left: 6px;
+}
+
+#player #joueur p{
+    margin: 0;
+    padding: 4px;
+    font-size: 13px;
+    color: white;
 }
 
 .iziToast-wrapper-topCenter{

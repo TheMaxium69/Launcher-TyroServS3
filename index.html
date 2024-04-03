@@ -54,7 +54,7 @@
 
         ipcRenderer.send("getCacheFile");
         ipcRenderer.on("cacheFile", (event, cacheFile) => {
-            console.log(cacheFile);
+            // console.log(cacheFile);
             authUseritiumToken(cacheFile.username, cacheFile.token);
         });
 

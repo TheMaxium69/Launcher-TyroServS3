@@ -13,7 +13,6 @@ let urlInstanceFaction = urlInstance + "TyroServ-Faction/";
 let urlInstanceMiniGame = urlInstance + "TyroServ-MiniGame/";
 let urlInstanceVanilla = urlInstance + "TyroServ-Vanilla/";
 global.userConnected = undefined;
-global.showLauncher = true;
 global.urlInstance = {
     "instance":urlInstance,
     "launcher":urlInstanceLauncher,
@@ -401,7 +400,7 @@ ipcMain.on("login", (event, data) => {
                     console.log("download", e)
                 });
                 launcher.on('download-status', (e) => {
-                    console.log("download-status", e)
+                    // console.log("download-status", e)
                     event.sender.send("progressionDownload", e)
                 });
             }).catch((error) => {

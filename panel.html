@@ -138,11 +138,18 @@
         <div id="downbar">
 
             <h3 id="player" class="btn" onclick="launchSite('https://fr.namemc.com/server/mc.tyrolium.fr')">
-                JOUEUR
+                JOUEUR <div id="joueur"><p><span id="inPlayerInfo">0</span>/<span id="maxPlayerInfo">1000</span></p></div>
+            </h3>
+            <h3 id="minecraft" style="display: none" class="btn" onclick="launchSite('https://www.minecraft.net/')">
+                MINECRAFT
             </h3>
 
-            <h3 id="ping" class="btn" onclick="launchSite('https://stats.uptimerobot.com/7z9o3SEnWX')">
+            <h3 id="ping" class="btn" >
                 STATUS <div id="cercle"></div>
+
+                <div class="menu" id="menu">
+                    <span id="pingValue">0</span> ms
+                </div>
             </h3>
 
             <button id="toggleButton">
@@ -211,6 +218,44 @@
     const { shell } = require('electron');
     const { ipcRenderer } = require('electron');
     const ipc = require("electron").ipcRenderer;
+
+    let ErreurLaunchControl = 0;
+
+
+    // Declancher le ping
+    let ipServerFaction = "vps207.tyrolium.fr";
+
+    document.getElementById('ping').addEventListener('mouseenter', function() {
+        var pingValue;
+        getInfoTechnicalServer(ipServerFaction)
+            .then(function(infoTechnicalServer) {
+
+                if (infoTechnicalServer.ping){
+                    pingValue = infoTechnicalServer.ping
+                } else {
+                    pingValue = "3"
+                }
+                document.getElementById('pingValue').innerText = pingValue;
+
+        }).catch(function(error) {
+            console.log(error);
+            pingValue = "none";
+            document.getElementById('pingValue').innerText = pingValue;
+        });
+    });
+
+    // Aficher le nombre de joueur sur le serveur
+    getInfoTechnicalServer(ipServerFaction)
+        .then(function(infoTechnicalServer) {
+            document.getElementById('inPlayerInfo').innerText = infoTechnicalServer.players;
+            document.getElementById('maxPlayerInfo').innerText = infoTechnicalServer.maxplayers;
+
+        }).catch(function(error) {
+
+            document.getElementById('inPlayerInfo').innerText = "??";
+            document.getElementById('maxPlayerInfo').innerText = "??";
+        });
+
 
     // RECUPERATION DE L'UTILISATEUR
     let userConnected = remote.getGlobal('userConnected');
@@ -304,7 +349,23 @@
             });
     }
 
-    // RECUPERATION INFO SERVEUR
+    // RECUPERATION INFO TECHNIQUE SERVEUR
+    function getInfoTechnicalServer(ipServerFaction) {
+        return new Promise((resolve, reject) => {
+            fetch('https://mcapi.xdefcon.com/server/'+ipServerFaction+'/full/json')
+                .then(function(response) {
+                    return response.json();
+                })
+                .then(function(data) {
+                    resolve(data);
+                })
+                .catch(function(error) {
+                    reject(error);
+                });
+        });
+    }
+
+    // RECUPERATION DES INFOS DU SERVEUR
     function getInfoServer(pseudo) {
         return new Promise((resolve, reject) => {
             fetch('http://vps207.tyrolium.fr/api/?pseudo=' + pseudo)
@@ -330,6 +391,7 @@
             startMinecraft(userConnected, hereServer);
 
             playbtn.innerText = "LANCEMENT";
+            ErreurLaunchControl = 0;
         }
 
 
@@ -357,7 +419,7 @@
         let pourcentage = (data.current / data.total) * 100;
         let pourcentageAffiche = Math.floor((data.current / data.total) * 100);
         let affichage = convertPercentageToCustomScale(pourcentageAffiche);
-        console.log("affichage", affichage)
+        // console.log("affichage", affichage)
         // progressBar.innerHTML = "<p> Type : " + data.type  + " | Task : " + data.task + " | total : " + data.total + "</p>"
         progressBar.innerHTML = '<div id="slide" style="width:' + affichage + '%!important;"><p>' + pourcentageAffiche + '%</p></div>'
 
@@ -392,6 +454,29 @@
             var arrow = document.getElementById('arrow');
             arrow.classList.add('ri-arrow-up-s-line');
             arrow.classList.remove('ri-arrow-down-s-line');
+
+        }
+
+        if (data === "[MCLC]: Failed to start due to Error: Invalid or unsupported zip format. No END header found, closing..." && ErreurLaunchControl === 0) {
+
+            const progressBar = document.getElementById('progressBar');
+            progressBar.innerHTML = "<p> </p>"
+
+            playbtn.innerText = "JOUER";
+
+            var bar = document.querySelector('.bar');
+            bar.classList.remove('show');
+            var downpanel = document.getElementById('down-panel');
+            downpanel.classList.remove('up');
+            var arrow = document.getElementById('arrow');
+            arrow.classList.add('ri-arrow-up-s-line');
+            arrow.classList.remove('ri-arrow-down-s-line');
+
+
+            notif("err", "Votre jeu n'a pas réussi à se lancer. Veuillez recommencer.");
+
+            ErreurLaunchControl += 1;
+
 
         }
 
@@ -511,6 +596,9 @@
             var barChoose = document.getElementById("barChoose");
             var statsPerso = document.getElementById("stats-perso");
             var btnMods = document.getElementById("mods");
+            var btnJoueur = document.getElementById("player");
+            var btnMinecraft = document.getElementById("minecraft");
+            var backNbJoueur = document.getElementById("joueur");
 
 
             if (futur === "faction"){
@@ -526,9 +614,12 @@
                 barChoose.style.top = "280px";
                 barChoose.style.background = "#1400FF";
                 statsPerso.style.display = "flex";
+                backNbJoueur.style.backgroundColor = "#002D85"
 
                 playBtn.innerText = "JOUER";
                 btnMods.innerText = "MODS";
+                btnJoueur.style.display = "flex";
+                btnMinecraft.style.display = "none";
 
                 hereServer = futur;
 
@@ -546,9 +637,12 @@
                 barChoose.style.top = "363px";
                 barChoose.style.background = "#FF0000";
                 statsPerso.style.display = "none";
+                backNbJoueur.style.backgroundColor = "#FF0000"
 
                 playBtn.innerText = "SOON";
                 btnMods.innerText = "MODS";
+                btnJoueur.style.display = "flex";
+                btnMinecraft.style.display = "none";
 
                 hereServer = futur;
 
@@ -569,6 +663,8 @@
 
                 playBtn.innerText = "SOON";
                 btnMods.innerText = "VERSION";
+                btnJoueur.style.display = "none";
+                btnMinecraft.style.display = "block";
 
                 hereServer = futur;
             }
