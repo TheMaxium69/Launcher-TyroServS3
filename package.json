@@ -4,13 +4,14 @@
   "description": "Launcher TyroServ",
   "main": "index.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "build": "electron-builder"
   },
   "author": "Maxime Tournier",
   "license": "MIT",
   "devDependencies": {
     "electron": "^10.1.5",
-    "electron-builder": "^22.9.1"
+    "electron-builder": "^22.14.13"
   },
   "dependencies": {
     "axios": "^0.21.0",
