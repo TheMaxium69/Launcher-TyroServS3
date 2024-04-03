@@ -25,7 +25,7 @@ global.urlInstance = {
 function createWindow () {
    mainWindow = new BrowserWindow({
     frame: false,
-    title: "TyroServ Launcher - 0.1.2",
+    title: "TyroServ Launcher - 0.1.3",
     width: 1318,
     height: 710,
     resizable: false,
@@ -140,7 +140,7 @@ ipcMain.on("connected", (event, data) => {
         {
             "id":2,
             "jar":"Neat[1.4-17]",
-            "activate":true,
+            "activate":false,
         },
         {
             "id":3,
