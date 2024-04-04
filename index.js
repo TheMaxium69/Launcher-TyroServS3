@@ -12,14 +12,7 @@ let urlInstanceLauncher = urlInstance + "Launcher/";
 let urlInstanceFaction = urlInstance + "TyroServ-Faction/";
 let urlInstanceMiniGame = urlInstance + "TyroServ-MiniGame/";
 let urlInstanceVanilla = urlInstance + "TyroServ-Vanilla/";
-global.userConnected = undefined;
-global.urlInstance = {
-    "instance":urlInstance,
-    "launcher":urlInstanceLauncher,
-    "faction":urlInstanceFaction,
-    "minigame":urlInstanceMiniGame,
-    "vanilla":urlInstanceVanilla,
-}
+let userConnected = undefined;
 
 // INITIALISATION DE L'ONGLET PRINCIPAL
 function createWindow () {
@@ -78,15 +71,24 @@ ipcMain.on("manualClose", () => {
 //   if (process.platform !== 'darwin') app.quit()
 });
 
+// RECUPERATION DE L'UTILISATEUR
+ipcMain.on('getUserConnected', (event) => {
+    event.sender.send('userConnected', userConnected);
+});
+
 // CONNECTION ET LANCEMENT DU PANEL
 ipcMain.on("connected", (event, data) => {
-    global.userConnected = data.userTyroServLoad;
+
+    // SET LA VARIABLE UTILISATEUR
+    userConnected = data.userTyroServLoad;
     console.log("Connection avec : ", data.userTyroServLoad.pseudo)
+
+    // CHARGER LE FICHIER PANEL
+    mainWindow.loadFile('panel.html');
+
 
     // UPDATE DU REACH PRESENCE
     setActivity('Navigue sur le Launcher', data.userTyroServLoad.pseudo);
-
-    mainWindow.loadFile('panel.html');
 
     // CREATION DU DOSSIER
     const UrlInstanceMC = app.getPath("appData") + urlInstance;
@@ -189,6 +191,8 @@ ipcMain.on("connected", (event, data) => {
     } else {
         console.log('Le fichier Launcher_Cache.json existe deja.');
     }
+
+
 
 
 });

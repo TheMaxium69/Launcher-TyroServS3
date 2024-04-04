@@ -212,9 +212,9 @@
 <!-- NAVBAR ET AUTH -->
 <script src="module/navbar.js"></script>
 <script src="authUseritium.js"></script>
+
 <script>
 
-    const { remote } = require('electron');
     const { shell } = require('electron');
     const { ipcRenderer } = require('electron');
     const ipc = require("electron").ipcRenderer;
@@ -258,96 +258,104 @@
 
 
     // RECUPERATION DE L'UTILISATEUR
-    let userConnected = remote.getGlobal('userConnected');
+    let userConnected = undefined;
+    ipcRenderer.send('getUserConnected');
 
-    if (userConnected){
+    // Recevoir les données utilisateur du processus principal
+    ipcRenderer.on('userConnected', (event, data) => {
 
-        console.log(userConnected);
-        var pseudo = document.getElementById("pseudo");
-        var PP = document.getElementById("PP");
-        var useritium_pseudo = document.getElementById("useritium-pseudo");
-        var useritium_account = document.getElementById("useritium-account");
+        console.log(data);
+        userConnected = data;
 
-        pseudo.innerText = userConnected.pseudo;
-        if (userConnected.useritium.pp){
-            useritium_account.src = "https://useritium.fr/uploads/pp/" + userConnected.useritium.pp;
-        } else {
-            useritium_account.src = "https://tyrolium.fr/generate-pp/?l=" + userConnected.pseudo.charAt(0);
-        }
+        if (userConnected){
 
-        if (userConnected.useritium.displayname){
-            useritium_pseudo.innerText = userConnected.useritium.displayname;
-        } else {
+            var pseudo = document.getElementById("pseudo");
+            var PP = document.getElementById("PP");
+            var useritium_pseudo = document.getElementById("useritium-pseudo");
+            var useritium_account = document.getElementById("useritium-account");
 
-            if (userConnected.useritium.username !== userConnected.pseudo){
-                useritium_pseudo.innerText = userConnected.useritium.username;
+            pseudo.innerText = userConnected.pseudo;
+            if (userConnected.useritium.pp){
+                useritium_account.src = "https://useritium.fr/uploads/pp/" + userConnected.useritium.pp;
             } else {
-                useritium_pseudo.innerText = " ";
+                useritium_account.src = "https://tyrolium.fr/generate-pp/?l=" + userConnected.pseudo.charAt(0);
             }
 
-        }
+            if (userConnected.useritium.displayname){
+                useritium_pseudo.innerText = userConnected.useritium.displayname;
+            } else {
 
-        if (userConnected.skin){
-            PP.style.backgroundImage = "url('https://useritium.fr/uploads/pp/" + userConnected.skin + "')";
-        } else {
-            PP.style.backgroundImage = "url('https://minotar.net/helm/" + userConnected.pseudo + "')";
-        }
-
-        getInfoServer(userConnected.pseudo)
-            .then(function(infoServUser) {
-                // console.log(infoServUser);
-
-
-                var level_div = document.getElementById("level-user");
-                var level_text = document.getElementById("level-user-text");
-
-                // VERIFICATION DE L'EXISTANCE DE L'UTILISATEUR
-                if (infoServUser['result']['player'] !== "no player"){
-
-                    // FACTION
-                    if (infoServUser['result']['roles'] !== "no roles"){
-                        var grade_div = document.getElementById("grade-user");
-                        grade_div.classList.add("show-tag");
-
-                        let allRoles = infoServUser['result']['roles'];
-                        allRoles.forEach(oneRoles =>{
-
-                            if (oneRoles['name'] !== "default"){
-                                var grade_text = document.getElementById("grade-user-text");
-                                grade_text.innerText +=  oneRoles['displayName'];
-                            }
-
-                        })
-
-                    }
-
-                    // FACTION
-                    if (infoServUser['result']['faction']['id'] !== "0"){
-                        var faction_div = document.getElementById("faction-user");
-                        faction_div.classList.add("show-tag");
-                        var faction_text = document.getElementById("faction-user-text");
-                        faction_text.innerText = "Faction : " + infoServUser['result']['faction']['name'];
-                    }
-
-                    // MONEY
-                    var money_div = document.getElementById("money-user");
-                    money_div.classList.add("show-tag");
-                    var money_text = document.getElementById("money-user-text");
-                    money_text.innerText = infoServUser['result']['money']['wallet'] + " $";
-
+                if (userConnected.useritium.username !== userConnected.pseudo){
+                    useritium_pseudo.innerText = userConnected.useritium.username;
                 } else {
-
-                    level_div.classList.add("show-tag");
-                    level_text.innerText = "Première connexion";
-
-
+                    useritium_pseudo.innerText = " ";
                 }
 
-            })
-            .catch(function(error) {
-                console.log(error);
-            });
-    }
+            }
+
+            if (userConnected.skin){
+                PP.style.backgroundImage = "url('https://useritium.fr/uploads/pp/" + userConnected.skin + "')";
+            } else {
+                PP.style.backgroundImage = "url('https://minotar.net/helm/" + userConnected.pseudo + "')";
+            }
+
+            getInfoServer(userConnected.pseudo)
+                .then(function(infoServUser) {
+                    // console.log(infoServUser);
+
+
+                    var level_div = document.getElementById("level-user");
+                    var level_text = document.getElementById("level-user-text");
+
+                    // VERIFICATION DE L'EXISTANCE DE L'UTILISATEUR
+                    if (infoServUser['result']['player'] !== "no player"){
+
+                        // FACTION
+                        if (infoServUser['result']['roles'] !== "no roles"){
+                            var grade_div = document.getElementById("grade-user");
+                            grade_div.classList.add("show-tag");
+
+                            let allRoles = infoServUser['result']['roles'];
+                            allRoles.forEach(oneRoles =>{
+
+                                if (oneRoles['name'] !== "default"){
+                                    var grade_text = document.getElementById("grade-user-text");
+                                    grade_text.innerText +=  oneRoles['displayName'];
+                                }
+
+                            })
+
+                        }
+
+                        // FACTION
+                        if (infoServUser['result']['faction']['id'] !== "0"){
+                            var faction_div = document.getElementById("faction-user");
+                            faction_div.classList.add("show-tag");
+                            var faction_text = document.getElementById("faction-user-text");
+                            faction_text.innerText = "Faction : " + infoServUser['result']['faction']['name'];
+                        }
+
+                        // MONEY
+                        var money_div = document.getElementById("money-user");
+                        money_div.classList.add("show-tag");
+                        var money_text = document.getElementById("money-user-text");
+                        money_text.innerText = infoServUser['result']['money']['wallet'] + " $";
+
+                    } else {
+
+                        level_div.classList.add("show-tag");
+                        level_text.innerText = "Première connexion";
+
+
+                    }
+
+                })
+                .catch(function(error) {
+                    console.log(error);
+                });
+        }
+
+    });
 
     // RECUPERATION INFO TECHNIQUE SERVEUR
     function getInfoTechnicalServer(ipServerFaction) {
@@ -707,6 +715,7 @@
         }
     }
 </script>
+
 
 </body>
 
