@@ -1,6 +1,6 @@
 {
   "name": "tyroserv-launcher",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Launcher TyroServ",
   "main": "index.js",
   "scripts": {
@@ -17,6 +17,7 @@
   "dependencies": {
     "axios": "^0.21.0",
     "custom-electron-titlebar": "^3.2.5",
+    "discord-rpc": "^4.0.1",
     "electron-custom-titlebar": "^4.0.2",
     "izitoast": "^1.4.0",
     "minecraft-launcher-core": "^3.15.0"

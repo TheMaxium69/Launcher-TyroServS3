@@ -225,6 +225,7 @@
         DiscordFalse.classList.add("active");
         settingsContenu.discordReachPresence = false;
         ipcRenderer.send("setSettingsFile", {newJson: settingsContenu});
+        ipcRenderer.send("updateDiscord", {state: 'stop'});
     });
 
     DiscordTrue.addEventListener("click", () => {
@@ -233,6 +234,7 @@
         DiscordFalse.classList.remove("active");
         settingsContenu.discordReachPresence = true;
         ipcRenderer.send("setSettingsFile", {newJson: settingsContenu});
+        ipcRenderer.send("updateDiscord", {state: 'start'});
     });
 
 

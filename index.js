@@ -7,7 +7,7 @@ const launcher = new Client();
 
 
 let mainWindow;
-let urlInstance = "/.TyroServ/";
+let urlInstance = "/.TyroServBeta/";
 let urlInstanceLauncher = urlInstance + "Launcher/";
 let urlInstanceFaction = urlInstance + "TyroServ-Faction/";
 let urlInstanceMiniGame = urlInstance + "TyroServ-MiniGame/";
@@ -25,7 +25,7 @@ global.urlInstance = {
 function createWindow () {
    mainWindow = new BrowserWindow({
     frame: false,
-    title: "TyroServ Launcher - 0.1.4",
+    title: "TyroServ Launcher - 0.1.5",
     width: 1318,
     height: 710,
     resizable: false,
@@ -46,7 +46,7 @@ function createWindow () {
 // CREATION DE L'ONGLET PRINCIPAL
 app.whenReady().then(() => {
   createWindow()
-  
+
   app.on('activate', function () {
     if (BrowserWindow.getAllWindows().length === 0){
         createWindow()
@@ -82,6 +82,9 @@ ipcMain.on("manualClose", () => {
 ipcMain.on("connected", (event, data) => {
     global.userConnected = data.userTyroServLoad;
     console.log("Connection avec : ", data.userTyroServLoad.pseudo)
+
+    // UPDATE DU REACH PRESENCE
+    setActivity('Navigue sur le Launcher', data.userTyroServLoad.pseudo);
 
     mainWindow.loadFile('panel.html');
 
@@ -372,6 +375,17 @@ ipcMain.on("login", (event, data) => {
                 launcher.on('debug', (e) => {
                     console.log("debug", e)
                     event.sender.send("lancement", e)
+
+                    // UPDATE DU REACH PRESENCE
+                    if (e === "[MCLC]: Set launch options") {
+                        if (data.hereServer === "minigame"){
+                            setActivity('Joue à TyroServ Mini-Jeux', data.username_tyroserv);
+                        } else if (data.hereServer === "vanilla"){
+                            setActivity('Joue à Minecraft Vanilla', data.username_tyroserv);
+                        } else {
+                            setActivity('Joue à TyroServ PVP/Faction', data.username_tyroserv);
+                        }
+                    }
                 });
                 launcher.on('data', (e) => {
                     console.log("data", e)
@@ -392,6 +406,9 @@ ipcMain.on("login", (event, data) => {
 
                     mainWindow.show();
                     event.sender.send("stopping")
+
+                    // UPDATE DU REACH PRESENCE
+                    setActivity('Navigue sur le Launcher', data.username_tyroserv);
                 });
                 launcher.on('package-extract', (e) => {
                     console.log("package-extract", e)
@@ -608,3 +625,100 @@ ipcMain.on("deconnexionUser", (event) =>{
 
 });
 
+
+// DISCORD
+
+const clientId = '849915439844687893';
+const DiscordRPC = require('discord-rpc');
+const RPC = new DiscordRPC.Client({ transport: 'ipc' });
+
+DiscordRPC.register(clientId);
+
+async function setActivity(msg, pseudo){
+    if (!RPC) return;
+
+    // RECUPERATION DU FICHIER SETTINGS !
+    const getSettingsPromise = new Promise((resolve, reject) => {
+        let settingFileDiscord = path.join(app.getPath("appData"), urlInstanceLauncher + "Launcher_Setting.json");
+        fs.readFile(settingFileDiscord, 'utf8', (err, data) => {
+            if (err) {
+                reject(new Error("ERREUR AVEC LE FICHIER"))
+                return;
+            }
+            resolve(JSON.parse(data));
+        });
+    });
+
+    getSettingsPromise.then((settingFileDiscord) => {
+        console.log(settingFileDiscord);
+
+        if (settingFileDiscord.discordReachPresence === true) {
+
+            if (pseudo) {
+
+                RPC.setActivity({
+                    details: msg,
+                    state: pseudo + ' est connectée',
+                    startTimestamp: Date.now(),
+                    largeImageKey: 'tyroservs3',
+                    largeImageText: 'TyroServ S3',
+                    smallImageKey: 'tyrolium',
+                    smallImageText: 'Tyrolium',
+                    instance: false,
+                    buttons: [
+                        {
+                            label: 'Nous Rejoindre',
+                            url: 'https://tyroserv.fr'
+                        }
+                    ]
+                })
+
+            } else {
+
+                RPC.setActivity({
+                    details: msg,
+                    startTimestamp: Date.now(),
+                    largeImageKey: 'tyroservs3',
+                    largeImageText: 'TyroServ S3',
+                    smallImageKey: 'tyrolium',
+                    smallImageText: 'Tyrolium',
+                    instance: false,
+                    buttons: [
+                        {
+                            label: 'Nous Rejoindre',
+                            url: 'https://tyroserv.fr'
+                        }
+                    ]
+                })
+
+            }
+
+        }
+
+    }).catch((error) => {
+        console.error(error);
+    });
+}
+
+RPC.on('ready', async () => {
+
+    setActivity('IDK', null);
+
+});
+
+RPC.login({ clientId }).catch(err => console.log(err))
+
+ipcMain.on("updateDiscord", (event, data) =>{
+
+    console.log("UpdatedDiscord : ", data.state);
+
+    if (data.state === "stop") {
+
+        if (RPC){
+            RPC.destroy();
+        }
+
+    } else {
+
+    }
+});
