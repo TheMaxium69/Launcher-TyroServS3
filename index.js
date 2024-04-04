@@ -7,7 +7,7 @@ const launcher = new Client();
 
 
 let mainWindow;
-let urlInstance = "/.TyroServBeta/";
+let urlInstance = "/.TyroServ/";
 let urlInstanceLauncher = urlInstance + "Launcher/";
 let urlInstanceFaction = urlInstance + "TyroServ-Faction/";
 let urlInstanceMiniGame = urlInstance + "TyroServ-MiniGame/";
@@ -610,6 +610,7 @@ ipcMain.on("setModsFile", (event, data) =>{
 // Deconnexion User
 ipcMain.on("deconnexionUser", (event) =>{
 
+    setActivity('IDK', null);
     let cacheFile = path.join(app.getPath("appData"), urlInstanceLauncher + "Launcher_Cache.json");
 
     fs.unlink(cacheFile, (err) => {
@@ -650,7 +651,7 @@ async function setActivity(msg, pseudo){
     });
 
     getSettingsPromise.then((settingFileDiscord) => {
-        console.log(settingFileDiscord);
+        // console.log(settingFileDiscord);
 
         if (settingFileDiscord.discordReachPresence === true) {
 
