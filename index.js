@@ -1,4 +1,4 @@
-const {app, BrowserWindow, ipcMain } = require('electron')
+const {app, BrowserWindow, ipcMain, dialog} = require('electron')
 const path = require('path')
 const { Client, Authenticator } = require('minecraft-launcher-core');
 const fs = require("fs");
@@ -719,6 +719,8 @@ ipcMain.on("updateDiscord", (event, data) =>{
         }
 
     } else {
+
+        dialog.showErrorBox("Restart Launcher", "il faut redémarré le launcher");
 
     }
 });
