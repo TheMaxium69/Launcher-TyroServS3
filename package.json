@@ -11,7 +11,7 @@
   "author": "Maxime Tournier",
   "license": "MIT",
   "devDependencies": {
-    "electron": "^10.1.5",
+    "electron": "^21.2.3",
     "electron-builder": "^22.14.13"
   },
   "dependencies": {
