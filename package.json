@@ -1,6 +1,6 @@
 {
   "name": "tyroserv-launcher",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "Launcher TyroServ",
   "main": "index.js",
   "scripts": {

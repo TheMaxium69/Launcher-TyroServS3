@@ -7,7 +7,7 @@ const launcher = new Client();
 
 
 let mainWindow;
-let urlInstance = "/.TyroServ/";
+let urlInstance = "/.TyroServBeta/";
 let urlInstanceLauncher = urlInstance + "Launcher/";
 let urlInstanceFaction = urlInstance + "TyroServ-Faction/";
 let urlInstanceMiniGame = urlInstance + "TyroServ-MiniGame/";
@@ -18,7 +18,7 @@ let userConnected = undefined;
 function createWindow () {
    mainWindow = new BrowserWindow({
     frame: false,
-    title: "TyroServ Launcher - 0.1.5",
+    title: "TyroServ Launcher - 0.1.6",
     width: 1318,
     height: 710,
     resizable: false,
