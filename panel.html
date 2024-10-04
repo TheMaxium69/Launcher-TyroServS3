@@ -38,7 +38,7 @@
 <!--  UP LEFT  -->
     <section id="up-left">
 
-        <div id="PP"></div>
+        <div id="PP" onclick="launchSite('https://tyroserv.fr/player/')"></div>
 
         <div id="useritium-pseudo"></div>
 
@@ -568,7 +568,12 @@
 
     // LANCEMENT DE SITE
     function launchSite(url){
-        shell.openExternal(url);
+        if (url === "https://tyroserv.fr/player/"){
+            // userConnected.pseudo
+            shell.openExternal(url + userConnected.pseudo);
+        } else {
+            shell.openExternal(url);
+        }
     }
 
     // LANCEMENT D'ONGLET
