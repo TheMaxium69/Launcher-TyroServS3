@@ -248,8 +248,26 @@
     getInfoTechnicalServer(ipServerFaction)
         .then(function(infoTechnicalServer) {
             console.log(infoTechnicalServer);
-            document.getElementById('inPlayerInfo').innerText = infoTechnicalServer.players;
-            document.getElementById('maxPlayerInfo').innerText = infoTechnicalServer.maxplayers;
+            if (infoTechnicalServer.why === "Succes Request"){
+
+                if (infoTechnicalServer.data.playerConnected){
+                    document.getElementById('inPlayerInfo').innerText = infoTechnicalServer.data.playerConnected;
+                } else {
+                    document.getElementById('inPlayerInfo').innerText = "??";
+                }
+                if (infoTechnicalServer.data.playerMax){
+                    document.getElementById('maxPlayerInfo').innerText = infoTechnicalServer.data.playerMax;
+                } else {
+                    document.getElementById('maxPlayerInfo').innerText = "??" ;
+                }
+
+            } else {
+
+                document.getElementById('inPlayerInfo').innerText = "??";
+                document.getElementById('maxPlayerInfo').innerText = "??";
+            }
+            // document.getElementById('inPlayerInfo').innerText = infoTechnicalServer.players;
+            // document.getElementById('maxPlayerInfo').innerText = infoTechnicalServer.maxplayers;
 
         }).catch(function(error) {
 
@@ -361,7 +379,8 @@
     // RECUPERATION INFO TECHNIQUE SERVEUR
     function getInfoTechnicalServer(ipServerFaction) {
         return new Promise((resolve, reject) => {
-            fetch('https://mcapi.xdefcon.com/server/'+ipServerFaction+'/full/json')
+            // fetch('https://mcapi.xdefcon.com/server/'+ipServerFaction+'/full/json')
+            fetch('http://127.0.0.1:8000/stats')
                 .then(function(response) {
                     return response.json();
                 })
