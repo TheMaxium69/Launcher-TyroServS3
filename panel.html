@@ -223,7 +223,7 @@
 
 
     // Declancher le ping
-    let ipServerFaction = "vps207.tyrolium.fr";
+    let ipServerFaction = "vps214.tyrolium.fr";
 
     document.getElementById('ping').addEventListener('mouseenter', function() {
         var pingValue;
@@ -247,6 +247,7 @@
     // Aficher le nombre de joueur sur le serveur
     getInfoTechnicalServer(ipServerFaction)
         .then(function(infoTechnicalServer) {
+            console.log(infoTechnicalServer);
             document.getElementById('inPlayerInfo').innerText = infoTechnicalServer.players;
             document.getElementById('maxPlayerInfo').innerText = infoTechnicalServer.maxplayers;
 
