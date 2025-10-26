@@ -2,7 +2,7 @@ const {app, BrowserWindow, ipcMain, dialog} = require('electron')
 const path = require('path')
 const { Client, Authenticator } = require('minecraft-launcher-core');
 const fs = require("fs");
-const launcher = new Client();
+let launcher = null;
 
 
 
@@ -374,6 +374,9 @@ ipcMain.on("login", (event, data) => {
                         min: settingsContenu.RamMin + "M",
                     },
                 }
+
+                launcher = new Client();
+
                 launcher.launch(options);
 
                 launcher.on('debug', (e) => {
@@ -407,6 +410,9 @@ ipcMain.on("login", (event, data) => {
                 });
                 launcher.on('close', (e) => {
                     console.log("close", e)
+
+                    //vider l'instance de minecraft
+                    launcher = null;
 
                     mainWindow.show();
                     event.sender.send("stopping")
