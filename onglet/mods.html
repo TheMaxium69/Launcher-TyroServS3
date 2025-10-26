@@ -70,43 +70,6 @@
 <!--            </div>-->
 <!--        </article>-->
 
-<!--        <article class="article-mods">-->
-<!--            <div class="info-mod">-->
-<!--                <h2 class="mods-name">ArmorPlus[11.28.0.69]</h2>-->
-<!--            </div>-->
-<!--        </article>-->
-
-<!--        <article class="article-mods">-->
-<!--            <div class="info-mod">-->
-<!--                <h2 class="mods-name">CustomMainMenu[2.0.9.1]</h2>-->
-<!--            </div>-->
-<!--        </article>-->
-
-<!--        <article class="article-mods">-->
-<!--            <div class="info-mod">-->
-<!--                <h2 class="mods-name">CustomMainMenu[2.0.9.1]</h2>-->
-<!--            </div>-->
-<!--        </article>-->
-
-<!--        <article class="article-mods">-->
-<!--            <div class="info-mod">-->
-<!--                <h2 class="mods-name">Ironchest[7.0.72.847]</h2>-->
-<!--            </div>-->
-<!--        </article>-->
-
-<!--        <article class="article-mods">-->
-<!--            <div class="info-mod">-->
-<!--                <h2 class="mods-name">Patchouli[1.0-23.6]</h2>-->
-<!--            </div>-->
-<!--        </article>-->
-
-<!--        <article class="article-mods">-->
-<!--            <div class="info-mod">-->
-<!--                <h2 class="mods-name">TheDragonLib[5.3.0]</h2>-->
-<!--            </div>-->
-<!--        </article>-->
-
-
     </section>
 
 
@@ -191,10 +154,17 @@
             // Ajoutez les liens du mod
             var linkMod = document.createElement("div");
             linkMod.className = "link-mod";
-            if (mod.id === 3){
-                linkMod.innerHTML = `<div onclick="launchSite('`+ mod.btnInfo.link +`')" class="btn-link-mod">Site Web <i class="ri-external-link-line"></i></div>`;
-            } else {
-                linkMod.innerHTML = `<div onclick="launchSite('`+ mod.btnInfo.curseforge +`')" class="btn-link-mod">CurseForge <i class="ri-external-link-line"></i></div><div onclick="launchSite('`+ mod.btnInfo.github +`')" class="btn-link-mod">GitHub <i class="ri-external-link-line"></i></div>`;
+            if (mod.btnInfo.link !== undefined){
+                linkMod.innerHTML = linkMod.innerHTML + `<div onclick="launchSite('`+ mod.btnInfo.link +`')" class="btn-link-mod">Site Web <i class="ri-external-link-line"></i></div>`;
+            }
+
+            if (mod.btnInfo.curseforge !== undefined){
+                linkMod.innerHTML = linkMod.innerHTML + `<div onclick="launchSite('`+ mod.btnInfo.curseforge +`')" class="btn-link-mod">CurseForge <i class="ri-external-link-line"></i></div>`;
+            }
+
+            if (mod.btnInfo.github !== undefined){
+                linkMod.innerHTML =  linkMod.innerHTML + `<div onclick="launchSite('`+ mod.btnInfo.github +`')" class="btn-link-mod">GitHub <i class="ri-external-link-line"></i></div>`;
+
             }
              infoMod.appendChild(linkMod);
 
@@ -282,10 +252,17 @@
             // Ajoutez les liens du mod
             var linkMod = document.createElement("div");
             linkMod.className = "link-mod";
-            if (mod.id === 3) {
-                linkMod.innerHTML = `<div onclick="launchSite('` + mod.btnInfo.link + `')" class="btn-link-mod">Site Web <i class="ri-external-link-line"></i></div>`;
-            } else {
-                linkMod.innerHTML = `<div onclick="launchSite('` + mod.btnInfo.curseforge + `')" class="btn-link-mod">CurseForge <i class="ri-external-link-line"></i></div><div onclick="launchSite('` + mod.btnInfo.github + `')" class="btn-link-mod">GitHub <i class="ri-external-link-line"></i></div>`;
+            if (mod.btnInfo.link !== undefined){
+                linkMod.innerHTML = linkMod.innerHTML + `<div onclick="launchSite('`+ mod.btnInfo.link +`')" class="btn-link-mod">Site Web <i class="ri-external-link-line"></i></div>`;
+            }
+
+            if (mod.btnInfo.curseforge !== undefined){
+                linkMod.innerHTML = linkMod.innerHTML + `<div onclick="launchSite('`+ mod.btnInfo.curseforge +`')" class="btn-link-mod">CurseForge <i class="ri-external-link-line"></i></div>`;
+            }
+
+            if (mod.btnInfo.github !== undefined){
+                linkMod.innerHTML =  linkMod.innerHTML + `<div onclick="launchSite('`+ mod.btnInfo.github +`')" class="btn-link-mod">GitHub <i class="ri-external-link-line"></i></div>`;
+
             }
             infoMod.appendChild(linkMod);
 
