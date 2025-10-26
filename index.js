@@ -1,6 +1,7 @@
 const {app, BrowserWindow, ipcMain, dialog} = require('electron')
 const path = require('path')
 const { Client, Authenticator } = require('minecraft-launcher-core');
+const request = require('request');
 const fs = require("fs");
 let launcher = null;
 
@@ -77,7 +78,7 @@ ipcMain.on('getUserConnected', (event) => {
 });
 
 // CONNECTION ET LANCEMENT DU PANEL
-ipcMain.on("connected", (event, data) => {
+ipcMain.on("connected", async (event, data) => {
 
     // SET LA VARIABLE UTILISATEUR
     userConnected = data.userTyroServLoad;
@@ -133,47 +134,6 @@ ipcMain.on("connected", (event, data) => {
         console.log('Le fichier Launcher_Setting.json existe deja.');
     }
 
-    let optionnalMods = [
-        {
-            "id":1,
-            "jar":"Schematica[1.8.0.169]",
-            "activate":false,
-            "dependence":[
-                "LunatriusCore[1.2.0.42]",
-            ]
-        },
-        {
-            "id":2,
-            "jar":"Neat[1.4-17]",
-            "activate":false,
-        },
-        {
-            "id":3,
-            "jar":"OptiFine[HD_U_E3]",
-            "activate":true,
-        },
-        {
-            "id":4,
-            "jar":"Jei[4.16.1.1012]",
-            "activate":true,
-            "dependence":[
-                "GeckolibForge[3.0.31]",
-            ]
-        }
-    ]
-
-    let modsFile = path.join(app.getPath("appData"), urlInstanceLauncher + "Launcher_Mods.json");
-
-    if (!fs.existsSync(modsFile)) {
-        fs.appendFile(modsFile, JSON.stringify(optionnalMods), function (err) {
-            if (err)
-                throw err;
-            console.log('Fichier Launcher_Mods.json cree !');
-        });
-    } else {
-        console.log('Le fichier Launcher_Mods.json existe deja.');
-    }
-
     let saveLauncher =
     {
         "username": data.userTyroServLoad.useritium.username,
@@ -192,7 +152,26 @@ ipcMain.on("connected", (event, data) => {
         console.log('Le fichier Launcher_Cache.json existe deja.');
     }
 
+    await (async () => {
+        let modsFile = path.join(app.getPath("appData"), urlInstanceLauncher + "Launcher_Mods.json");
 
+        // Vérifie d'abord si le fichier existe
+        if (fs.existsSync(modsFile)) {
+            console.log('Le fichier Launcher_Mods.json existe deja.');
+            return; // Pas besoin de continuer
+        }
+
+        // Sinon, on télécharge les mods
+        // console.log('Fichier Launcher_Mods.json manquant, récupération en cours...');
+        try {
+            let optionnalMods = await fetchOptionnalMods();
+
+            fs.writeFileSync(modsFile, JSON.stringify(optionnalMods, null, 2));
+            console.log('Fichier Launcher_Mods.json cree !');
+        } catch (err) {
+            console.error("Erreur lors de la creation des Launcher_Mods.json :", err);
+        }
+    })();
 
 
 });
@@ -227,212 +206,250 @@ ipcMain.on("login", (event, data) => {
         getModsPromise.then((modsFile) => {
             console.log(modsFile);
 
-            // BONNE SELECTION DES MODS
-            modsFile.forEach(modsOne => {
+            // Vider le dossier mods avant de démarré
+            const clearModsFolder = new Promise((resolve, reject) => {
+                const modsFolderPath = path.join(app.getPath("appData"), instanceChoose + "/mods");
+                if (fs.existsSync(modsFolderPath)) {
+                    const files = fs.readdirSync(modsFolderPath);
+                    for (const file of files) {
+                        const curPath = path.join(modsFolderPath, file);
+                        try {
+                            fs.unlinkSync(curPath);
+                        } catch (err) {
+                            reject(new Error("Instance deja en cours d'execution. Impossible de vider les mods."));
+                            return; // ← arrête ici et empêche le resolve
+                        }
+                    }
+                    console.log("Dossier mods vide.");
+                    resolve();
+                } else {
+                    fs.mkdirSync(modsFolderPath, { recursive: true });
+                    console.log("Dossier mods cree.");
+                    resolve();
+                }
+            });
 
-                let modsFileJar = path.join(app.getPath("appData"),  instanceChoose + "/mods/" + modsOne.jar + ".jar");
-                let modsFileDeJar = path.join(app.getPath("appData"),  instanceChoose + "/mods/" + modsOne.jar + ".dejar");
-                if (!fs.existsSync(modsFileJar) && fs.existsSync(modsFileDeJar) && modsOne.activate === true) {
-                    // SWITCH VERS .jar
-                    fs.rename(modsFileDeJar, modsFileJar, (err) => {
+            clearModsFolder.then(() => {
+
+                // RECUPERATION DU FICHIER SETTINGS
+                let settingsContenu;
+                const getSettingsPromise = new Promise((resolve, reject) => {
+                    let settingFile = path.join(app.getPath("appData"), urlInstanceLauncher + "Launcher_Setting.json");
+                    fs.readFile(settingFile, 'utf8', (err, data) => {
                         if (err) {
-                            console.error('Erreur lors du renommage du fichier :', err);
+                            reject(new Error("ERREUR AVEC LE FICHIER"))
+                            return;
+                        }
+                        resolve(JSON.parse(data));
+                    });
+                });
+
+                getSettingsPromise.then((settingsFile) => {
+                    settingsContenu = settingsFile;
+                    console.log(settingsFile);
+
+                    // CREER LE DOSSIER DE L'INSTANCE MC
+                    const urlAsCreate = app.getPath("appData") + instanceChoose;
+                    fs.mkdir(urlAsCreate, (err) => {
+                        if (err) {
+                            if (err.code === "EEXIST")
+                                console.log("Le Dossier 'Launcher' a deja ete cree");
                         } else {
-                            console.log('Le fichier a ete renomme avec succes.');
+                            console.log("Repertoire 'Launcher' cree avec succes.");
                         }
                     });
 
-                    if (modsOne.dependence){
+                    // CREER LES FICHIER TOKEN D'USERITIUM
+                    if (data.hereServer !== "vanilla"){
+                        let usercachetyroservFile = path.join(app.getPath("appData"), instanceChoose + "usercachetyroserv.json");
+                        let usercachetyroserva2fFile = path.join(app.getPath("appData"), instanceChoose + "usercachetyroserva2f.json");
 
-                        modsOne.dependence.forEach(dependence => {
-                            let dependenceFileJar = path.join(app.getPath("appData"),  instanceChoose + "/mods/" + dependence + ".jar");
-                            let dependenceFileDeJar = path.join(app.getPath("appData"),  instanceChoose + "/mods/" + dependence + ".dejar");
-
-                            fs.rename(dependenceFileDeJar, dependenceFileJar, (err) => {
-                                if (err) {
-                                    console.error('Erreur lors du renommage du fichier :', err);
-                                } else {
-                                    console.log('Le fichier a ete renomme avec succes.');
-                                }
-                            });
-
-                        })
+                        fs.appendFile(usercachetyroservFile, data.token_tyroserv, function (err) { if (err) throw err; console.log('Fichier usercachetyroserv.json cree !');});
+                        fs.appendFile(usercachetyroserva2fFile, data.token_tyroserv_a2f, function (err) { if (err) throw err; console.log('Fichier usercachetyroserva2f cree !');});
                     }
-                } else if (fs.existsSync(modsFileJar) && !fs.existsSync(modsFileDeJar) && modsOne.activate === false){
-                    // SWITCH VERS .dejar
-                    fs.rename(modsFileJar, modsFileDeJar, (err) => {
-                        if (err) {
-                            console.error('Erreur lors du renommage du fichier :', err);
-                        } else {
-                            console.log('Le fichier a ete renomme avec succes.');
+
+                    // CREER L'USER MC
+                    let UserTest = {
+                        access_token: '',
+                        client_token: '',
+                        uuid: data.uuid_tyroserv,
+                        name: data.username_tyroserv,
+                        user_properties: '{}',
+                        meta: {
+                            // type: "msa",
+                            type: "mojang",
+                            demo: false,
+                            xuid: '',
+                            clientId: ''
+                        }
+                    }
+
+
+                    // CREER LES OPTIONS MC
+                    let options = {
+                        clientPackage: "http://tyrolium.fr/Download/TyroServS3/instance.zip", //null,
+                        authorization: UserTest,
+                        // https://wiki.vg/Launching_the_game
+                        customLaunchArgs: [
+                            "--useritiumTokenPrivate ",
+                            data.token_tyroserv,
+                            "--useritiumTokenA2F ",
+                            data.token_tyroserv_a2f,
+                            "--width",
+                            settingsContenu.width,
+                            "--height",
+                            settingsContenu.height,
+                            // "--server",
+                            // "vps207.tyrolium.fr"
+                        ],
+                        root: path.join(app.getPath("appData"), instanceChoose),
+                        // javaPath: `C:/Users/mxmto/AppData/Roaming/.minecraft/runtime/jre-legacy/windows/jre-legacy/bin/javaw.exe`,
+                        // javaPath: `C:/Users/mxmto/AppData/Roaming/.minecraft/runtime/java-runtime-gamma/windows/java-runtime-gamma/bin/javaw.exe`,
+                        version: {
+                            number: "1.12.2",
+                            type: "release",
+                            // custom: "Forge 1.12.2"
+                        },
+                        forge:path.join(app.getPath("appData"), instanceChoose + "Launch.jar"),
+                        memory: {
+                            max: settingsContenu.RamMax + "M",
+                            min: settingsContenu.RamMin + "M",
+                        },
+                    }
+
+                    launcher = new Client();
+
+                    launcher.launch(options);
+
+                    launcher.on('debug', (e) => {
+                        console.log("debug", e)
+                        event.sender.send("lancement", e)
+
+                        // UPDATE DU REACH PRESENCE
+                        if (e === "[MCLC]: Set launch options") {
+                            if (data.hereServer === "minigame"){
+                                setActivity('Joue à TyroServ Mini-Jeux', data.username_tyroserv);
+                            } else if (data.hereServer === "vanilla"){
+                                setActivity('Joue à Minecraft Vanilla', data.username_tyroserv);
+                            } else {
+                                setActivity('Joue à TyroServ PVP/Faction', data.username_tyroserv);
+                            }
                         }
                     });
+                    launcher.on('data', (e) => {
+                        console.log("data", e)
 
-                    if (modsOne.dependence){
-
-                        modsOne.dependence.forEach(dependence => {
-                            let dependenceFileJar = path.join(app.getPath("appData"),  instanceChoose + "/mods/" + dependence + ".jar");
-                            let dependenceFileDeJar = path.join(app.getPath("appData"),  instanceChoose + "/mods/" + dependence + ".dejar");
-
-                            fs.rename(dependenceFileJar, dependenceFileDeJar, (err) => {
-                                if (err) {
-                                    console.error('Erreur lors du renommage du fichier :', err);
-                                } else {
-                                    console.log('Le fichier a ete renomme avec succes.');
-                                }
-                            });
-
-                        })
-                    }
-                }
-
-            });
-
-
-            // RECUPERATION DU FICHIER SETTINGS
-            let settingsContenu;
-            const getSettingsPromise = new Promise((resolve, reject) => {
-                let settingFile = path.join(app.getPath("appData"), urlInstanceLauncher + "Launcher_Setting.json");
-                fs.readFile(settingFile, 'utf8', (err, data) => {
-                    if (err) {
-                        reject(new Error("ERREUR AVEC LE FICHIER"))
-                        return;
-                    }
-                    resolve(JSON.parse(data));
-                });
-            });
-
-            getSettingsPromise.then((settingsFile) => {
-                settingsContenu = settingsFile;
-                console.log(settingsFile);
-
-                // CREER LE DOSSIER DE L'INSTANCE MC
-                const urlAsCreate = app.getPath("appData") + instanceChoose;
-                fs.mkdir(urlAsCreate, (err) => {
-                    if (err) {
-                        if (err.code === "EEXIST")
-                            console.log("Le Dossier 'Launcher' a deja ete cree");
-                    } else {
-                        console.log("Repertoire 'Launcher' cree avec succes.");
-                    }
-                });
-
-                // CREER LES FICHIER TOKEN D'USERITIUM
-                if (data.hereServer !== "vanilla"){
-                    let usercachetyroservFile = path.join(app.getPath("appData"), instanceChoose + "usercachetyroserv.json");
-                    let usercachetyroserva2fFile = path.join(app.getPath("appData"), instanceChoose + "usercachetyroserva2f.json");
-
-                    fs.appendFile(usercachetyroservFile, data.token_tyroserv, function (err) { if (err) throw err; console.log('Fichier usercachetyroserv.json cree !');});
-                    fs.appendFile(usercachetyroserva2fFile, data.token_tyroserv_a2f, function (err) { if (err) throw err; console.log('Fichier usercachetyroserva2f cree !');});
-                }
-
-                // CREER L'USER MC
-                let UserTest = {
-                    access_token: '',
-                    client_token: '',
-                    uuid: data.uuid_tyroserv,
-                    name: data.username_tyroserv,
-                    user_properties: '{}',
-                    meta: {
-                        // type: "msa",
-                        type: "mojang",
-                        demo: false,
-                        xuid: '',
-                        clientId: ''
-                    }
-                }
-
-
-                // CREER LES OPTIONS MC
-                let options = {
-                    clientPackage: "http://tyrolium.fr/Download/TyroServS3/instance.zip", //null,
-                    authorization: UserTest,
-                    // https://wiki.vg/Launching_the_game
-                    customLaunchArgs: [
-                        "--useritiumTokenPrivate ",
-                        data.token_tyroserv,
-                        "--useritiumTokenA2F ",
-                        data.token_tyroserv_a2f,
-                        "--width",
-                        settingsContenu.width,
-                        "--height",
-                        settingsContenu.height,
-                        // "--server",
-                        // "vps207.tyrolium.fr"
-                    ],
-                    root: path.join(app.getPath("appData"), instanceChoose),
-                    // javaPath: `C:/Users/mxmto/AppData/Roaming/.minecraft/runtime/jre-legacy/windows/jre-legacy/bin/javaw.exe`,
-                    // javaPath: `C:/Users/mxmto/AppData/Roaming/.minecraft/runtime/java-runtime-gamma/windows/java-runtime-gamma/bin/javaw.exe`,
-                    version: {
-                        number: "1.12.2",
-                        type: "release",
-                        // custom: "Forge 1.12.2"
-                    },
-                    forge:path.join(app.getPath("appData"), instanceChoose + "Launch.jar"),
-                    memory: {
-                        max: settingsContenu.RamMax + "M",
-                        min: settingsContenu.RamMin + "M",
-                    },
-                }
-
-                launcher = new Client();
-
-                launcher.launch(options);
-
-                launcher.on('debug', (e) => {
-                    console.log("debug", e)
-                    event.sender.send("lancement", e)
-
-                    // UPDATE DU REACH PRESENCE
-                    if (e === "[MCLC]: Set launch options") {
-                        if (data.hereServer === "minigame"){
-                            setActivity('Joue à TyroServ Mini-Jeux', data.username_tyroserv);
-                        } else if (data.hereServer === "vanilla"){
-                            setActivity('Joue à Minecraft Vanilla', data.username_tyroserv);
-                        } else {
-                            setActivity('Joue à TyroServ PVP/Faction', data.username_tyroserv);
+                        if (settingsContenu.showLauncher === false){
+                            mainWindow.hide();
                         }
-                    }
-                });
-                launcher.on('data', (e) => {
-                    console.log("data", e)
+                    });
+                    launcher.on('progress', (e) => {
+                        console.log("progress", e);
+                        event.sender.send("progression", e)
+                    });
+                    launcher.on('arguments', (e) => {
+                        console.log("arguments", e)
+                    });
+                    launcher.on('close', (e) => {
+                        console.log("close", e)
 
-                    if (settingsContenu.showLauncher === false){
-                        mainWindow.hide();
-                    }
-                });
-                launcher.on('progress', (e) => {
-                    console.log("progress", e);
-                    event.sender.send("progression", e)
-                });
-                launcher.on('arguments', (e) => {
-                    console.log("arguments", e)
-                });
-                launcher.on('close', (e) => {
-                    console.log("close", e)
+                        //vider l'instance de minecraft
+                        launcher = null;
 
-                    //vider l'instance de minecraft
-                    launcher = null;
+                        mainWindow.show();
+                        event.sender.send("stopping")
 
-                    mainWindow.show();
-                    event.sender.send("stopping")
+                        // UPDATE DU REACH PRESENCE
+                        setActivity('Navigue sur le Launcher', data.username_tyroserv);
+                    });
+                    launcher.on('package-extract', (e) => {
+                        console.log("package-extract", e)
 
-                    // UPDATE DU REACH PRESENCE
-                    setActivity('Navigue sur le Launcher', data.username_tyroserv);
+                        if (e.toString() === "true"){
+
+                            // BONNE SELECTION DES MODS
+                            modsFile.forEach(modsOne => {
+
+                                let modsFileJar = path.join(app.getPath("appData"),  instanceChoose + "/mods/" + modsOne.jar + ".jar");
+                                let modsFileDeJar = path.join(app.getPath("appData"),  instanceChoose + "/mods/" + modsOne.jar + ".dejar");
+                                if (!fs.existsSync(modsFileJar) && fs.existsSync(modsFileDeJar) && modsOne.activate === true) {
+                                    // SWITCH VERS .jar
+                                    fs.rename(modsFileDeJar, modsFileJar, (err) => {
+                                        if (err) {
+                                            console.error('Erreur lors du renommage du fichier :', err);
+                                        } else {
+                                            console.log('Le fichier a ete renomme avec succes.');
+                                        }
+                                    });
+
+                                    if (modsOne.dependence){
+
+                                        modsOne.dependence.forEach(dependence => {
+                                            let dependenceFileJar = path.join(app.getPath("appData"),  instanceChoose + "/mods/" + dependence + ".jar");
+                                            let dependenceFileDeJar = path.join(app.getPath("appData"),  instanceChoose + "/mods/" + dependence + ".dejar");
+
+                                            fs.rename(dependenceFileDeJar, dependenceFileJar, (err) => {
+                                                if (err) {
+                                                    console.error('Erreur lors du renommage du fichier :', err);
+                                                } else {
+                                                    console.log('Le fichier a ete renomme avec succes.');
+                                                }
+                                            });
+
+                                        })
+                                    }
+                                } else if (fs.existsSync(modsFileJar) && !fs.existsSync(modsFileDeJar) && modsOne.activate === false){
+                                    // SWITCH VERS .dejar
+                                    fs.rename(modsFileJar, modsFileDeJar, (err) => {
+                                        if (err) {
+                                            console.error('Erreur lors du renommage du fichier :', err);
+                                        } else {
+                                            console.log('Le fichier a ete renomme avec succes.');
+                                        }
+                                    });
+
+                                    if (modsOne.dependence){
+
+                                        modsOne.dependence.forEach(dependence => {
+                                            let dependenceFileJar = path.join(app.getPath("appData"),  instanceChoose + "/mods/" + dependence + ".jar");
+                                            let dependenceFileDeJar = path.join(app.getPath("appData"),  instanceChoose + "/mods/" + dependence + ".dejar");
+
+                                            fs.rename(dependenceFileJar, dependenceFileDeJar, (err) => {
+                                                if (err) {
+                                                    console.error('Erreur lors du renommage du fichier :', err);
+                                                } else {
+                                                    console.log('Le fichier a ete renomme avec succes.');
+                                                }
+                                            });
+
+                                        })
+                                    }
+                                }
+
+                            });
+                        }
+
+                    });
+                    launcher.on('download', (e) => {
+                        console.log("download", e)
+                    });
+                    launcher.on('download-status', (e) => {
+                        console.log("download-status", e)
+                        event.sender.send("progressionDownload", e)
+                    });
+
+                    // Launch -> Del All Mod -> Install Instance -> DeJar & Jar (activate) -> Launch Game
+
+
+                }).catch((error) => {
+                    console.error(error);
                 });
-                launcher.on('package-extract', (e) => {
-                    console.log("package-extract", e)
-                });
-                launcher.on('download', (e) => {
-                    console.log("download", e)
-                });
-                launcher.on('download-status', (e) => {
-                    // console.log("download-status", e)
-                    event.sender.send("progressionDownload", e)
-                });
+
+
             }).catch((error) => {
                 console.error(error);
             });
+
         }).catch((error) => {
             console.error(error);
         });
@@ -636,6 +653,49 @@ ipcMain.on("deconnexionUser", (event) =>{
 
 });
 
+
+ipcMain.on("getModsLock", (event) => {
+
+    console.log("getModsLock COUCOU")
+    let lockMods = [];
+
+    request('https://tyrolium.fr/Download/TyroServS3/launcher/mod/lock.php', { json: true }, (err, res, body) => {
+        if (err) {
+            console.error('Erreur lors de la récupération des mods lock:', err);
+            event.sender.send("setModsLock", []); // Envoyer un tableau vide en cas d'erreur
+            return;
+        }
+        if (res.statusCode !== 200) {
+            console.error('Erreur HTTP lors de la récupération des mods lock:', res.statusCode);
+            event.sender.send("setModsLock", []);
+            return;
+        }
+        lockMods = body;
+        event.sender.send("setModsLock", lockMods);
+    });
+
+
+})
+
+ipcMain.on("getModsOptionnal", async (event) => {
+    try {
+        const mods = await fetchOptionnalMods();
+        event.sender.send("setModsOptionnal", mods);
+    } catch (err) {
+        console.error("Erreur lors de la récupération des mods optionnal:", err);
+        event.sender.send("setModsOptionnal", []);
+    }
+});
+
+function fetchOptionnalMods() {
+    return new Promise((resolve, reject) => {
+        request('https://tyrolium.fr/Download/TyroServS3/launcher/mod/optional.php', { json: true }, (err, res, body) => {
+            if (err) return reject(err);
+            if (res.statusCode !== 200) return reject(new Error('HTTP ' + res.statusCode));
+            resolve(body);
+        });
+    });
+}
 
 // DISCORD
 
