@@ -385,8 +385,8 @@ ipcMain.on("login", (event, data) => {
                                     if (modsOne.dependence){
 
                                         modsOne.dependence.forEach(dependence => {
-                                            let dependenceFileJar = path.join(app.getPath("appData"),  instanceChoose + "/mods/" + dependence + ".jar");
-                                            let dependenceFileDeJar = path.join(app.getPath("appData"),  instanceChoose + "/mods/" + dependence + ".dejar");
+                                            let dependenceFileJar = path.join(app.getPath("appData"),  instanceChoose + "/mods/" + dependence.jar + ".jar");
+                                            let dependenceFileDeJar = path.join(app.getPath("appData"),  instanceChoose + "/mods/" + dependence.jar + ".dejar");
 
                                             fs.rename(dependenceFileDeJar, dependenceFileJar, (err) => {
                                                 if (err) {

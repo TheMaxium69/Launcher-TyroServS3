@@ -16,7 +16,7 @@ function authUseritium (email, mdp) {
         var reponse = JSON.parse(myRequest.responseText);
 
         if(reponse['status'] == "true"){
-          
+
           isConnect(reponse, email, mdp);
 
         } else { notif(reponse['status'], reponse['why']); }
@@ -82,9 +82,9 @@ function startMinecraft (userTyroServLoad, hereServer){
 
   notif("true", message);
 
-  let uuid_tyroserv = "505874d8-f150-4685-add1-041453f6d713"
+  let uuid_tyroserv = "00000000-0000-0000-0000-000000000000"
   ipc.send("login", {hereServer: hereServer, username_tyroserv: userTyroServLoad['pseudo'], uuid_tyroserv: uuid_tyroserv, token_tyroserv: userTyroServLoad['token'], token_tyroserv_a2f: userTyroServLoad['tokenTwo']})
-    
+
 }
 
 function firstConnexion(pseudo, email, mdp){
