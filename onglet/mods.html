@@ -143,7 +143,11 @@
             // Ajoutez le nom et la version du mod
             var nomEtVersion = document.createElement("h2");
             nomEtVersion.className = "mods-name";
-            nomEtVersion.innerHTML = mod.nom + " <span>(" + mod.version + ")</span>";
+            if (mod.versionAlias){
+                nomEtVersion.innerHTML = mod.nom + " <span>(" + mod.versionAlias + ")</span>";
+            } else {
+                nomEtVersion.innerHTML = mod.nom + " <span>(" + mod.version + ")</span>";
+            }
             infoMod.appendChild(nomEtVersion);
 
             // Ajoutez l'auteur du mod
@@ -241,7 +245,11 @@
             // Ajoutez le nom et la version du mod
             var nomEtVersion = document.createElement("h2");
             nomEtVersion.className = "mods-name";
-            nomEtVersion.innerHTML = mod.nom + " <span>(" + mod.version + ")</span>";
+            if (mod.versionAlias){
+                nomEtVersion.innerHTML = mod.nom + " <span>(" + mod.versionAlias + ")</span>";
+            } else {
+                nomEtVersion.innerHTML = mod.nom + " <span>(" + mod.version + ")</span>";
+            }
             infoMod.appendChild(nomEtVersion);
 
             // Ajoutez l'auteur du mod

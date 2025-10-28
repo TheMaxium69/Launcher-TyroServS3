@@ -659,7 +659,7 @@ ipcMain.on("getModsLock", (event) => {
     console.log("getModsLock COUCOU")
     let lockMods = [];
 
-    request('https://tyrolium.fr/Download/TyroServS3/launcher/mod/lock.php', { json: true }, (err, res, body) => {
+    request('https://tyrolium.fr/Download/TyroServS3/launcher/mod/get.php?t=lock', { json: true }, (err, res, body) => {
         if (err) {
             console.error('Erreur lors de la récupération des mods lock:', err);
             event.sender.send("setModsLock", []); // Envoyer un tableau vide en cas d'erreur
@@ -689,7 +689,7 @@ ipcMain.on("getModsOptionnal", async (event) => {
 
 function fetchOptionnalMods() {
     return new Promise((resolve, reject) => {
-        request('https://tyrolium.fr/Download/TyroServS3/launcher/mod/optional.php', { json: true }, (err, res, body) => {
+        request('https://tyrolium.fr/Download/TyroServS3/launcher/mod/get.php?t=optional', { json: true }, (err, res, body) => {
             if (err) return reject(err);
             if (res.statusCode !== 200) return reject(new Error('HTTP ' + res.statusCode));
             resolve(body);
