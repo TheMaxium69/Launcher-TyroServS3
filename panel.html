@@ -223,7 +223,7 @@
 
 
     // Declancher le ping
-    let ipServerFaction = "vps214.tyrolium.fr";
+    let ipServerFaction = "vps212.tyrolium.fr";
 
     document.getElementById('ping').addEventListener('mouseenter', function() {
         var pingValue;
@@ -396,7 +396,7 @@
     // RECUPERATION DES INFOS DU SERVEUR
     function getInfoServer(pseudo) {
         return new Promise((resolve, reject) => {
-            fetch('http://vps214.tyrolium.fr/api-tyroserv/?pseudo=' + pseudo)
+            fetch('https:///api-minecraft.tyroserv.fr/?pseudo=' + pseudo)
                 .then(function(response) {
                     return response.json();
                 })
