@@ -19,7 +19,7 @@ let userConnected = undefined;
 function createWindow () {
    mainWindow = new BrowserWindow({
     frame: false,
-    title: "TyroServ Launcher - 0.1.6",
+    title: "TyroServ Launcher - 0.1.7",
     width: 1318,
     height: 710,
     resizable: false,

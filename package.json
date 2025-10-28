@@ -1,11 +1,14 @@
 {
   "name": "tyroserv-launcher",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "Launcher TyroServ",
   "main": "index.js",
   "scripts": {
     "start": "electron .",
     "build": "electron-builder"
+  },
+  "build": {
+    "npmRebuild": false
   },
   "icon": "asset/logo.png",
   "author": "Maxime Tournier",
