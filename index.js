@@ -654,12 +654,34 @@ ipcMain.on("deconnexionUser", (event) =>{
 });
 
 
+ipcMain.on("getInfoLauncher", (event) => {
+
+    let infoLauncher = [];
+
+    request('https://tyrolium.fr/Download/TyroServS3/launcher/index.php?t=launcher', { json: true }, (err, res, body) => {
+        if (err) {
+            console.error('Erreur lors de la récupération des info launcher:', err);
+            event.sender.send("setInfoLauncher", []); // Envoyer un tableau vide en cas d'erreur
+            return;
+        }
+        if (res.statusCode !== 200) {
+            console.error('Erreur HTTP lors de la récupération des info launcher:', res.statusCode);
+            event.sender.send("setInfoLauncher", []);
+            return;
+        }
+        infoLauncher = body;
+        event.sender.send("setInfoLauncher", infoLauncher);
+    });
+
+
+})
+
 ipcMain.on("getModsLock", (event) => {
 
-    console.log("getModsLock COUCOU")
+    // console.log("getModsLock COUCOU")
     let lockMods = [];
 
-    request('https://tyrolium.fr/Download/TyroServS3/launcher/mod/get.php?t=lock', { json: true }, (err, res, body) => {
+    request('https://tyrolium.fr/Download/TyroServS3/launcher/index.php?t=lock', { json: true }, (err, res, body) => {
         if (err) {
             console.error('Erreur lors de la récupération des mods lock:', err);
             event.sender.send("setModsLock", []); // Envoyer un tableau vide en cas d'erreur
@@ -689,7 +711,7 @@ ipcMain.on("getModsOptionnal", async (event) => {
 
 function fetchOptionnalMods() {
     return new Promise((resolve, reject) => {
-        request('https://tyrolium.fr/Download/TyroServS3/launcher/mod/get.php?t=optional', { json: true }, (err, res, body) => {
+        request('https://tyrolium.fr/Download/TyroServS3/launcher/index.php?t=optional', { json: true }, (err, res, body) => {
             if (err) return reject(err);
             if (res.statusCode !== 200) return reject(new Error('HTTP ' + res.statusCode));
             resolve(body);

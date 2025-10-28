@@ -133,10 +133,14 @@
 
     <section id="setting-legal">
         <h3 class="sub-title">Légal</h3>
-        <p class="param-sub-name" style="margin: 0"><i class="ri-corner-down-right-fill"></i> TyroServ Saison : 3.0</p>
-        <p class="param-sub-name" style="margin: 0"><i class="ri-corner-down-right-fill"></i> TyroServ Launcher : 0.2.1</p>
-        <p class="param-sub-name" style="margin: 0"><i class="ri-corner-down-right-fill"></i> Useritium Version : V2.0</p>
-        <p class="param-sub-name" style="margin: 0"><i class="ri-corner-down-right-fill"></i> TyroMod Version : S3-0.2.0</p>
+        <div id="info-launcher">
+
+<!--            <p class="param-sub-name" style="margin: 0"><i class="ri-corner-down-right-fill"></i> TyroServ Saison : 3.0</p>-->
+<!--            <p class="param-sub-name" style="margin: 0"><i class="ri-corner-down-right-fill"></i> TyroServ Launcher : 0.2.1</p>-->
+<!--            <p class="param-sub-name" style="margin: 0"><i class="ri-corner-down-right-fill"></i> Useritium Version : V2.0</p>-->
+<!--            <p class="param-sub-name" style="margin: 0"><i class="ri-corner-down-right-fill"></i> TyroMod Version : S3-0.2.0</p>-->
+
+        </div>
 
         <div class="btn-legal">
             <button onclick="launchSite('https://tyroserv.fr/cgu')">CGU</button>
@@ -145,7 +149,7 @@
         </div>
 
         <p id="end-info">
-            Copyright © 2017-2024 All Rights Reserved by <b onclick="launchSite('https://tyrolium.fr')">Tyrolium</b>.<br>
+            Copyright © 2017-2026 All Rights Reserved by <b onclick="launchSite('https://tyrolium.fr')">Tyrolium</b>.<br>
             Non afflié à <span onclick="launchSite('https://www.minecraft.net')">Mojang</span> ou <span onclick="launchSite('https://www.microsoft.com/')">Microsoft</span>
         </p>
     </section>
@@ -283,6 +287,35 @@
     function launchSite(url){
         shell.openExternal(url);
     }
+
+
+    // SET INFO
+    var dataInfoLauncher = [];
+
+    ipcRenderer.send("getInfoLauncher");
+    ipcRenderer.on("setInfoLauncher", (event, data) => {
+        dataInfoLauncher = data;
+
+        // Sélectionnez l'élément HTML où vous souhaitez ajouter vos articles
+        var conteneurVersion = document.getElementById("info-launcher");
+
+        // Boucle forEach pour générer les articles dynamiquement
+        dataInfoLauncher.forEach(function (info) {
+            var nouvelArticle = document.createElement("p");
+            nouvelArticle.className = "param-sub-name";
+            nouvelArticle.style.margin = "0";
+
+            var icon = document.createElement("i");
+            icon.className = "ri-corner-down-right-fill";
+
+            nouvelArticle.appendChild(icon);
+            nouvelArticle.appendChild(document.createTextNode(" " + info.name + " : " + info.version));
+        
+            conteneurVersion.appendChild(nouvelArticle);
+        });
+
+    });
+
 
     // NOTIFICATION
     function notif(status, why){
