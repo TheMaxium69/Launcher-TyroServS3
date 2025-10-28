@@ -138,7 +138,7 @@
         <div id="downbar">
 
             <h3 id="player" class="btn" onclick="launchSite('https://fr.namemc.com/server/mc.tyrolium.fr')">
-                JOUEUR <div id="joueur"><p><span id="inPlayerInfo">0</span>/<span id="maxPlayerInfo">1000</span></p></div>
+                JOUEURS <div id="joueur"><p><span id="inPlayerInfo">0</span>/<span id="maxPlayerInfo">1000</span></p></div>
             </h3>
             <h3 id="minecraft" style="display: none" class="btn" onclick="launchSite('https://www.minecraft.net/')">
                 MINECRAFT
@@ -148,7 +148,7 @@
                 STATUS <div id="cercle"></div>
 
                 <div class="menu" id="menu">
-                    <span id="pingValue">0</span> ms
+                    <span id="pingValue">Chargement...</span>
                 </div>
             </h3>
 
@@ -223,7 +223,7 @@
 
 
     // Declancher le ping
-    let ipServerFaction = "vps212.tyrolium.fr";
+    let ipServerFaction = "mc.tyroserv.fr";
 
     document.getElementById('ping').addEventListener('mouseenter', function() {
         var pingValue;
@@ -232,14 +232,19 @@
 
                 if (infoTechnicalServer.ping){
                     pingValue = infoTechnicalServer.ping
+                    document.getElementById('pingValue').innerText = pingValue + " ms";
+                } else if (infoTechnicalServer.serverStatus && infoTechnicalServer.serverStatus === "offline") {
+                    pingValue = "Hors ligne"
+                    document.getElementById('pingValue').innerText = pingValue;
+                    document.getElementById('cercle').style.background = "red";
                 } else {
-                    pingValue = "3"
+                    pingValue = "Erreur";
+                    document.getElementById('pingValue').innerText = pingValue;
                 }
-                document.getElementById('pingValue').innerText = pingValue;
 
         }).catch(function(error) {
             console.log(error);
-            pingValue = "none";
+            pingValue = "Erreur";
             document.getElementById('pingValue').innerText = pingValue;
         });
     });
@@ -247,25 +252,19 @@
     // Aficher le nombre de joueur sur le serveur
     getInfoTechnicalServer(ipServerFaction)
         .then(function(infoTechnicalServer) {
-            console.log(infoTechnicalServer);
-            if (infoTechnicalServer.why === "Succes Request"){
+            // console.log(infoTechnicalServer);
 
-                if (infoTechnicalServer.data.playerConnected){
-                    document.getElementById('inPlayerInfo').innerText = infoTechnicalServer.data.playerConnected;
+                if (infoTechnicalServer.players || infoTechnicalServer.players === 0){
+                    document.getElementById('inPlayerInfo').innerText = infoTechnicalServer.players;
                 } else {
                     document.getElementById('inPlayerInfo').innerText = "??";
                 }
-                if (infoTechnicalServer.data.playerMax){
-                    document.getElementById('maxPlayerInfo').innerText = infoTechnicalServer.data.playerMax;
+                if (infoTechnicalServer.maxplayers){
+                    document.getElementById('maxPlayerInfo').innerText = infoTechnicalServer.maxplayers;
                 } else {
                     document.getElementById('maxPlayerInfo').innerText = "??" ;
                 }
 
-            } else {
-
-                document.getElementById('inPlayerInfo').innerText = "??";
-                document.getElementById('maxPlayerInfo').innerText = "??";
-            }
             // document.getElementById('inPlayerInfo').innerText = infoTechnicalServer.players;
             // document.getElementById('maxPlayerInfo').innerText = infoTechnicalServer.maxplayers;
 
@@ -283,7 +282,7 @@
     // Recevoir les données utilisateur du processus principal
     ipcRenderer.on('userConnected', (event, data) => {
 
-        console.log(data);
+        // console.log(data);
         userConnected = data;
 
         if (userConnected){
@@ -379,8 +378,8 @@
     // RECUPERATION INFO TECHNIQUE SERVEUR
     function getInfoTechnicalServer(ipServerFaction) {
         return new Promise((resolve, reject) => {
-            // fetch('https://mcapi.xdefcon.com/server/'+ipServerFaction+'/full/json')
-            fetch('http://127.0.0.1:8000/stats')
+            fetch('https://mcapi.xdefcon.com/server/'+ipServerFaction+'/full/json')
+            // fetch('http://127.0.0.1:8000/stats')
                 .then(function(response) {
                     return response.json();
                 })

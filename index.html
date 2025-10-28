@@ -36,8 +36,8 @@
                 <input type="password" placeholder="Mot de passe" id="password" />
                 <button id="connection">Se connecter</button>
             <div class="down-form">
-                <a target="_blank" href="https://tyrolium.fr">Mots de passe oublier</a>
-                <a href="">S'inscrire</a>
+                <a onclick="launchSite('https://useritium.fr/password.php?create=yes')">Mots de passe oublier ?</a><br>
+                <a style="text-decoration: underline;" onclick="launchSite('https://useritium.fr/connect.php')">S'inscrire !</a>
             </div>
             <img class="block-tyrolium" src="asset/block/tyrolium.png"/>
         </div>
@@ -80,6 +80,12 @@
             if(email && pass && pseudo){ 
                 authFirstConnexion(pseudo, email, pass);
             }
+        }
+
+        const { shell } = require('electron');
+        // LANCEMENT DE SITE
+        function launchSite(url){
+            shell.openExternal(url);
         }
 
         function notif(status, why){
