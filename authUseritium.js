@@ -10,7 +10,7 @@ function authUseritium (email, mdp) {
     param = "email_useritium="+email+"&mdp_useritium="+mdp
 
     let myRequest = new XMLHttpRequest();
-    myRequest.open('POST', 'http:s//useritium.fr/api-externe/index.php?controller=TyroServ&task=connect');
+    myRequest.open('POST', 'https://useritium.fr/api-externe/index.php?controller=TyroServ&task=connect');
     myRequest.onload = () => {
 
         var reponse = JSON.parse(myRequest.responseText);
