@@ -260,12 +260,12 @@ ipcMain.on("login", (event, data) => {
                     });
 
                     // CREER LES FICHIER TOKEN D'USERITIUM
-                    if (data.hereServer !== "vanilla"){
+                    if (data.hereServer !== "vanilla") {
                         let usercachetyroservFile = path.join(app.getPath("appData"), instanceChoose + "usercachetyroserv.json");
                         let usercachetyroserva2fFile = path.join(app.getPath("appData"), instanceChoose + "usercachetyroserva2f.json");
 
-                        fs.appendFile(usercachetyroservFile, data.token_tyroserv, function (err) { if (err) throw err; console.log('Fichier usercachetyroserv.json cree !');});
-                        fs.appendFile(usercachetyroserva2fFile, data.token_tyroserv_a2f, function (err) { if (err) throw err; console.log('Fichier usercachetyroserva2f cree !');});
+                        fs.writeFileSync(usercachetyroservFile, data.token_tyroserv);
+                        fs.writeFileSync(usercachetyroserva2fFile, data.token_tyroserv_a2f);
                     }
 
                     // CREER L'USER MC
