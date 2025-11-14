@@ -295,6 +295,7 @@
             var PP = document.getElementById("PP");
             var useritium_pseudo = document.getElementById("useritium-pseudo");
             var useritium_account = document.getElementById("useritium-account");
+            var stats_perso = document.getElementById("stats-perso");
 
             pseudo.innerText = userConnected.pseudo;
             if (userConnected.useritium.pp){
@@ -303,16 +304,20 @@
                 useritium_account.src = "https://tyrolium.fr/generate-pp/?l=" + userConnected.pseudo.charAt(0);
             }
 
+            /* Affichage du nom Useritium*/
+            let Useritium_Name = "";
             if (userConnected.useritium.displayname){
-                useritium_pseudo.innerText = userConnected.useritium.displayname;
+                Useritium_Name = userConnected.useritium.displayname;
             } else {
+                Useritium_Name = userConnected.useritium.username
+            }
 
-                if (userConnected.useritium.username !== userConnected.pseudo){
-                    useritium_pseudo.innerText = userConnected.useritium.username;
-                } else {
-                    useritium_pseudo.innerText = " ";
-                }
-
+            if (Useritium_Name !== userConnected.pseudo){
+                useritium_pseudo.innerText = Useritium_Name;
+            } else {
+                useritium_pseudo.innerText = null;
+                pseudo.style.top = "93px";
+                stats_perso.style.top = "146px";
             }
 
             if (userConnected.skin){
@@ -350,12 +355,15 @@
                         }
 
                         // FACTION
-                        if (infoServUser['result']['faction']['id'] !== "0"){
-                            var faction_div = document.getElementById("faction-user");
-                            faction_div.classList.add("show-tag");
-                            var faction_text = document.getElementById("faction-user-text");
-                            faction_text.innerText = "Faction : " + infoServUser['result']['faction']['name'];
+                        if (infoServUser['result']['faction']){
+                            if (infoServUser['result']['faction']['id'] !== "0"){
+                                var faction_div = document.getElementById("faction-user");
+                                faction_div.classList.add("show-tag");
+                                var faction_text = document.getElementById("faction-user-text");
+                                faction_text.innerText = "Faction : " + infoServUser['result']['faction']['name'];
+                            }
                         }
+
 
                         // MONEY
                         var money_div = document.getElementById("money-user");
