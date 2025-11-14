@@ -82,7 +82,7 @@
 
     <section id="icone-left">
 
-        <img id="useritium-account" onclick="launchSite('https://useritium.fr/connect.php')" src="https://tyrolium.fr/generate-pp/">
+        <img id="useritium-account" style="cursor: pointer;" onclick="launchSite('https://useritium.fr/connect.php')" src="https://tyrolium.fr/generate-pp/">
 
         <div id="setting" class="btnleft" onclick="launchOnglet('settings')">
 <!--            <i class="ri-settings-fill icone-left"></i>-->
@@ -114,7 +114,7 @@
             <i class="ri-linkedin-box-fill icone-left"></i>
         </div>
 
-        <img id="tyroliumsite" onclick="launchSite('https://tyrolium.fr')" src="asset/tyroliumwite.png">
+        <img id="tyroliumsite" style="cursor: pointer;" onclick="launchSite('https://tyrolium.fr')" src="asset/tyroliumwite.png">
 
     </section>
 
@@ -126,9 +126,10 @@
 
         <div id="backServAll"></div>
 
-        <div id="serv-faction" onclick="switchLauncher('faction')"><img src="asset/logo3d.png"></div>
-        <div id="serv-game" onclick="switchLauncher('minigame')"><img src="asset/logominigame.png"></div>
-        <div id="serv-vanilla" onclick="switchLauncher('vanilla')"><img src="asset/minecraft.png"></div>
+        <div id="serv-faction" style="cursor: pointer;" onclick="switchLauncher('faction')"><img src="asset/logo3d.png"></div>
+        <div id="serv-game" style="cursor: pointer;" onclick="switchLauncher('minigame')"><img src="asset/logominigame.png"></div>
+        <div id="serv-vanilla" style="cursor: pointer;" onclick="switchLauncher('vanilla')"><img src="asset/minecraft.png"></div>
+<!--        <div id="serv-bedrock" onclick="switchLauncher('bedrock')"><img src="asset/minecraft.png"></div>-->
 
     </section>
 
@@ -137,7 +138,7 @@
 
         <div id="downbar">
 
-            <h3 id="player" class="btn" onclick="launchSite('https://fr.namemc.com/server/mc.tyrolium.fr')">
+            <h3 id="player" class="btn" onclick="launchSite('https://tyroserv.fr/player/' + userConnected.pseudo)">
                 JOUEURS <div id="joueur"><p><span id="inPlayerInfo">0</span>/<span id="maxPlayerInfo">1000</span></p></div>
             </h3>
             <h3 id="minecraft" style="display: none" class="btn" onclick="launchSite('https://www.minecraft.net/')">
@@ -223,12 +224,15 @@
 
 
     // Declancher le ping
-    let ipServerFaction = "mc.tyroserv.fr";
+    // let ipServerFaction = "mc.tyroserv.fr";
+    let ipServerFaction = "vps212.tyrolium.fr:25566";
 
     document.getElementById('ping').addEventListener('mouseenter', function() {
         var pingValue;
         getInfoTechnicalServer(ipServerFaction)
             .then(function(infoTechnicalServer) {
+
+                console.log(infoTechnicalServer);
 
                 if (infoTechnicalServer.ping){
                     pingValue = infoTechnicalServer.ping
@@ -587,6 +591,7 @@
 
     // LANCEMENT DE SITE
     function launchSite(url){
+        // shell.openExternal("minecraft://");
         if (url === "https://tyroserv.fr/player/"){
             // userConnected.pseudo
             shell.openExternal(url + userConnected.pseudo);
@@ -615,6 +620,11 @@
 
     // CHANGESERV
     let hereServer = "faction"
+
+    let BackgroundFaction = "url('asset/back/TyroServ \(1920x1080\).png')";
+    let BackgroundMiniGame = "url('asset/back/MiniGame \(1920x1080\).png')";
+    let BackgroundVanilla = "url('asset/back/Vanilla \(1920x1080\).png')";
+
     function switchLauncher(futur){
 
         var playBtn = document.getElementById("play");
@@ -635,7 +645,7 @@
 
             if (futur === "faction"){
 
-                bodyPanel.style.backgroundImage = "url('asset/back/Launcher.png')";
+                bodyPanel.style.backgroundImage = BackgroundFaction;
                 nameServer.style.color = "#1400FF";
                 nameServer.style.left = "937px";
                 nameServer.innerText = "TYROSERV";
@@ -647,9 +657,12 @@
                 barChoose.style.background = "#1400FF";
                 statsPerso.style.display = "flex";
                 backNbJoueur.style.backgroundColor = "#002D85"
+                backNbJoueur.style.display = "block"
 
                 playBtn.innerText = "JOUER";
+                playBtn.style.cursor = "unset";
                 btnMods.innerText = "MODS";
+                btnMods.style.cursor = "unset";
                 btnJoueur.style.display = "flex";
                 btnMinecraft.style.display = "none";
 
@@ -658,7 +671,7 @@
             }
             if (futur === "minigame"){
 
-                bodyPanel.style.backgroundImage = "url('asset/back/sky.png')";
+                bodyPanel.style.backgroundImage = BackgroundMiniGame;
                 nameServer.style.color = "#FF0000";
                 nameServer.style.left = "937px";
                 nameServer.innerText = "TYROSERV";
@@ -670,9 +683,12 @@
                 barChoose.style.background = "#FF0000";
                 statsPerso.style.display = "none";
                 backNbJoueur.style.backgroundColor = "#FF0000"
+                backNbJoueur.style.display = "none"
 
                 playBtn.innerText = "SOON";
+                playBtn.style.cursor = "not-allowed";
                 btnMods.innerText = "MODS";
+                btnMods.style.cursor = "not-allowed";
                 btnJoueur.style.display = "flex";
                 btnMinecraft.style.display = "none";
 
@@ -681,7 +697,7 @@
             }
             if (futur === "vanilla"){
 
-                bodyPanel.style.backgroundImage = "url('asset/back/vanilla.jpeg')";
+                bodyPanel.style.backgroundImage = BackgroundVanilla;
                 nameServer.style.color = "#0ABE06";
                 nameServer.style.left = "915px";
                 nameServer.innerText = "MINECRAFT";
@@ -694,7 +710,9 @@
                 statsPerso.style.display = "none";
 
                 playBtn.innerText = "SOON";
+                playBtn.style.cursor = "not-allowed";
                 btnMods.innerText = "VERSION";
+                btnMods.style.cursor = "not-allowed";
                 btnJoueur.style.display = "none";
                 btnMinecraft.style.display = "block";
 
@@ -738,7 +756,11 @@
 
         }
     }
+
+
+
 </script>
+<script src="module/cheatcode.js"></script>
 
 
 </body>
