@@ -223,13 +223,46 @@
     let ErreurLaunchControl = 0;
 
 
-    // Declancher le ping
+    /*
+    *
+    *
+    * ETAT DES SERVEURS
+    * (Ping & API MC)
+    *
+    * */
+
     // let ipServerFaction = "mc.tyroserv.fr";
     let ipServerFaction = "vps212.tyrolium.fr:25566";
-    let ipServerPing = "http://home.vps212.tyrolium.fr";
+    let ipServerPing = "https://vps212.tyrolium.fr";
     // let ipServerPing = "http://127.0.0.1/Tyrolium-Uptime-InServer";
 
+    /* CONTROLE DE LA COULEUR DU CERCLE */
+    let serverState = {
+        "server-global": true,
+        "faction": true,
+        "api-mc": true
+    }
+
+    updateServerState();
+    let cercle = document.getElementById('cercle');
+    function updateServerState() {
+        console.log(serverState)
+        if (!serverState.faction && !serverState["api-mc"] && !serverState["server-global"]) {
+            cercle.style.background = "red"; // Tous false = rouge
+        } else if (!serverState.faction || !serverState["api-mc"] || !serverState["server-global"]) {
+            cercle.style.background = "orange"; // Au moins un false = orange 
+        } else {
+            document.getElementById('cercle').style.background = "#00ff00"; // Tous true = vert
+        }
+    }
+
+    
+    /* AFFICHAGE PING (SERVER_GLOBAL) */
+    getPingServer();
     document.getElementById('ping').addEventListener('mouseenter', function() {
+        getPingServer();
+    });
+    function getPingServer() {
         var pingValue;
         var TimeClientStart = Date.now();
         getTyroUptimeInfo(ipServerPing, TimeClientStart)
@@ -239,40 +272,183 @@
                 pingValue = pingClientSide + " ms";
                 document.getElementById('pingValue').innerText = pingValue;
 
-        }).catch(function(error) {
-            console.log(error);
-            pingValue = "Erreur";
+            }).catch(function(error) {console.log(error);
+
+            // Si l'erreur est le timeout que nous avons généré
+            if (error.message.startsWith("Timeout_2s")) {
+                pingValue = "Hors ligne";
+            } else {
+                // Autres erreurs (réseau, JSON, etc.)
+                pingValue = "Erreur réseau";
+            }
+
             document.getElementById('pingValue').innerText = pingValue;
         });
-    });
+    }
 
-    // Aficher le nombre de joueur sur le serveur
-    getInfoTechnicalServer(ipServerFaction)
-        .then(function(infoTechnicalServer) {
-            // console.log(infoTechnicalServer);
+    // AFFICHAGE NOMBRE JOUEUR (FACTION)
+    updatePlayerInfo();
+    function updatePlayerInfo() {
+        getInfoTechnicalServer(ipServerFaction)
+            .then(function(infoTechnicalServer) {
+                // console.log(infoTechnicalServer);
 
-                if (infoTechnicalServer.players || infoTechnicalServer.players === 0){
-                    document.getElementById('inPlayerInfo').innerText = infoTechnicalServer.players;
+                    if (infoTechnicalServer.players || infoTechnicalServer.players === 0){
+                        document.getElementById('inPlayerInfo').innerText = infoTechnicalServer.players;
+                    } else {
+                        document.getElementById('inPlayerInfo').innerText = "??";
+                    }
+                    if (infoTechnicalServer.maxplayers){
+                        document.getElementById('maxPlayerInfo').innerText = infoTechnicalServer.maxplayers;
+                    } else {
+                        document.getElementById('maxPlayerInfo').innerText = "??" ;
+                    }
+
+                // document.getElementById('inPlayerInfo').innerText = infoTechnicalServer.players;
+                // document.getElementById('maxPlayerInfo').innerText = infoTechnicalServer.maxplayers;
+
+            }).catch(function(error) {
+
+                document.getElementById('inPlayerInfo').innerText = "??";
+                document.getElementById('maxPlayerInfo').innerText = "??";
+            });
+    }
+
+    // AFFICHAGE LABEL JOUEUR (API_MC)
+    function labelPlayer(){
+        getInfoServer(userConnected.pseudo)
+            .then(function(infoServUser) {
+                // console.log(infoServUser);
+
+
+                var level_div = document.getElementById("level-user");
+                var level_text = document.getElementById("level-user-text");
+
+                // VERIFICATION DE L'EXISTANCE DE L'UTILISATEUR
+                if (infoServUser['result']['player'] !== "no player"){
+
+                    // FACTION
+                    if (infoServUser['result']['roles'] !== "no roles"){
+                        var grade_div = document.getElementById("grade-user");
+                        grade_div.classList.add("show-tag");
+
+                        let allRoles = infoServUser['result']['roles'];
+                        allRoles.forEach(oneRoles =>{
+
+                            if (oneRoles['name'] !== "default"){
+                                var grade_text = document.getElementById("grade-user-text");
+                                grade_text.innerText +=  oneRoles['displayName'];
+                            }
+
+                        })
+
+                    }
+
+                    // FACTION
+                    if (infoServUser['result']['faction']){
+                        if (infoServUser['result']['faction']['id'] !== "0"){
+                            var faction_div = document.getElementById("faction-user");
+                            faction_div.classList.add("show-tag");
+                            var faction_text = document.getElementById("faction-user-text");
+                            faction_text.innerText = "Faction : " + infoServUser['result']['faction']['name'];
+                        }
+                    }
+
+
+                    // MONEY
+                    var money_div = document.getElementById("money-user");
+                    money_div.classList.add("show-tag");
+                    var money_text = document.getElementById("money-user-text");
+                    money_text.innerText = infoServUser['result']['money']['wallet'] + " $";
+
                 } else {
-                    document.getElementById('inPlayerInfo').innerText = "??";
+
+                    level_div.classList.add("show-tag");
+                    level_text.innerText = "Première connexion";
+
+
                 }
-                if (infoTechnicalServer.maxplayers){
-                    document.getElementById('maxPlayerInfo').innerText = infoTechnicalServer.maxplayers;
-                } else {
-                    document.getElementById('maxPlayerInfo').innerText = "??" ;
+
+            })
+            .catch(function(error) {
+                console.log(error);
+            });
+    }
+
+    // RECUPERATION PING (SERVER_GLOBAL)
+    function getTyroUptimeInfo(ipTyroUptime, TimeClientStart) {
+        const controller = new AbortController();
+        const signal = controller.signal;
+        const timeoutDuration = 2000; // 2 secondes
+
+
+        const timeoutId = setTimeout(() => {
+            controller.abort();
+        }, timeoutDuration);
+
+        return fetch(ipTyroUptime +'/?uptime=1&time=' + TimeClientStart , { signal })
+            .then(response => {
+                clearTimeout(timeoutId); // Annule le timeout si le fetch a réussi
+                if (!response.ok) {
+                    throw new Error(`Erreur HTTP: ${response.status}`);
                 }
+                return response.json();
+            })
+            .catch(error => {
+                clearTimeout(timeoutId); // Annule le timeout en cas d'erreur
+                // Si l'erreur est due à l'annulation, on propage un message clair
+                if (error.name === 'AbortError') {
+                    serverState["server-global"] = false;
+                    updateServerState();
+                    throw new Error("Timeout_2s: La requête SERVER_GLOBAL a dépassé 2 secondes.");
+                }
+                throw error; // Propage les autres erreurs (réseau, JSON, etc.)
+            });
 
-            // document.getElementById('inPlayerInfo').innerText = infoTechnicalServer.players;
-            // document.getElementById('maxPlayerInfo').innerText = infoTechnicalServer.maxplayers;
+    }
 
-        }).catch(function(error) {
-
-            document.getElementById('inPlayerInfo').innerText = "??";
-            document.getElementById('maxPlayerInfo').innerText = "??";
+    /* RECUPERATION NOMBRE JOUEUR (FACTION) */
+    function getInfoTechnicalServer(ipServerFaction) {
+        return new Promise((resolve, reject) => {
+            fetch('https://mcapi.xdefcon.com/server/'+ipServerFaction+'/full/json')
+                // fetch('http://127.0.0.1:8000/stats')
+                .then(function(response) {
+                    return response.json();
+                })
+                .then(function(data) {
+                    resolve(data);
+                })
+                .catch(function(error) {
+                    reject(error);
+                });
         });
+    }
+
+    // RECUPERATION LABEL JOUEUR (API_MC)
+    function getInfoServer(pseudo) {
+        return new Promise((resolve, reject) => {
+            fetch('https:///api-minecraft.tyroserv.fr/?pseudo=' + pseudo)
+                .then(function(response) {
+                    return response.json();
+                })
+                .then(function(data) {
+                    resolve(data);
+                })
+                .catch(function(error) {
+                    reject(error);
+                });
+        });
+    }
 
 
-    // RECUPERATION DE L'UTILISATEUR
+    /*
+    *
+    *
+    * GESTION DE L'UTILISATEUR
+    *
+    *
+    * */
+
     let userConnected = undefined;
     ipcRenderer.send('getUserConnected');
 
@@ -319,114 +495,19 @@
                 PP.style.backgroundImage = "url('https://minotar.net/helm/" + userConnected.pseudo + "')";
             }
 
-            getInfoServer(userConnected.pseudo)
-                .then(function(infoServUser) {
-                    // console.log(infoServUser);
-
-
-                    var level_div = document.getElementById("level-user");
-                    var level_text = document.getElementById("level-user-text");
-
-                    // VERIFICATION DE L'EXISTANCE DE L'UTILISATEUR
-                    if (infoServUser['result']['player'] !== "no player"){
-
-                        // FACTION
-                        if (infoServUser['result']['roles'] !== "no roles"){
-                            var grade_div = document.getElementById("grade-user");
-                            grade_div.classList.add("show-tag");
-
-                            let allRoles = infoServUser['result']['roles'];
-                            allRoles.forEach(oneRoles =>{
-
-                                if (oneRoles['name'] !== "default"){
-                                    var grade_text = document.getElementById("grade-user-text");
-                                    grade_text.innerText +=  oneRoles['displayName'];
-                                }
-
-                            })
-
-                        }
-
-                        // FACTION
-                        if (infoServUser['result']['faction']){
-                            if (infoServUser['result']['faction']['id'] !== "0"){
-                                var faction_div = document.getElementById("faction-user");
-                                faction_div.classList.add("show-tag");
-                                var faction_text = document.getElementById("faction-user-text");
-                                faction_text.innerText = "Faction : " + infoServUser['result']['faction']['name'];
-                            }
-                        }
-
-
-                        // MONEY
-                        var money_div = document.getElementById("money-user");
-                        money_div.classList.add("show-tag");
-                        var money_text = document.getElementById("money-user-text");
-                        money_text.innerText = infoServUser['result']['money']['wallet'] + " $";
-
-                    } else {
-
-                        level_div.classList.add("show-tag");
-                        level_text.innerText = "Première connexion";
-
-
-                    }
-
-                })
-                .catch(function(error) {
-                    console.log(error);
-                });
+            labelPlayer();
         }
 
     });
 
-    // RECUPERATION INFO TECHNIQUE SERVEUR
-    function getTyroUptimeInfo(ipTyroUptime, TimeClientStart) {
-        return new Promise((resolve, reject) => {
-            fetch(ipTyroUptime +'/?uptime=1&time=' + TimeClientStart)
-                .then(function(response) {
-                    return response.json();
-                })
-                .then(data => {
-                    resolve(data);
-                })
-                .catch(function(error) {
-                    reject(error);
-                });
-        });
-    }
 
-    function getInfoTechnicalServer(ipServerFaction) {
-        return new Promise((resolve, reject) => {
-            fetch('https://mcapi.xdefcon.com/server/'+ipServerFaction+'/full/json')
-            // fetch('http://127.0.0.1:8000/stats')
-                .then(function(response) {
-                    return response.json();
-                })
-                .then(function(data) {
-                    resolve(data);
-                })
-                .catch(function(error) {
-                    reject(error);
-                });
-        });
-    }
-
-    // RECUPERATION DES INFOS DU SERVEUR
-    function getInfoServer(pseudo) {
-        return new Promise((resolve, reject) => {
-            fetch('https:///api-minecraft.tyroserv.fr/?pseudo=' + pseudo)
-                .then(function(response) {
-                    return response.json();
-                })
-                .then(function(data) {
-                    resolve(data);
-                })
-                .catch(function(error) {
-                    reject(error);
-                });
-        });
-    }
+    /*
+    *
+    *
+    * GESTION DU JEU
+    *
+    *
+    * */
 
     // BTN DE LANCEMENT DU JEUX
     var playbtn = document.getElementById("play");
@@ -471,16 +552,6 @@
         progressBar.innerHTML = '<div id="slide" style="width:' + affichage + '%!important;"><p>' + pourcentageAffiche + '%</p></div>'
 
     });
-
-    function convertPercentageToCustomScale(percentage) {
-        // Assurez-vous que le pourcentage est compris entre 0 et 100
-        percentage = Math.max(0, Math.min(100, percentage));
-
-        // Convertir le pourcentage en échelle personnalisée
-        const customScale = (percentage * (92.5 - 1) / 100) + 1;
-
-        return customScale;
-    }
 
     // BAR AU LANCEMENT
     ipcRenderer.on('lancement', (event, data) => {
@@ -529,6 +600,16 @@
 
     });
 
+    /* CALCULE DE LA BAR */
+    function convertPercentageToCustomScale(percentage) {
+        // Assurez-vous que le pourcentage est compris entre 0 et 100
+        percentage = Math.max(0, Math.min(100, percentage));
+
+        // Convertir le pourcentage en échelle personnalisée
+        const customScale = (percentage * (92.5 - 1) / 100) + 1;
+
+        return customScale;
+    }
 
     // ARRET DU JEUX (RETOUR A LA NORMAL)
     ipcRenderer.on('stopping', (event, data) => {
@@ -605,36 +686,15 @@
 
     });
 
-    // LANCEMENT DE SITE
-    function launchSite(url){
-        // shell.openExternal("minecraft://");
-        if (url === "https://tyroserv.fr/player/"){
-            // userConnected.pseudo
-            shell.openExternal(url + userConnected.pseudo);
-        } else {
-            shell.openExternal(url);
-        }
-    }
 
-    // LANCEMENT D'ONGLET
-    function launchOnglet(onglet) {
+    /*
+    *
+    *
+    * CHANGEMENT DE SERVER/INSTANCE
+    *
+    *
+    * */
 
-        if (onglet === 'mods' && hereServer === "faction"){
-            ipc.send("launchMods");
-        }
-
-        if (onglet === 'settings'){
-            ipc.send("launchSettings");
-        }
-
-        if (onglet === 'version' && hereServer === "faction"){
-            ipc.send("launchVersion");
-        }
-
-    }
-
-
-    // CHANGESERV
     let hereServer = "faction"
 
     let BackgroundFaction = "url('asset/back/TyroServ \(1920x1080\).png')";
@@ -739,6 +799,41 @@
 
     }
 
+
+    /*
+    *
+    *
+    * UTILITAIRE
+    *
+    * */
+
+    // LANCEMENT DE SITE
+    function launchSite(url){
+        // shell.openExternal("minecraft://");
+        if (url === "https://tyroserv.fr/player/"){
+            // userConnected.pseudo
+            shell.openExternal(url + userConnected.pseudo);
+        } else {
+            shell.openExternal(url);
+        }
+    }
+
+    // LANCEMENT D'ONGLET
+    function launchOnglet(onglet) {
+
+        if (onglet === 'mods' && hereServer === "faction"){
+            ipc.send("launchMods");
+        }
+
+        if (onglet === 'settings'){
+            ipc.send("launchSettings");
+        }
+
+        if (onglet === 'version' && hereServer === "faction"){
+            ipc.send("launchVersion");
+        }
+
+    }
 
     // NOTIFICATION
     function notif(status, why){
