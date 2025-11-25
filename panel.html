@@ -222,7 +222,6 @@
 
     let ErreurLaunchControl = 0;
 
-
     /*
     *
     *
@@ -411,7 +410,6 @@
     function getInfoTechnicalServer(ipServerFaction) {
         return new Promise((resolve, reject) => {
             fetch('https://mcapi.xdefcon.com/server/'+ipServerFaction+'/full/json')
-                // fetch('http://127.0.0.1:8000/stats')
                 .then(function(response) {
                     return response.json();
                 })
@@ -427,7 +425,7 @@
     // RECUPERATION LABEL JOUEUR (API_MC)
     function getInfoServer(pseudo) {
         return new Promise((resolve, reject) => {
-            fetch('https:///api-minecraft.tyroserv.fr/?pseudo=' + pseudo)
+            fetch('https:///api-minecraft.tyroserv.fr'+'/?pseudo=' + pseudo)
                 .then(function(response) {
                     return response.json();
                 })
@@ -470,7 +468,7 @@
             if (userConnected.useritium.pp){
                 useritium_account.src = "https://useritium.fr/uploads/pp/" + userConnected.useritium.pp;
             } else {
-                useritium_account.src = "https://tyrolium.fr/generate-pp/?l=" + userConnected.pseudo.charAt(0);
+                useritium_account.src = "https://tyrolium.fr/generate-pp/"+ "?l=" + userConnected.pseudo.charAt(0);
             }
 
             /* Affichage du nom Useritium*/
@@ -490,7 +488,7 @@
             }
 
             if (userConnected.skin){
-                PP.style.backgroundImage = "url('https://useritium.fr/uploads/skin/headView.php?scale=20&pictureName=" + userConnected.skin + "')";
+                PP.style.backgroundImage = "url('https://useritium.fr/uploads/skin/headView.php?scale=20"+"&pictureName=" + userConnected.skin + "')";
             } else {
                 PP.style.backgroundImage = "url('https://minotar.net/helm/" + userConnected.pseudo + "')";
             }

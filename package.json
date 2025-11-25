@@ -4,8 +4,9 @@
   "description": "Launcher TyroServ",
   "main": "index.js",
   "scripts": {
-    "start": "electron .",
-    "build": "electron-builder"
+    "start": "cross-env NODE_ENV=dev electron .",
+    "start_prod": "cross-env NODE_ENV=prod electron .",
+    "build": "cross-env NODE_ENV=prod electron-builder"
   },
   "build": {
     "npmRebuild": false
@@ -14,6 +15,7 @@
   "author": "Maxime Tournier",
   "license": "MIT",
   "devDependencies": {
+    "cross-env": "^10.1.0",
     "electron": "^21.2.3",
     "electron-builder": "^22.14.13"
   },

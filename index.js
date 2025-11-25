@@ -3,6 +3,7 @@ const path = require('path')
 const { Client, Authenticator } = require('minecraft-launcher-core');
 const request = require('request');
 const fs = require("fs");
+const global = require('./global.js');
 let launcher = null;
 
 
@@ -19,16 +20,16 @@ let userConnected = undefined;
 function createWindow () {
    mainWindow = new BrowserWindow({
     frame: false,
-    title: "TyroServ Launcher - 0.1.9",
-    width: 1318,
-    height: 710,
-    resizable: false,
+    title: global.TITLE_FIRST_WINDOW,
+    width: global.FIRST_WINDOW_WIDHT,
+    height: global.FIRST_WINDOW_HEIGHT,
+    resizable: global.FIRST_WINDOW_RESIZABLE,
     icon: path.join(__dirname, "/asset/logo.png"),
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,
       enableRemoteModule: true,
-      // preload: path.join(__dirname, 'preload.js'),
+      preload: path.join(__dirname, 'preload.js'),
     }
   })
 
@@ -39,6 +40,7 @@ function createWindow () {
 
 // CREATION DE L'ONGLET PRINCIPAL
 app.whenReady().then(() => {
+  console.log("ENV : ", process.env.NODE_ENV);
   createWindow()
 
   app.on('activate', function () {
@@ -460,10 +462,10 @@ ipcMain.on("launchSettings", () => {
 
     let settingsWindow = new BrowserWindow({
         frame: false,
-        title: "TyroServ - Paramètres",
-        width: 830,
-        height: 660,
-        resizable: false,
+        title: global.TITLE_ONGLET + "Paramètres",
+        width: global.ONGLET_WIDHT,
+        height: global.ONGLET_HEIGHT,
+        resizable: global.ONGLET_RESIZABLE,
         icon: path.join(__dirname, "/asset/logo.png"),
         webPreferences: {
             nodeIntegration: true,
@@ -491,10 +493,10 @@ ipcMain.on("launchMods", () => {
 
     let modsWindow = new BrowserWindow({
         frame: false,
-        title: "TyroServ - MODS",
-        width: 830,
-        height: 660,
-        resizable: false,
+        title: global.TITLE_ONGLET + "MODS",
+        width: global.ONGLET_WIDHT,
+        height: global.ONGLET_HEIGHT,
+        resizable: global.ONGLET_RESIZABLE,
         icon: path.join(__dirname, "/asset/logo.png"),
         webPreferences: {
             nodeIntegration: true,
@@ -522,10 +524,10 @@ ipcMain.on("launchVersion", () => {
 
     let versionWindow = new BrowserWindow({
         frame: false,
-        title: "TyroServ - Version",
-        width: 830,
-        height: 660,
-        resizable: false,
+        title: global.TITLE_ONGLET + "Version",
+        width: global.ONGLET_WIDHT,
+        height: global.ONGLET_HEIGHT,
+        resizable: global.ONGLET_RESIZABLE,
         icon: path.join(__dirname, "/asset/logo.png"),
         webPreferences: {
             nodeIntegration: true,
@@ -742,7 +744,7 @@ function fetchOptionnalMods() {
 
 // DISCORD
 
-const clientId = '849915439844687893';
+const clientId = global.DISCORD_CLIENT_ID;
 const DiscordRPC = require('discord-rpc');
 const RPC = new DiscordRPC.Client({ transport: 'ipc' });
 
