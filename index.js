@@ -564,24 +564,45 @@ ipcMain.on("getSettingsFile", (event) =>{
 
 });
 
-ipcMain.on("setSettingsFile", (event, data) =>{
 
+ipcMain.on("setSettingsFile", async (event, data) => {
     let settingFile = path.join(app.getPath("appData"), urlInstanceLauncher + "Launcher_Setting.json");
 
-    fs.unlink(settingFile   , (err) => {
-        if (err) {
-            console.error('Erreur lors de la suppression du fichier :', err);
-            return;
-        }
+    try {
+        // Suppression de l'ancien fichier
+        await fs.promises.unlink(settingFile);
         console.log('Le fichier a ete supprime avec succes.');
-    });
 
-        fs.appendFile(settingFile, JSON.stringify(data.newJson), function (err) {
-            if (err)
-                throw err;
-            console.log('Fichier Launcher_Setting.json cree !');
+        // Écriture du nouveau fichier
+        await fs.promises.writeFile(settingFile, JSON.stringify(data.newJson, null, 2));
+        console.log('Fichier Launcher_Setting.json cree !');
+
+        // Optionnel : Envoyer une confirmation au renderer
+        event.reply('settingsFileUpdated', {success: true});
+
+    } catch (err) {
+        console.error('Erreur lors de la mise a jour du fichier :', err);
+
+        // Gestion spécifique si le fichier n'existe pas
+        if (err.code === 'ENOENT') {
+            try {
+                await fs.promises.writeFile(settingFile, JSON.stringify(data.newJson, null, 2));
+                console.log('Nouveau fichier Launcher_Setting.json cree !');
+                event.reply('settingsFileUpdated', {success: true});
+                return;
+            } catch (writeErr) {
+                console.error('Erreur lors de la creation du fichier :', writeErr);
+            }
+        }
+
+        // Informer le renderer de l'échec
+        event.reply('settingsFileUpdated', {
+            success: false,
+            error: err.message
         });
+    }
 });
+
 
 ipcMain.on("getCacheFile", (event) =>{
 
