@@ -226,25 +226,18 @@
     // Declancher le ping
     // let ipServerFaction = "mc.tyroserv.fr";
     let ipServerFaction = "vps212.tyrolium.fr:25566";
+    let ipServerPing = "http://home.vps212.tyrolium.fr";
+    // let ipServerPing = "http://127.0.0.1/Tyrolium-Uptime-InServer";
 
     document.getElementById('ping').addEventListener('mouseenter', function() {
         var pingValue;
-        getInfoTechnicalServer(ipServerFaction)
-            .then(function(infoTechnicalServer) {
+        var TimeClientStart = Date.now();
+        getTyroUptimeInfo(ipServerPing, TimeClientStart)
+            .then(function(tyroUptimeInfo) {
 
-                console.log(infoTechnicalServer);
-
-                if (infoTechnicalServer.ping){
-                    pingValue = infoTechnicalServer.ping
-                    document.getElementById('pingValue').innerText = pingValue + " ms";
-                } else if (infoTechnicalServer.serverStatus && infoTechnicalServer.serverStatus === "offline") {
-                    pingValue = "Hors ligne"
-                    document.getElementById('pingValue').innerText = pingValue;
-                    document.getElementById('cercle').style.background = "red";
-                } else {
-                    pingValue = "Erreur";
-                    document.getElementById('pingValue').innerText = pingValue;
-                }
+                const pingClientSide = Date.now() - TimeClientStart; /* Ping calculer par le Client uniquement */
+                pingValue = pingClientSide + " ms";
+                document.getElementById('pingValue').innerText = pingValue;
 
         }).catch(function(error) {
             console.log(error);
@@ -388,6 +381,21 @@
     });
 
     // RECUPERATION INFO TECHNIQUE SERVEUR
+    function getTyroUptimeInfo(ipTyroUptime, TimeClientStart) {
+        return new Promise((resolve, reject) => {
+            fetch(ipTyroUptime +'/?uptime=1&time=' + TimeClientStart)
+                .then(function(response) {
+                    return response.json();
+                })
+                .then(data => {
+                    resolve(data);
+                })
+                .catch(function(error) {
+                    reject(error);
+                });
+        });
+    }
+
     function getInfoTechnicalServer(ipServerFaction) {
         return new Promise((resolve, reject) => {
             fetch('https://mcapi.xdefcon.com/server/'+ipServerFaction+'/full/json')
