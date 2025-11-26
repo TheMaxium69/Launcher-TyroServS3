@@ -20,6 +20,7 @@
     <link rel="stylesheet" href="css/index.css">
     <link rel="stylesheet" href="css/navbar.css">
     <link rel="stylesheet" href="css/panel.css">
+    <link rel="stylesheet" href="css/loadingBar.css">
 
 </head>
 
@@ -180,42 +181,12 @@
 
     </section>
 </main>
-<style>
-    .bar {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        height: 0;
-        transition: height 0.5s ease-in-out;
-    }
-
-    .show {
-        height: 80px;
-    }
-
-</style>
-<script>
-    document.getElementById('toggleButton').addEventListener('click', function() {
-
-        if (document.getElementById('play').innerText !== "SOON" && document.getElementById('play').innerText !== "EN COURS"){
-            var bar = document.querySelector('.bar');
-            bar.classList.toggle('show');
-            var downpanel = document.getElementById('down-panel');
-            downpanel.classList.toggle('up');
-            var arrow = document.getElementById('arrow');
-            arrow.classList.toggle('ri-arrow-up-s-line');
-            arrow.classList.toggle('ri-arrow-down-s-line');
-        }
-
-    });
-
-</script>
 
 <!-- MODULE JS -->
+<script src="module/loadingBar.js"></script>
 <script src="module/navbar.js"></script>
 <script src="module/cheatcode.js"></script>
-<script src="authUseritium.js"></script>
+<script src="module/authUseritium.js"></script>
 
 <!-- MAIN SCRIPT-->
 <script>
