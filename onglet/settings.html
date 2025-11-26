@@ -181,7 +181,7 @@
     function baseView(){
 
         /* Titre Navbar */
-        document.getElementById("title").innerText = window.NAME_LAUNCHER + " - " + window.ONGLET_MOD_NAME;
+        document.getElementById("title").innerText = window.NAME_LAUNCHER + " - " + window.ONGLET_SETTING_NAME;
     }
 
     /*
@@ -294,24 +294,35 @@
         DiscordTrue.classList.remove("active");
         DiscordFalse.classList.add("active");
         settingsContenu.discordReachPresence = false;
-        ipcRenderer.send("setSettingsFile", {newJson: settingsContenu});
-        ipcRenderer.send("updateDiscord", {state: 'stop'});
+        ipcRenderer.send("setSettingsFile", {newJson: settingsContenu, discord: 'stop'});
     });
 
     // discordReachPresence TRUE
     DiscordTrue.addEventListener("click", () => {
-        console.log(settingsContenu)
         DiscordTrue.classList.add("active");
         DiscordFalse.classList.remove("active");
         settingsContenu.discordReachPresence = true;
-        ipcRenderer.send("setSettingsFile", {newJson: settingsContenu});
-        ipcRenderer.send("updateDiscord", {state: 'start'});
+        ipcRenderer.send("setSettingsFile", {newJson: settingsContenu, discord: 'start'});
     });
 
     // DECONNEXION
     document.getElementById("decoUser").addEventListener("click", () => {
         ipc.send("manualCloseOnglet");
         ipc.send("deconnexionUser");
+    });
+
+    // Reception de la mise a jour
+    ipcRenderer.on("settingsFileUpdated", (event, data) => {
+        let infoUpdate = data;
+
+        // console.log(infoUpdate);
+        if (infoUpdate.discord){
+            if (infoUpdate.discord == 'start'){
+                ipcRenderer.send("updateDiscord", {state: 'start'});
+            } else if (infoUpdate.discord == 'stop') {
+                ipcRenderer.send("updateDiscord", {state: 'stop'});
+            }
+        }
     });
 
 

@@ -635,7 +635,11 @@ ipcMain.on("setSettingsFile", async (event, data) => {
         console.log('Fichier Launcher_Setting.json cree !');
 
         // Optionnel : Envoyer une confirmation au renderer
-        event.reply('settingsFileUpdated', {success: true});
+        if (data.discord){
+            event.reply('settingsFileUpdated', {success: true, discord: data.discord});
+        } else {
+            event.reply('settingsFileUpdated', {success: true});
+        }
 
     } catch (err) {
         console.error('Erreur lors de la mise a jour du fichier :', err);
@@ -645,7 +649,11 @@ ipcMain.on("setSettingsFile", async (event, data) => {
             try {
                 await fs.promises.writeFile(settingFile, JSON.stringify(data.newJson, null, 2));
                 console.log('Nouveau fichier Launcher_Setting.json cree !');
-                event.reply('settingsFileUpdated', {success: true});
+                if (data.discord){
+                    event.reply('settingsFileUpdated', {success: true, discord: data.discord});
+                } else {
+                    event.reply('settingsFileUpdated', {success: true});
+                }
                 return;
             } catch (writeErr) {
                 console.error('Erreur lors de la creation du fichier :', writeErr);
@@ -787,24 +795,69 @@ function fetchOptionnalMods() {
     });
 }
 
+
 /*
 *
 * DISCORD
 *
 * */
 
-const clientId = global.DISCORD_CLIENT_ID;
 const DiscordRPC = require('discord-rpc');
-const RPC = new DiscordRPC.Client({ transport: 'ipc' });
 
-DiscordRPC.register(clientId);
+// Variable
+const clientId = global.DISCORD_CLIENT_ID;
+let RPC = null;
+let isConnected = false;
 
+// Démarré Discord au Démarrage
+connectDiscord();
+
+// Connection à Discord
+async function connectDiscord(reConnexion = false) {
+    if (isConnected) return;
+
+    if (!RPC) {
+        RPC = new DiscordRPC.Client({ transport: 'ipc' });
+        DiscordRPC.register(clientId);
+        RPC.on('disconnected', handleDisconnected);
+    }
+
+    try {
+        await RPC.login({ clientId });
+
+        isConnected = true;
+        console.log("Connexion Discord RPC reussie !");
+
+        // Déclencher l'activité une fois connecté
+        if (reConnexion){
+            setActivity('Navigue sur le Launcher', userConnected.pseudo)
+        } else {
+            setActivity('IDK', null);
+        }
+
+    } catch (error) {
+        isConnected = false;
+        console.error("Erreur de connexion Discord RPC : ", error.message);
+        handleDisconnected();
+    }
+}
+
+// Deconnexion de Discord
+function handleDisconnected() {
+    if (RPC) {
+        try { RPC.destroy(); } catch (e) {}
+        RPC = null;
+    }
+    isConnected = false;
+}
+
+// Déclanché une activité
 async function setActivity(msg, pseudo){
-    if (!RPC) return;
+    if (!RPC || !isConnected) return;
 
     // RECUPERATION DU FICHIER SETTINGS !
     const getSettingsPromise = new Promise((resolve, reject) => {
-        let settingFileDiscord = path.join(app.getPath("appData"), global.DIR_INSTANCE_LAUNCHER + "Launcher_Setting.json");
+        let settingFileDiscord = path.join(app.getPath("appData"), global.DIR_INSTANCE_LAUNCHER + global.FILE_SETTINGS);
         fs.readFile(settingFileDiscord, 'utf8', (err, data) => {
             if (err) {
                 reject(new Error("ERREUR AVEC LE FICHIER"))
@@ -815,7 +868,6 @@ async function setActivity(msg, pseudo){
     });
 
     getSettingsPromise.then((settingFileDiscord) => {
-        // console.log(settingFileDiscord);
 
         if (settingFileDiscord.discordReachPresence === true) {
 
@@ -865,27 +917,14 @@ async function setActivity(msg, pseudo){
     });
 }
 
-RPC.on('ready', async () => {
-
-    setActivity('IDK', null);
-
-});
-
-RPC.login({ clientId }).catch(err => console.log(err))
-
+// Dynamique BTN Settings
 ipcMain.on("updateDiscord", (event, data) =>{
-
-    console.log("UpdatedDiscord : ", data.state);
-
+    // console.log("UpdatedDiscord : ", data.state);
     if (data.state === "stop") {
-
         if (RPC){
-            RPC.destroy();
+            handleDisconnected();
         }
-
     } else {
-
-        dialog.showErrorBox("Restart Launcher", "il faut redémarré le launcher");
-
+        connectDiscord(true);
     }
 });
