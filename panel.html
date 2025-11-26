@@ -3,18 +3,23 @@
     <!--Create By Maxime Tournier-->
 <head>
 
+    <!-- BASE -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link rel="stylesheet" href="module/iziToast.min.css">
-    <script src="module/iziToast.min.js" type="text/javascript"></script>
+    <!-- EXTENSION -->
+    <link rel="stylesheet" href="extension/iziToast.css">
+    <script type="text/javascript" src="extension/iziToast.js"></script>
+    <link rel="stylesheet" href="extension/remixicon/remixicon.css">
+    <link rel="stylesheet" href="extension/fontawesome/css/all.css">
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.min.css">
-    <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v6.4.2/css/all.css">
+<!--    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.min.css">-->
+<!--    <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v6.4.2/css/all.css">-->
 
-    <link rel="stylesheet" href="module/index.css">
-    <link rel="stylesheet" href="module/navbar.css">
-    <link rel="stylesheet" href="module/panel.css">
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/index.css">
+    <link rel="stylesheet" href="css/navbar.css">
+    <link rel="stylesheet" href="css/panel.css">
 
 </head>
 
@@ -25,9 +30,9 @@
     <img src="asset/logo.png" width="20px" style="margin-left: 10px">
     <p id="title"></p>
     <div class="nav-buttons">
-        <button id="minimize"><i class="fa-light fa-window-minimize"></i></button>
-        <button id="maximize" style="display: none"><i class="fa-light fa-square"></i></button>
-        <button id="close"><i class="fa-light fa-xmark"></i></button>
+        <button id="minimize"><i class="fa-solid fa-window-minimize"></i></button>
+        <button id="maximize" style="display: none"><i class="fa-solid fa-square"></i></button>
+        <button id="close"><i class="fa-solid fa-xmark"></i></button>
     </div>
 </nav>
 
@@ -207,7 +212,7 @@
 
 </script>
 
-<!-- EXTENSION JS -->
+<!-- MODULE JS -->
 <script src="module/navbar.js"></script>
 <script src="module/cheatcode.js"></script>
 <script src="authUseritium.js"></script>

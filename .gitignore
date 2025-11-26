@@ -3,3 +3,5 @@ node_modules/*
 minecraft/*
 TyroServLauncher-win32-x64/*
 dist/
+remixicon/
+fontawesome/
