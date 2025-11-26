@@ -4,12 +4,29 @@ const { Client, Authenticator } = require('minecraft-launcher-core');
 const request = require('request');
 const fs = require("fs");
 const global = require('./global.js');
+
 let launcher = null;
-
-
-
 let mainWindow;
 let userConnected = undefined;
+
+// LANCEMENT DU LAUNCHER
+app.whenReady().then(() => {
+    console.log("ENV : ", process.env.NODE_ENV);
+
+    createWindow(); /* Création de l'onglet principal */
+
+    app.on('activate', function () {
+        if (BrowserWindow.getAllWindows().length === 0){
+            createWindow()
+        }
+    })
+})
+
+/*
+*
+* GESTION FENETRE PRINCIPAL
+*
+* */
 
 // INITIALISATION DE L'ONGLET PRINCIPAL
 function createWindow () {
@@ -33,34 +50,22 @@ function createWindow () {
 
 }
 
-// CREATION DE L'ONGLET PRINCIPAL
-app.whenReady().then(() => {
-  console.log("ENV : ", process.env.NODE_ENV);
-  createWindow()
-
-  app.on('activate', function () {
-    if (BrowserWindow.getAllWindows().length === 0){
-        createWindow()
-    }
-  })
-})
-
-
 // METTRE EN PETIT L'ONGLET PRINCIPAL
 ipcMain.on("manualMinimize", () => {
     mainWindow.minimize();
 });
 
-
 // MAXIMIZE DE L'ONGLET PRINCIPAL
-let maximizeToggle=false;
+let maximizeToggle= false;
 ipcMain.on("manualMaximize", () => {
-    if (maximizeToggle) {
-        mainWindow.unmaximize();
-    } else {
-        mainWindow.maximize();
+    if (global.FIRST_WINDOW_RESIZABLE){
+        if (maximizeToggle) {
+            mainWindow.unmaximize();
+        } else {
+            mainWindow.maximize();
+        }
+        maximizeToggle=!maximizeToggle;
     }
-    maximizeToggle=!maximizeToggle;
 });
 
 // FERMETURE DE L'ONGLET PRINCIPAL
@@ -69,9 +74,36 @@ ipcMain.on("manualClose", () => {
 //   if (process.platform !== 'darwin') app.quit()
 });
 
+
+/*
+*
+* GESTION UTILISATEUR
+*
+* */
+
+
 // RECUPERATION DE L'UTILISATEUR
 ipcMain.on('getUserConnected', (event) => {
     event.sender.send('userConnected', userConnected);
+});
+
+// Deconnexion User
+ipcMain.on("deconnexionUser", (event) =>{
+
+    setActivity('IDK', null);
+    let cacheFile = path.join(app.getPath("appData"), global.DIR_INSTANCE_LAUNCHER + "Launcher_Cache.json");
+
+    fs.unlink(cacheFile, (err) => {
+        if (err) {
+            console.error('Erreur lors de la suppression du fichier :', err);
+            return;
+        }
+        console.log('Le fichier a ete supprime avec succes.');
+    });
+
+    mainWindow.loadFile('index.html');
+
+
 });
 
 // CONNECTION ET LANCEMENT DU PANEL
@@ -83,7 +115,6 @@ ipcMain.on("connected", async (event, data) => {
 
     // CHARGER LE FICHIER PANEL
     mainWindow.loadFile('panel.html');
-
 
     // UPDATE DU REACH PRESENCE
     setActivity('Navigue sur le Launcher', data.userTyroServLoad.pseudo);
@@ -100,6 +131,7 @@ ipcMain.on("connected", async (event, data) => {
         }
     });
 
+    /* GESTION DU FICHIER SETTINGS */
     fs.mkdir(app.getPath("appData") + global.DIR_INSTANCE_LAUNCHER, (err) => {
         if (err) {
             if (err.code === "EEXIST")
@@ -130,6 +162,8 @@ ipcMain.on("connected", async (event, data) => {
         console.log('Le fichier Launcher_Setting.json existe deja.');
     }
 
+    /* GESTION DU FICHIER CACHE */
+
     let saveLauncher =
     {
         "username": data.userTyroServLoad.useritium.username,
@@ -147,6 +181,9 @@ ipcMain.on("connected", async (event, data) => {
     } else {
         console.log('Le fichier Launcher_Cache.json existe deja.');
     }
+
+
+    /* GESTION DU FICHIER MODS */
 
     await (async () => {
         let modsFile = path.join(app.getPath("appData"), global.DIR_INSTANCE_LAUNCHER + "Launcher_Mods.json");
@@ -171,6 +208,13 @@ ipcMain.on("connected", async (event, data) => {
 
 
 });
+
+
+/*
+*
+* GESTION DU JEU
+*
+* */
 
 // LANCEMENT DU JEUX
 ipcMain.on("login", (event, data) => {
@@ -451,6 +495,14 @@ ipcMain.on("login", (event, data) => {
         });
 })
 
+
+/*
+*
+* ONGLET SECONDAIRE
+*
+* */
+
+
 // ONGLET SETTINGS
 ipcMain.on("launchSettings", () => {
 
@@ -480,7 +532,6 @@ ipcMain.on("launchSettings", () => {
         }
     });
 })
-
 
 // ONGLET MODS
 ipcMain.on("launchMods", () => {
@@ -513,7 +564,6 @@ ipcMain.on("launchMods", () => {
 })
 
 // ONGLET VERSION
-
 ipcMain.on("launchVersion", () => {
 
     let versionWindow = new BrowserWindow({
@@ -543,7 +593,15 @@ ipcMain.on("launchVersion", () => {
     });
 })
 
-//  RECUPERATION DE FICHIER
+
+/*
+*
+* FICHIER CONFIGURATION
+*
+* */
+
+
+//  RECUPERATION SETTINGS
 ipcMain.on("getSettingsFile", (event) =>{
 
     let settingFile = path.join(app.getPath("appData"), global.DIR_INSTANCE_LAUNCHER + "Launcher_Setting.json");
@@ -560,7 +618,7 @@ ipcMain.on("getSettingsFile", (event) =>{
 
 });
 
-
+//  SET SETTINGS
 ipcMain.on("setSettingsFile", async (event, data) => {
     let settingFile = path.join(app.getPath("appData"), global.DIR_INSTANCE_LAUNCHER + "Launcher_Setting.json");
 
@@ -599,7 +657,7 @@ ipcMain.on("setSettingsFile", async (event, data) => {
     }
 });
 
-
+//  RECUPERATION CACHE
 ipcMain.on("getCacheFile", (event) =>{
 
     let cacheFile = path.join(app.getPath("appData"), global.DIR_INSTANCE_LAUNCHER + "Launcher_Cache.json");
@@ -616,6 +674,7 @@ ipcMain.on("getCacheFile", (event) =>{
 
 });
 
+//  RECUPERATION MODS
 ipcMain.on("getModsFile", (event) =>{
 
     let settingFile = path.join(app.getPath("appData"), global.DIR_INSTANCE_LAUNCHER + "Launcher_Mods.json");
@@ -632,6 +691,7 @@ ipcMain.on("getModsFile", (event) =>{
 
 });
 
+//  SET MODS
 ipcMain.on("setModsFile", (event, data) =>{
 
     let modsFile = path.join(app.getPath("appData"), global.DIR_INSTANCE_LAUNCHER + "Launcher_Mods.json");
@@ -651,24 +711,12 @@ ipcMain.on("setModsFile", (event, data) =>{
     });
 });
 
-// Deconnexion User
-ipcMain.on("deconnexionUser", (event) =>{
 
-    setActivity('IDK', null);
-    let cacheFile = path.join(app.getPath("appData"), global.DIR_INSTANCE_LAUNCHER + "Launcher_Cache.json");
-
-    fs.unlink(cacheFile, (err) => {
-        if (err) {
-            console.error('Erreur lors de la suppression du fichier :', err);
-            return;
-        }
-        console.log('Le fichier a ete supprime avec succes.');
-    });
-
-    mainWindow.loadFile('index.html');
-
-
-});
+/*
+*
+* CONFIG MODS
+*
+* */
 
 
 ipcMain.on("getInfoLauncher", (event) => {
@@ -736,7 +784,11 @@ function fetchOptionnalMods() {
     });
 }
 
-// DISCORD
+/*
+*
+* DISCORD
+*
+* */
 
 const clientId = global.DISCORD_CLIENT_ID;
 const DiscordRPC = require('discord-rpc');

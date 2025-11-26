@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-<!--Create By Maxime Tournier-->
+    <!--Create By Maxime Tournier-->
 <head>
 
     <meta charset="utf-8">
@@ -20,20 +20,18 @@
 
 <body id="panel">
 
-
-<!--NAVBAR -->
+<!-- NAVBAR -->
 <nav style="-webkit-app-region: drag">
     <img src="asset/logo.png" width="20px" style="margin-left: 10px">
-    <p id="title">TyroServ Launcher</p>
+    <p id="title"></p>
     <div class="nav-buttons">
         <button id="minimize"><i class="fa-light fa-window-minimize"></i></button>
-<!--        <button id="maximize"><i class="fa-light fa-square"></i></button>-->
+        <button id="maximize" style="display: none"><i class="fa-light fa-square"></i></button>
         <button id="close"><i class="fa-light fa-xmark"></i></button>
     </div>
 </nav>
 
-
-
+<!-- PANEL -->
 <main id="panel-faction">
 <!--  UP LEFT  -->
     <section id="up-left">
@@ -209,11 +207,12 @@
 
 </script>
 
-
-<!-- NAVBAR ET AUTH -->
+<!-- EXTENSION JS -->
 <script src="module/navbar.js"></script>
+<script src="module/cheatcode.js"></script>
 <script src="authUseritium.js"></script>
 
+<!-- MAIN SCRIPT-->
 <script>
 
     const { shell } = require('electron');
@@ -221,6 +220,13 @@
     const ipc = require("electron").ipcRenderer;
 
     let ErreurLaunchControl = 0;
+
+    /*
+    *
+    * AFFICHAGE PAGE
+    *
+    * */
+
 
     /*
     *
@@ -869,8 +875,6 @@
 
 
 </script>
-<script src="module/cheatcode.js"></script>
-
 
 </body>
 

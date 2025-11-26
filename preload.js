@@ -1,5 +1,10 @@
 const global = require('./global.js');
 
-window.API_URL = global.API_URL;
-window.API_PROD = global.API_PROD;
+/* GLOBAL */
+window.NAME_LAUNCHER = global.NAME_LAUNCHER;
+window.FIRST_WINDOW_RESIZABLE = global.FIRST_WINDOW_RESIZABLE;
 
+/* URL */
+
+window.URL_USERITIUM_INSCRIPTION = global.URL_USERITIUM_INSCRIPTION
+window.URL_USERITIUM_MDP = global.URL_USERITIUM_MDP

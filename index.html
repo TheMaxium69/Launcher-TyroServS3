@@ -9,7 +9,6 @@
     <link rel="stylesheet" href="module/iziToast.min.css">
     <script src="module/iziToast.min.js" type="text/javascript"></script>
 
-
     <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v6.4.2/css/all.css">
 
     <link rel="stylesheet" href="module/index.css">
@@ -18,110 +17,136 @@
 </head>
 
 <body id="login">
-    <nav style="-webkit-app-region: drag">
-        <img src="asset/logo.png" width="20px" style="margin-left: 10px">
-        <p id="title">TyroServ Launcher</p>
-        <div class="nav-buttons">
-            <button id="minimize"><i class="fa-light fa-window-minimize"></i></button>
-<!--            <button id="maximize"><i class="fa-light fa-square"></i></button>-->
-            <button id="close"><i class="fa-light fa-xmark"></i></button>
-        </div>
-    </nav>
 
-	<div class="login-page">
-        <div class="form" id="form">
-            <img class="block-rodonite" src="asset/block/rhodonite.png"/>
-            <h2>Compte Useritium</h2>
-                <input type="text" placeholder="Email" id="email" />
-                <input type="password" placeholder="Mot de passe" id="password" />
-                <button id="connection">Se connecter</button>
-            <div class="down-form">
-                <a onclick="launchSite('https://useritium.fr/password.php?create=yes')">Mots de passe oublier ?</a><br>
-                <a style="text-decoration: underline;" onclick="launchSite('https://useritium.fr/connect.php')">S'inscrire !</a>
-            </div>
-            <img class="block-tyrolium" src="asset/block/tyrolium.png"/>
-        </div>
+<!-- NAVBAR -->
+<nav style="-webkit-app-region: drag">
+    <img src="asset/logo.png" width="20px" style="margin-left: 10px">
+    <p id="title"></p>
+    <div class="nav-buttons">
+        <button id="minimize"><i class="fa-light fa-window-minimize"></i></button>
+        <button id="maximize" style="display: none"><i class="fa-light fa-square"></i></button>
+        <button id="close"><i class="fa-light fa-xmark"></i></button>
     </div>
+</nav>
 
-    <script src="authUseritium.js"></script>
+<!-- FORMULAIRE DE CONNEXION -->
+<div class="login-page">
+    <div class="form" id="form">
+        <img class="block-rodonite" src="asset/block/rhodonite.png"/>
+        <h2>Compte Useritium</h2>
+            <input type="text" placeholder="Email" id="email" />
+            <input type="password" placeholder="Mot de passe" id="password" />
+            <button id="connection">Se connecter</button>
+        <div class="down-form">
+            <a id="forget" style="cursor: pointer" onclick="launchSite(window.URL_USERITIUM_MDP)">Mots de passe oublier ?</a><br>
+            <a id="signup" style="cursor: pointer; text-decoration: underline;" onclick="launchSite(window.URL_USERITIUM_INSCRIPTION)">S'inscrire !</a>
+        </div>
+        <img class="block-tyrolium" src="asset/block/tyrolium.png"/>
+    </div>
+</div>
 
-    <script>
+<!-- EXTENSION JS -->
+<script src="module/navbar.js"></script>
+<script src="authUseritium.js"></script>
 
-        const ipc = require("electron").ipcRenderer;
-        const { ipcRenderer } = require('electron');
+<!-- MAIN SCRIPT-->
+<script>
 
-        // RECONNECTION AUTOMATIQUE
+    const { shell } = require('electron');
+    const { ipcRenderer } = require('electron');
+    const ipc = require("electron").ipcRenderer;
 
-        ipcRenderer.send("getCacheFile");
-        ipcRenderer.on("cacheFile", (event, cacheFile) => {
-            // console.log(cacheFile);
-            authUseritiumToken(cacheFile.username, cacheFile.token);
-        });
+    /*
+    *
+    * CONNEXION AUTOMATIQUE
+    * (par fichier cache)
+    *
+    * */
 
-        var connectionbtn = document.getElementById("connection");
+    ipcRenderer.send("getCacheFile");
+    ipcRenderer.on("cacheFile", (event, cacheFile) => {
+        // console.log(cacheFile);
+        authUseritiumToken(cacheFile.username, cacheFile.token);
+    });
 
-        connectionbtn.addEventListener("click", e => {
-            let email = document.getElementById("email").value
-            let pass = document.getElementById("password").value
+    /*
+    *
+    * CONNEXION FORMULAIRE
+    *
+    * */
 
-            if(email && pass){
-                authUseritium(email, pass);
-            }
-            
+    // Login
+    var connectionbtn = document.getElementById("connection");
+    connectionbtn.addEventListener("click", e => {
+        let email = document.getElementById("email").value
+        let pass = document.getElementById("password").value
 
-        });
-
-        function formFirst(){
-
-            let email = document.getElementById("email").value
-            let pass = document.getElementById("password").value
-            let pseudo = document.getElementById("pseudo").value 
-
-            if(email && pass && pseudo){ 
-                authFirstConnexion(pseudo, email, pass);
-            }
+        if(email && pass){
+            authUseritium(email, pass);
         }
 
-        const { shell } = require('electron');
-        // LANCEMENT DE SITE
-        function launchSite(url){
-            shell.openExternal(url);
+    });
+
+    // Formulaire de première connexion (pseudo IG)
+    function formFirst(){
+
+        let email = document.getElementById("email").value
+        let pass = document.getElementById("password").value
+        let pseudo = document.getElementById("pseudo").value
+
+        if(email && pass && pseudo){
+            authFirstConnexion(pseudo, email, pass);
         }
+    }
 
-        function notif(status, why){
-            if(status == "true"){
+    /*
+    *
+    *
+    * UTILITAIRE
+    *
+    * */
 
-                iziToast.success({
-                    title: 'OK',
-                    message: why,
-                });
 
-                // playbtn.disabled = true;
+    // LANCEMENT DE SITE
+    function launchSite(url){
+        shell.openExternal(url);
+    }
 
-            }
-            if(status == "err"){
+    // NOTIFICATION
+    function notif(status, why){
+        if(status == "true"){
 
-                iziToast.error({
-                    title: 'Erreur',
-                    message: why,
-                })
-                // playbtn.disabled = false;
+            iziToast.success({
+                title: 'OK',
+                message: why,
+            });
 
-            }
-            if(status == "info"){
+            // playbtn.disabled = true;
 
-                iziToast.info({
-                    title: 'Info',
-                    message: why,
-                })
-
-                // playbtn.disabled = false;
-
-            }
         }
-    </script>
+        if(status == "err"){
 
-    <script src="module/navbar.js"></script>
+            iziToast.error({
+                title: 'Erreur',
+                message: why,
+            })
+            // playbtn.disabled = false;
+
+        }
+        if(status == "info"){
+
+            iziToast.info({
+                title: 'Info',
+                message: why,
+            })
+
+            // playbtn.disabled = false;
+
+        }
+    }
+
+</script>
+
 </body>
 
 </html>
