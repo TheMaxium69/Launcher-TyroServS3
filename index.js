@@ -9,11 +9,6 @@ let launcher = null;
 
 
 let mainWindow;
-let urlInstance = "/.TyroServBeta/";
-let urlInstanceLauncher = urlInstance + "Launcher/";
-let urlInstanceFaction = urlInstance + "TyroServ-Faction/";
-let urlInstanceMiniGame = urlInstance + "TyroServ-MiniGame/";
-let urlInstanceVanilla = urlInstance + "TyroServ-Vanilla/";
 let userConnected = undefined;
 
 // INITIALISATION DE L'ONGLET PRINCIPAL
@@ -94,7 +89,7 @@ ipcMain.on("connected", async (event, data) => {
     setActivity('Navigue sur le Launcher', data.userTyroServLoad.pseudo);
 
     // CREATION DU DOSSIER
-    const UrlInstanceMC = app.getPath("appData") + urlInstance;
+    const UrlInstanceMC = app.getPath("appData") + global.DIR_INSTANCE;
 
     fs.mkdir(UrlInstanceMC, (err) => {
         if (err) {
@@ -105,8 +100,7 @@ ipcMain.on("connected", async (event, data) => {
         }
     });
 
-    const UrlInstanceLauncher = app.getPath("appData") + urlInstanceLauncher;
-    fs.mkdir(UrlInstanceLauncher, (err) => {
+    fs.mkdir(app.getPath("appData") + global.DIR_INSTANCE_LAUNCHER, (err) => {
         if (err) {
             if (err.code === "EEXIST")
                 console.log("Le Dossier 'Launcher' a deja ete cree");
@@ -124,7 +118,7 @@ ipcMain.on("connected", async (event, data) => {
         "discordReachPresence":true
     }
 
-    let settingFile = path.join(app.getPath("appData"), urlInstanceLauncher + "Launcher_Setting.json");
+    let settingFile = path.join(app.getPath("appData"), global.DIR_INSTANCE_LAUNCHER + "Launcher_Setting.json");
 
     if (!fs.existsSync(settingFile)) {
         fs.appendFile(settingFile, JSON.stringify(settingJsonDefault), function (err) {
@@ -142,7 +136,7 @@ ipcMain.on("connected", async (event, data) => {
         "token": data.userTyroServLoad.token
     }
 
-    let cacheFile = path.join(app.getPath("appData"), urlInstanceLauncher + "Launcher_Cache.json");
+    let cacheFile = path.join(app.getPath("appData"), global.DIR_INSTANCE_LAUNCHER + "Launcher_Cache.json");
 
     if (!fs.existsSync(cacheFile)) {
         fs.appendFile(cacheFile, JSON.stringify(saveLauncher), function (err) {
@@ -155,7 +149,7 @@ ipcMain.on("connected", async (event, data) => {
     }
 
     await (async () => {
-        let modsFile = path.join(app.getPath("appData"), urlInstanceLauncher + "Launcher_Mods.json");
+        let modsFile = path.join(app.getPath("appData"), global.DIR_INSTANCE_LAUNCHER + "Launcher_Mods.json");
 
         // Vérifie d'abord si le fichier existe
         if (fs.existsSync(modsFile)) {
@@ -186,16 +180,16 @@ ipcMain.on("login", (event, data) => {
         // SET L'URL DE L'INSTANCE MC
         let instanceChoose = undefined;
         if (data.hereServer === "minigame"){
-            instanceChoose = urlInstanceMiniGame;
+            instanceChoose = global.DIR_INSTANCE_MINIGAME;
         } else if (data.hereServer === "vanilla"){
-            instanceChoose = urlInstanceVanilla;
+            instanceChoose = global.DIR_INSTANCE_VANILLA;
         } else {
-            instanceChoose = urlInstanceFaction;
+            instanceChoose = global.DIR_INSTANCE_FACTION;
         }
 
         // RECUPERATION DU FICHIER MODS
         const getModsPromise = new Promise((resolve, reject) => {
-            let modsFile = path.join(app.getPath("appData"), urlInstanceLauncher + "Launcher_Mods.json");
+            let modsFile = path.join(app.getPath("appData"), global.DIR_INSTANCE_LAUNCHER + "Launcher_Mods.json");
             fs.readFile(modsFile, 'utf8', (err, data) => {
                 if (err) {
                     reject(new Error("ERREUR AVEC LE FICHIER"))
@@ -236,7 +230,7 @@ ipcMain.on("login", (event, data) => {
                 // RECUPERATION DU FICHIER SETTINGS
                 let settingsContenu;
                 const getSettingsPromise = new Promise((resolve, reject) => {
-                    let settingFile = path.join(app.getPath("appData"), urlInstanceLauncher + "Launcher_Setting.json");
+                    let settingFile = path.join(app.getPath("appData"), global.DIR_INSTANCE_LAUNCHER + "Launcher_Setting.json");
                     fs.readFile(settingFile, 'utf8', (err, data) => {
                         if (err) {
                             reject(new Error("ERREUR AVEC LE FICHIER"))
@@ -552,7 +546,7 @@ ipcMain.on("launchVersion", () => {
 //  RECUPERATION DE FICHIER
 ipcMain.on("getSettingsFile", (event) =>{
 
-    let settingFile = path.join(app.getPath("appData"), urlInstanceLauncher + "Launcher_Setting.json");
+    let settingFile = path.join(app.getPath("appData"), global.DIR_INSTANCE_LAUNCHER + "Launcher_Setting.json");
 
     fs.readFile(settingFile, 'utf8', (err, data) => {
         if (err) {
@@ -568,7 +562,7 @@ ipcMain.on("getSettingsFile", (event) =>{
 
 
 ipcMain.on("setSettingsFile", async (event, data) => {
-    let settingFile = path.join(app.getPath("appData"), urlInstanceLauncher + "Launcher_Setting.json");
+    let settingFile = path.join(app.getPath("appData"), global.DIR_INSTANCE_LAUNCHER + "Launcher_Setting.json");
 
     try {
         // Suppression de l'ancien fichier
@@ -608,7 +602,7 @@ ipcMain.on("setSettingsFile", async (event, data) => {
 
 ipcMain.on("getCacheFile", (event) =>{
 
-    let cacheFile = path.join(app.getPath("appData"), urlInstanceLauncher + "Launcher_Cache.json");
+    let cacheFile = path.join(app.getPath("appData"), global.DIR_INSTANCE_LAUNCHER + "Launcher_Cache.json");
 
     fs.readFile(cacheFile, 'utf8', (err, data) => {
         if (err) {
@@ -624,7 +618,7 @@ ipcMain.on("getCacheFile", (event) =>{
 
 ipcMain.on("getModsFile", (event) =>{
 
-    let settingFile = path.join(app.getPath("appData"), urlInstanceLauncher + "Launcher_Mods.json");
+    let settingFile = path.join(app.getPath("appData"), global.DIR_INSTANCE_LAUNCHER + "Launcher_Mods.json");
 
     fs.readFile(settingFile, 'utf8', (err, data) => {
         if (err) {
@@ -640,7 +634,7 @@ ipcMain.on("getModsFile", (event) =>{
 
 ipcMain.on("setModsFile", (event, data) =>{
 
-    let modsFile = path.join(app.getPath("appData"), urlInstanceLauncher + "Launcher_Mods.json");
+    let modsFile = path.join(app.getPath("appData"), global.DIR_INSTANCE_LAUNCHER + "Launcher_Mods.json");
 
     fs.unlink(modsFile   , (err) => {
         if (err) {
@@ -661,7 +655,7 @@ ipcMain.on("setModsFile", (event, data) =>{
 ipcMain.on("deconnexionUser", (event) =>{
 
     setActivity('IDK', null);
-    let cacheFile = path.join(app.getPath("appData"), urlInstanceLauncher + "Launcher_Cache.json");
+    let cacheFile = path.join(app.getPath("appData"), global.DIR_INSTANCE_LAUNCHER + "Launcher_Cache.json");
 
     fs.unlink(cacheFile, (err) => {
         if (err) {
@@ -755,7 +749,7 @@ async function setActivity(msg, pseudo){
 
     // RECUPERATION DU FICHIER SETTINGS !
     const getSettingsPromise = new Promise((resolve, reject) => {
-        let settingFileDiscord = path.join(app.getPath("appData"), urlInstanceLauncher + "Launcher_Setting.json");
+        let settingFileDiscord = path.join(app.getPath("appData"), global.DIR_INSTANCE_LAUNCHER + "Launcher_Setting.json");
         fs.readFile(settingFileDiscord, 'utf8', (err, data) => {
             if (err) {
                 reject(new Error("ERREUR AVEC LE FICHIER"))
@@ -784,7 +778,7 @@ async function setActivity(msg, pseudo){
                     buttons: [
                         {
                             label: 'Nous Rejoindre',
-                            url: 'https://tyroserv.fr'
+                            url: global.URL_TYROSERV_SITEWEB
                         }
                     ]
                 })
@@ -802,7 +796,7 @@ async function setActivity(msg, pseudo){
                     buttons: [
                         {
                             label: 'Nous Rejoindre',
-                            url: 'https://tyroserv.fr'
+                            url: global.URL_TYROSERV_SITEWEB
                         }
                     ]
                 })

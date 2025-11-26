@@ -326,7 +326,7 @@
                 // VERIFICATION DE L'EXISTANCE DE L'UTILISATEUR
                 if (infoServUser['result']['player'] !== "no player"){
 
-                    // FACTION
+                    // ROLES
                     if (infoServUser['result']['roles'] !== "no roles"){
                         var grade_div = document.getElementById("grade-user");
                         grade_div.classList.add("show-tag");
@@ -344,7 +344,7 @@
                     }
 
                     // FACTION
-                    if (infoServUser['result']['faction']){
+                    if (infoServUser['result']['faction'] && infoServUser['result']['faction'] !== "no faction"){
                         if (infoServUser['result']['faction']['id'] !== "0"){
                             var faction_div = document.getElementById("faction-user");
                             faction_div.classList.add("show-tag");
