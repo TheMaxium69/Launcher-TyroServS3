@@ -10,7 +10,7 @@ function authUseritium (email, mdp) {
     param = "email_useritium="+email+"&mdp_useritium="+mdp
 
     let myRequest = new XMLHttpRequest();
-    myRequest.open('POST', 'https://useritium.fr/api-externe/index.php?controller=TyroServ&task=connect');
+    myRequest.open('POST', window.API_USERITIUM_CONNEXION);
     myRequest.onload = () => {
 
         var reponse = JSON.parse(myRequest.responseText);
@@ -33,7 +33,7 @@ function authUseritiumToken (username, token) {
     // console.log(param)
 
     let myRequest = new XMLHttpRequest();
-    myRequest.open('POST', 'https://useritium.fr/api-externe/index.php?controller=TyroServ&task=connectToken');
+    myRequest.open('POST', window.API_USERITIUM_TOKEN);
     myRequest.onload = () => {
 
         var reponse = JSON.parse(myRequest.responseText);
@@ -93,7 +93,7 @@ function firstConnexion(pseudo, email, mdp){
   // form.innerHTML = '<h2>Compte Useritium</h2> <p>Première connexion</p> <input type="hidden" id="type" value="first" />  <input type="hidden" placeholder="Email" id="email" value="'+ email +'" /> <input type="hidden" placeholder="Mot de passe" id="password" value="'+ mdp +'" /> <input type="text" placeholder="Pseudo" id="pseudo" value="'+ pseudo +'" /> <button id="play" onclick="formFirst()">Jouer</button>';
   form.innerHTML = `
 
-            <img class="block-rodonite" src="https://tyrolium.fr/Contenu/Image/launcher/rhodonite.png"/>
+            <img class="block-rodonite" src="../asset/block/rhodonite.png"/>
             <h2>Compte Useritium</h2>
                 <p style="color: black">Première connexion</p> 
                 
@@ -106,7 +106,7 @@ function firstConnexion(pseudo, email, mdp){
             <div class="down-form">
                 <p style="color: black">Ne pourra pas être modifier</p> 
             </div>
-            <img class="block-tyrolium" src="https://tyrolium.fr/Contenu/Image/launcher/tyrolium.png"/>
+            <img class="block-tyrolium" src="../asset/block/tyrolium.png"/>
 
 
 `;
@@ -119,7 +119,7 @@ function authFirstConnexion(pseudo, email, mdp){
   paramFirst = "email_useritium="+email+"&mdp_useritium="+mdp+"&pseudo_tyroserv="+pseudo
 
     let myRequestFirst = new XMLHttpRequest();
-    myRequestFirst.open('POST', 'https://useritium.fr/api-externe/index.php?controller=TyroServ&task=connect');
+    myRequestFirst.open('POST', window.API_USERITIUM_CONNEXION);
     myRequestFirst.onload = () => {
 
         console.log(myRequestFirst.responseText);

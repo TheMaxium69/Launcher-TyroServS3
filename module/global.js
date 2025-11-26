@@ -81,6 +81,9 @@ const URL_USERITIUM_MDP = "https://useritium.fr/password.php?create=yes"
 const URL_USERITIUM_PP = "https://useritium.fr/uploads/pp/";
 const URL_GENERATE_PP = "https://tyrolium.fr/generate-pp/";
 
+const API_USERITIUM_CONNEXION = "https://useritium.fr/api-externe/index.php?controller=TyroServ&task=connect";
+const API_USERITIUM_TOKEN = "https://useritium.fr/api-externe/index.php?controller=TyroServ&task=connectToken";
+
 const PROD_URL_TYROSERV_SITEWEB = "tyroserv.fr";
 const PROD_PROTOCOLE_TYROSERV_SITEWEB = "https://";
 const DEV_URL_TYROSERV_SITEWEB = "beta.tyroserv.fr";
@@ -150,6 +153,9 @@ module.exports = {
     URL_USERITIUM_MDP: URL_USERITIUM_MDP,
     URL_USERITIUM_PP: URL_USERITIUM_PP,
     URL_GENERATE_PP: URL_GENERATE_PP,
+
+    API_USERITIUM_CONNEXION: API_USERITIUM_CONNEXION,
+    API_USERITIUM_TOKEN: API_USERITIUM_TOKEN,
 
     URL_TYROSERV_SITEWEB: IS_PROD ? PROD_PROTOCOLE_TYROSERV_SITEWEB + PROD_URL_TYROSERV_SITEWEB : DEV_PROTOCOLE_TYROSERV_SITEWEB + DEV_URL_TYROSERV_SITEWEB,
     URL_TYROSERV_SITEWEB_PLAYER : URL_TYROSERV_SITEWEB_PLAYER,
