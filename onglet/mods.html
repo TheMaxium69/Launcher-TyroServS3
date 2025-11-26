@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-<!--Create By Maxime Tournier-->
+    <!--Create By Maxime Tournier-->
 <head>
 
     <!-- BASE -->
@@ -33,6 +33,7 @@
     </div>
 </nav>
 
+<!-- ONGLET MOD -->
 <main class="custom-scrollbar">
 
     <section id="mods-unlock">
@@ -56,6 +57,7 @@
 
 </main>
 
+<!-- MAIN SCRIPT-->
 <script>
 
     const { shell } = require('electron');
@@ -235,7 +237,7 @@
 
     });
 
-    /* RECUPERATION DU FICHIER MODS*/
+    /* RECUPERATION DU FICHIER MODS */
     ipcRenderer.on("modsFile", (event, modsFile) => {
         console.log(modsFile);
         updateActivateMods(modsFile);
@@ -324,7 +326,6 @@
 
     /*
     *
-    *
     * UTILITAIRE
     *
     * */
@@ -367,4 +368,5 @@
 </script>
 
 </body>
+
 </html>

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-<!--Create By Maxime Tournier-->
+    <!--Create By Maxime Tournier-->
 <head>
 
     <!-- BASE -->
@@ -33,6 +33,7 @@
     </div>
 </nav>
 
+<!-- ONGLET SETTING -->
 <main class="custom-scrollbar">
 
     <h2 class="up-title"><i class="ri-settings-3-fill icone-left"></i> PREFERENCE</h2>
@@ -96,7 +97,7 @@
             </div>
 
             <div class="btn-param">
-                <button onclick="launchSite('https://useritium.fr/connect.php')" class="btn-classic">Votre Compte <i class="ri-user-line"></i></button>
+                <button onclick="launchSite(window.URL_USERITIUM_INSCRIPTION)" class="btn-classic">Votre Compte <i class="ri-user-line"></i></button>
             </div>
         </article>
 
@@ -145,9 +146,9 @@
         </div>
 
         <div class="btn-legal">
-            <button onclick="launchSite('https://tyroserv.fr/cgu')">CGU</button>
-            <button onclick="launchSite('https://tyroserv.fr/cgv')">CGV</button>
-            <button onclick="launchSite('https://tyroserv.fr/terms')">TERMS</button>
+            <button onclick="launchSite(window.URL_TYROSERV_SITEWEB_CGU)">CGU</button>
+            <button onclick="launchSite(window.URL_TYROSERV_SITEWEB_CGV)">CGV</button>
+            <button onclick="launchSite(window.URL_TYROSERV_SITEWEB_TERMS)">TERMS</button>
         </div>
 
         <p id="end-info">
@@ -159,16 +160,35 @@
 
 </main>
 
+<!-- MAIN SCRIPT-->
 <script>
-    // Navbar
+    const { shell } = require('electron');
+    const { ipcRenderer } = require('electron');
+    const ipc = require("electron").ipcRenderer;
+
+    /*
+    *
+    * AFFICHAGE DE BASE
+    *
+    * */
+
+    /* NAVBAR*/
     document.querySelector("#closeOnglet").addEventListener("click", () => {
         ipc.send("manualCloseOnglet");
     });
 
+    baseView();
+    function baseView(){
 
-    const { shell } = require('electron');
-    const { ipcRenderer } = require('electron');
-    const ipc = require("electron").ipcRenderer;
+        /* Titre Navbar */
+        document.getElementById("title").innerText = window.NAME_LAUNCHER + " - " + window.ONGLET_MOD_NAME;
+    }
+
+    /*
+    *
+    * RECUPERATION DES BUTTON
+    *
+    * */
 
     var RamMin = document.getElementById("RamMin")
     var RamMax = document.getElementById("RamMax")
@@ -179,81 +199,24 @@
     var DiscordFalse = document.getElementById("DiscordFalse")
     var DiscordTrue = document.getElementById("DiscordTrue")
 
-
     /*
     *
-    * BTN SET
+    * INIT SETTING
     *
     * */
 
-    // RAM
-    RamMin.addEventListener('input', (event) => {
-        settingsContenu.RamMin = +event.target.value;
-        ipcRenderer.send("setSettingsFile", {newJson: settingsContenu});
-    });
-
-    RamMax.addEventListener('input', (event) => {
-        settingsContenu.RamMax = +event.target.value;
-        ipcRenderer.send("setSettingsFile", {newJson: settingsContenu});
-    });
-
-    // Resolution
-    ResoWidth.addEventListener('input', (event) => {
-        settingsContenu.width = +event.target.value;
-        ipcRenderer.send("setSettingsFile", {newJson: settingsContenu});
-    });
-
-    ResoHeight.addEventListener('input', (event) => {
-        settingsContenu.height = +event.target.value;
-        ipcRenderer.send("setSettingsFile", {newJson: settingsContenu});
-    });
-
-
-    // showLauncher
-    showLauncherFalse.addEventListener("click", () => {
-        showLauncherTrue.classList.remove("active");
-        showLauncherFalse.classList.add("active");
-        settingsContenu.showLauncher = false;
-        ipcRenderer.send("setSettingsFile", {newJson: settingsContenu});
-    });
-
-    showLauncherTrue.addEventListener("click", () => {
-        showLauncherTrue.classList.add("active");
-        showLauncherFalse.classList.remove("active");
-        settingsContenu.showLauncher = true;
-        ipcRenderer.send("setSettingsFile", {newJson: settingsContenu});
-    });
-
-    // discordReachPresence
-    DiscordFalse.addEventListener("click", () => {
-        DiscordTrue.classList.remove("active");
-        DiscordFalse.classList.add("active");
-        settingsContenu.discordReachPresence = false;
-        ipcRenderer.send("setSettingsFile", {newJson: settingsContenu});
-        ipcRenderer.send("updateDiscord", {state: 'stop'});
-    });
-
-    DiscordTrue.addEventListener("click", () => {
-        console.log(settingsContenu)
-        DiscordTrue.classList.add("active");
-        DiscordFalse.classList.remove("active");
-        settingsContenu.discordReachPresence = true;
-        ipcRenderer.send("setSettingsFile", {newJson: settingsContenu});
-        ipcRenderer.send("updateDiscord", {state: 'start'});
-    });
-
-
+    // DB SETTING
     let settingsContenu;
 
-    // GET SETTING FILE
+    // RECUPERATION DE SETTINGS FILE
     ipcRenderer.send("getSettingsFile");
     ipcRenderer.on("settingsFile", (event, settingsFile) => {
-        console.log(settingsFile);
+        // console.log(settingsFile);
         setActualyValeur(settingsFile);
         settingsContenu = settingsFile;
     });
 
-    // MISE IN FORM SETTING FILE
+    // AFFICHAGE DE SETTINGS FILE
     function setActualyValeur(settingsFile){
 
         RamMin.value = settingsFile.RamMin
@@ -279,22 +242,91 @@
 
     }
 
+    /*
+    *
+    * UPDATE SETTING
+    *
+    * */
+
+
+    // RAM MIN
+    RamMin.addEventListener('input', (event) => {
+        settingsContenu.RamMin = +event.target.value;
+        ipcRenderer.send("setSettingsFile", {newJson: settingsContenu});
+    });
+
+    // RAM MAX
+    RamMax.addEventListener('input', (event) => {
+        settingsContenu.RamMax = +event.target.value;
+        ipcRenderer.send("setSettingsFile", {newJson: settingsContenu});
+    });
+
+    // Resolution Width
+    ResoWidth.addEventListener('input', (event) => {
+        settingsContenu.width = +event.target.value;
+        ipcRenderer.send("setSettingsFile", {newJson: settingsContenu});
+    });
+
+    // Resolution Height
+    ResoHeight.addEventListener('input', (event) => {
+        settingsContenu.height = +event.target.value;
+        ipcRenderer.send("setSettingsFile", {newJson: settingsContenu});
+    });
+
+    // showLauncher FALSE
+    showLauncherFalse.addEventListener("click", () => {
+        showLauncherTrue.classList.remove("active");
+        showLauncherFalse.classList.add("active");
+        settingsContenu.showLauncher = false;
+        ipcRenderer.send("setSettingsFile", {newJson: settingsContenu});
+    });
+
+    // showLauncher TRUE
+    showLauncherTrue.addEventListener("click", () => {
+        showLauncherTrue.classList.add("active");
+        showLauncherFalse.classList.remove("active");
+        settingsContenu.showLauncher = true;
+        ipcRenderer.send("setSettingsFile", {newJson: settingsContenu});
+    });
+
+    // discordReachPresence FALSE
+    DiscordFalse.addEventListener("click", () => {
+        DiscordTrue.classList.remove("active");
+        DiscordFalse.classList.add("active");
+        settingsContenu.discordReachPresence = false;
+        ipcRenderer.send("setSettingsFile", {newJson: settingsContenu});
+        ipcRenderer.send("updateDiscord", {state: 'stop'});
+    });
+
+    // discordReachPresence TRUE
+    DiscordTrue.addEventListener("click", () => {
+        console.log(settingsContenu)
+        DiscordTrue.classList.add("active");
+        DiscordFalse.classList.remove("active");
+        settingsContenu.discordReachPresence = true;
+        ipcRenderer.send("setSettingsFile", {newJson: settingsContenu});
+        ipcRenderer.send("updateDiscord", {state: 'start'});
+    });
+
     // DECONNEXION
     document.getElementById("decoUser").addEventListener("click", () => {
         ipc.send("manualCloseOnglet");
         ipc.send("deconnexionUser");
     });
 
-    // LANCEMENT DE SITE
-    function launchSite(url){
-        shell.openExternal(url);
-    }
 
+    /*
+    *
+    * GESTION DE API GET LAUNCHER
+    *
+    * */
 
-    // SET INFO
     var dataInfoLauncher = [];
 
+    // RECUPERATION DES INFO D'API GET LAUNCHER
     ipcRenderer.send("getInfoLauncher");
+
+    // AFFICHAGE DES INFO D'API GET LAUNCHER
     ipcRenderer.on("setInfoLauncher", (event, data) => {
         dataInfoLauncher = data;
 
@@ -318,6 +350,16 @@
 
     });
 
+    /*
+    *
+    * UTILITAIRE
+    *
+    * */
+
+    // LANCEMENT DE SITE
+    function launchSite(url){
+        shell.openExternal(url);
+    }
 
     // NOTIFICATION
     function notif(status, why){
@@ -352,4 +394,5 @@
 </script>
 
 </body>
+
 </html>
