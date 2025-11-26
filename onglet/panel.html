@@ -279,10 +279,12 @@
     updatePlayerInfo();
     let nbPlayerLastTimestamp = 0;
     document.getElementById('player').addEventListener('mouseenter', function() {
-        const currentTime = Date.now();
-        if (currentTime - nbPlayerLastTimestamp >= window.DELAY_REQUEST) {
-            updatePlayerInfo();
-            nbPlayerLastTimestamp = currentTime;
+        if (hereServer === "faction"){
+            const currentTime = Date.now();
+            if (currentTime - nbPlayerLastTimestamp >= window.DELAY_REQUEST) {
+                updatePlayerInfo();
+                nbPlayerLastTimestamp = currentTime;
+            }
         }
     });
     function updatePlayerInfo() {
