@@ -143,7 +143,7 @@
         <div id="downbar">
 
             <h3 id="player" class="btn" onclick="launchSite('https://tyroserv.fr/player/' + userConnected.pseudo)">
-                JOUEURS <div id="joueur"><p><span id="inPlayerInfo">0</span>/<span id="maxPlayerInfo">1000</span></p></div>
+                JOUEURS <div id="joueur" style="display: none"><p><span id="inPlayerInfo">0</span>/<span id="maxPlayerInfo">1000</span></p></div>
             </h3>
             <h3 id="minecraft" style="display: none" class="btn" onclick="launchSite('https://www.minecraft.net/')">
                 MINECRAFT
@@ -205,11 +205,6 @@
     *
     * */
 
-    // let ipServerFaction = "mc.tyroserv.fr";
-    let ipServerFaction = "vps212.tyrolium.fr:25566";
-    let ipServerPing = "https://vps212.tyrolium.fr";
-    // let ipServerPing = "http://127.0.0.1/Tyrolium-Uptime-InServer";
-
     /* CONTROLE DE LA COULEUR DU CERCLE */
     let serverState = {
         "server-global": true,
@@ -220,7 +215,7 @@
     updateServerState();
     let cercle = document.getElementById('cercle');
     function updateServerState() {
-        console.log(serverState)
+        // console.log(serverState)
         if (!serverState.faction && !serverState["api-mc"] && !serverState["server-global"]) {
             cercle.style.background = "red"; // Tous false = rouge
         } else if (!serverState.faction || !serverState["api-mc"] || !serverState["server-global"]) {
@@ -230,23 +225,32 @@
         }
     }
 
-    
     /* AFFICHAGE PING (SERVER_GLOBAL) */
     getPingServer();
+    let pingLastTimestamp = 0;
     document.getElementById('ping').addEventListener('mouseenter', function() {
-        getPingServer();
+        const currentTime = Date.now();
+        if (currentTime - pingLastTimestamp >= window.DELAY_REQUEST) {
+            getPingServer();
+            pingLastTimestamp = currentTime;
+        }
     });
     function getPingServer() {
         var pingValue;
         var TimeClientStart = Date.now();
-        getTyroUptimeInfo(ipServerPing, TimeClientStart)
+        getTyroUptimeInfo(TimeClientStart)
             .then(function(tyroUptimeInfo) {
 
                 const pingClientSide = Date.now() - TimeClientStart; /* Ping calculer par le Client uniquement */
                 pingValue = pingClientSide + " ms";
                 document.getElementById('pingValue').innerText = pingValue;
 
-            }).catch(function(error) {console.log(error);
+            }).catch(function(error) {
+
+            console.log(error);
+
+            serverState["server-global"] = false;
+            updateServerState();
 
             // Si l'erreur est le timeout que nous avons généré
             if (error.message.startsWith("Timeout_2s")) {
@@ -262,33 +266,67 @@
 
     // AFFICHAGE NOMBRE JOUEUR (FACTION)
     updatePlayerInfo();
+    let nbPlayerLastTimestamp = 0;
+    document.getElementById('player').addEventListener('mouseenter', function() {
+        const currentTime = Date.now();
+        if (currentTime - nbPlayerLastTimestamp >= window.DELAY_REQUEST) {
+            updatePlayerInfo();
+            nbPlayerLastTimestamp = currentTime;
+        }
+    });
     function updatePlayerInfo() {
-        getInfoTechnicalServer(ipServerFaction)
+        getInfoTechnicalServer()
             .then(function(infoTechnicalServer) {
                 // console.log(infoTechnicalServer);
 
+                if (infoTechnicalServer.serverStatus && infoTechnicalServer.serverStatus !== "offline"){
+
                     if (infoTechnicalServer.players || infoTechnicalServer.players === 0){
+                        document.getElementById('joueur').style.display = "block";
                         document.getElementById('inPlayerInfo').innerText = infoTechnicalServer.players;
                     } else {
-                        document.getElementById('inPlayerInfo').innerText = "??";
+                        document.getElementById('joueur').style.display = "none";
+                        document.getElementById('inPlayerInfo').innerText = window.DEFAULT_MIN_PLAYER;
                     }
                     if (infoTechnicalServer.maxplayers){
                         document.getElementById('maxPlayerInfo').innerText = infoTechnicalServer.maxplayers;
                     } else {
-                        document.getElementById('maxPlayerInfo').innerText = "??" ;
+                        document.getElementById('maxPlayerInfo').innerText = window.DEFAULT_MAX_PLAYER;
                     }
 
-                // document.getElementById('inPlayerInfo').innerText = infoTechnicalServer.players;
-                // document.getElementById('maxPlayerInfo').innerText = infoTechnicalServer.maxplayers;
+                } else {
+                    serverState["faction"] = false;
+                    updateServerState();
+
+                    document.getElementById('joueur').style.display = "none";
+                    document.getElementById('inPlayerInfo').innerText = window.DEFAULT_MIN_PLAYER;
+                    document.getElementById('maxPlayerInfo').innerText = window.DEFAULT_MAX_PLAYER;
+                }
 
             }).catch(function(error) {
+                console.log(error);
 
-                document.getElementById('inPlayerInfo').innerText = "??";
-                document.getElementById('maxPlayerInfo').innerText = "??";
+                serverState["faction"] = false;
+                updateServerState();
+
+                document.getElementById('joueur').style.display = "none";
+                document.getElementById('inPlayerInfo').innerText = window.DEFAULT_MIN_PLAYER;
+                document.getElementById('maxPlayerInfo').innerText = window.DEFAULT_MAX_PLAYER;
             });
     }
 
     // AFFICHAGE LABEL JOUEUR (API_MC)
+    let activateLabelPlayer = false;
+    let labelPlayerLastTimestamp = 0;
+    document.getElementById('stats-perso').addEventListener('mouseenter', function () {
+        if (activateLabelPlayer){
+            const currentTime = Date.now();
+            if (currentTime - labelPlayerLastTimestamp >= window.DELAY_REQUEST) {
+                labelPlayer();
+                labelPlayerLastTimestamp = currentTime;
+            }
+        }
+    });
     function labelPlayer(){
         getInfoServer(userConnected.pseudo)
             .then(function(infoServUser) {
@@ -307,10 +345,11 @@
                         grade_div.classList.add("show-tag");
 
                         let allRoles = infoServUser['result']['roles'];
+                        var grade_text = document.getElementById("grade-user-text");
+                        grade_text.innerText = "";
                         allRoles.forEach(oneRoles =>{
 
                             if (oneRoles['name'] !== "default"){
-                                var grade_text = document.getElementById("grade-user-text");
                                 grade_text.innerText +=  oneRoles['displayName'];
                             }
 
@@ -346,21 +385,24 @@
             })
             .catch(function(error) {
                 console.log(error);
+
+                serverState["api-mc"] = false;
+                updateServerState();
+
             });
     }
 
     // RECUPERATION PING (SERVER_GLOBAL)
-    function getTyroUptimeInfo(ipTyroUptime, TimeClientStart) {
+    function getTyroUptimeInfo(TimeClientStart) {
         const controller = new AbortController();
         const signal = controller.signal;
-        const timeoutDuration = 2000; // 2 secondes
-
+        const timeoutDuration = window.TIMEOUT_REQUEST;
 
         const timeoutId = setTimeout(() => {
             controller.abort();
         }, timeoutDuration);
 
-        return fetch(ipTyroUptime +'/?uptime=1&time=' + TimeClientStart , { signal })
+        return fetch(window.IP_SERVER_PING +'/?uptime=1&time=' + TimeClientStart , { signal })
             .then(response => {
                 clearTimeout(timeoutId); // Annule le timeout si le fetch a réussi
                 if (!response.ok) {
@@ -372,8 +414,6 @@
                 clearTimeout(timeoutId); // Annule le timeout en cas d'erreur
                 // Si l'erreur est due à l'annulation, on propage un message clair
                 if (error.name === 'AbortError') {
-                    serverState["server-global"] = false;
-                    updateServerState();
                     throw new Error("Timeout_2s: La requête SERVER_GLOBAL a dépassé 2 secondes.");
                 }
                 throw error; // Propage les autres erreurs (réseau, JSON, etc.)
@@ -382,35 +422,59 @@
     }
 
     /* RECUPERATION NOMBRE JOUEUR (FACTION) */
-    function getInfoTechnicalServer(ipServerFaction) {
-        return new Promise((resolve, reject) => {
-            fetch('https://mcapi.xdefcon.com/server/'+ipServerFaction+'/full/json')
-                .then(function(response) {
-                    return response.json();
-                })
-                .then(function(data) {
-                    resolve(data);
-                })
-                .catch(function(error) {
-                    reject(error);
-                });
-        });
+    function getInfoTechnicalServer() {
+        const controller = new AbortController();
+        const signal = controller.signal;
+        const timeoutDuration = window.TIMEOUT_REQUEST;
+
+        const timeoutId = setTimeout(() => {
+            controller.abort();
+        }, timeoutDuration);
+
+        return fetch(window.GET_NB_PLAYER, { signal })
+            .then(response => {
+                clearTimeout(timeoutId); // Annule le timeout si le fetch a réussi
+                if (!response.ok) {
+                    throw new Error(`Erreur HTTP: ${response.status}`);
+                }
+                return response.json();
+            })
+            .catch(error => {
+                clearTimeout(timeoutId); // Annule le timeout en cas d'erreur
+                // Si l'erreur est due à l'annulation, on propage un message clair
+                if (error.name === 'AbortError') {
+                    throw new Error("Timeout_2s: La requête FACTION a dépassé 2 secondes.");
+                }
+                throw error; // Propage les autres erreurs (réseau, JSON, etc.)
+            });
     }
 
     // RECUPERATION LABEL JOUEUR (API_MC)
     function getInfoServer(pseudo) {
-        return new Promise((resolve, reject) => {
-            fetch('https:///api-minecraft.tyroserv.fr'+'/?pseudo=' + pseudo)
-                .then(function(response) {
-                    return response.json();
-                })
-                .then(function(data) {
-                    resolve(data);
-                })
-                .catch(function(error) {
-                    reject(error);
-                });
-        });
+        const controller = new AbortController();
+        const signal = controller.signal;
+        const timeoutDuration = window.TIMEOUT_REQUEST;
+
+        const timeoutId = setTimeout(() => {
+            controller.abort();
+        }, timeoutDuration);
+
+        return fetch(window.API_GET_TYROSERV +'/?pseudo=' + pseudo, { signal })
+            .then(response => {
+                clearTimeout(timeoutId); // Annule le timeout si le fetch a réussi
+                if (!response.ok) {
+                    throw new Error(`Erreur HTTP: ${response.status}`);
+                }
+                return response.json();
+            })
+            .catch(error => {
+                clearTimeout(timeoutId); // Annule le timeout en cas d'erreur
+                // Si l'erreur est due à l'annulation, on propage un message clair
+                if (error.name === 'AbortError') {
+                    throw new Error("Timeout_2s: La requête API_MC a dépassé 2 secondes.");
+                }
+                throw error; // Propage les autres erreurs (réseau, JSON, etc.)
+            });
     }
 
 
@@ -468,6 +532,7 @@
                 PP.style.backgroundImage = "url('https://minotar.net/helm/" + userConnected.pseudo + "')";
             }
 
+            activateLabelPlayer = true;
             labelPlayer();
         }
 

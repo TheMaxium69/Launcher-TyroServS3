@@ -2,9 +2,22 @@ const global = require('../module/global.js');
 
 /* GLOBAL */
 window.NAME_LAUNCHER = global.NAME_LAUNCHER;
+
 window.FIRST_WINDOW_RESIZABLE = global.FIRST_WINDOW_RESIZABLE;
 
+window.TIMEOUT_REQUEST = global.TIMEOUT_REQUEST;
+window.DELAY_REQUEST = global.DELAY_REQUEST;
+
+window.DEFAULT_MIN_PLAYER = global.DEFAULT_MIN_PLAYER
+window.DEFAULT_MAX_PLAYER = global.DEFAULT_MAX_PLAYER
+
 /* URL */
+window.IP_SERVER_MC = global.IP_SERVER_MC
+window.IP_SERVER_PING = global.IP_SERVER_PING
+window.API_GET_TYROSERV = global.API_GET_TYROSERV
 
 window.URL_USERITIUM_INSCRIPTION = global.URL_USERITIUM_INSCRIPTION
 window.URL_USERITIUM_MDP = global.URL_USERITIUM_MDP
+
+/* REQUEST */
+window.GET_NB_PLAYER = global.GET_NB_PLAYER
