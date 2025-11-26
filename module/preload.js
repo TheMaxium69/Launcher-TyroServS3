@@ -1,4 +1,4 @@
-const global = require('./global.js');
+const global = require('../module/global.js');
 
 /* GLOBAL */
 window.NAME_LAUNCHER = global.NAME_LAUNCHER;

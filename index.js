@@ -3,7 +3,7 @@ const path = require('path')
 const { Client, Authenticator } = require('minecraft-launcher-core');
 const request = require('request');
 const fs = require("fs");
-const global = require('./global.js');
+const global = require('./module/global.js');
 
 let launcher = null;
 let mainWindow;
@@ -41,11 +41,11 @@ function createWindow () {
       nodeIntegration: true,
       contextIsolation: false,
       enableRemoteModule: true,
-      preload: path.join(__dirname, 'preload.js'),
+      preload: path.join(__dirname, 'module/preload.js'),
     }
   })
 
-  mainWindow.loadFile('index.html')
+  mainWindow.loadFile('onglet/index.html')
   mainWindow.setMenuBarVisibility(false);
 
 }
@@ -101,7 +101,7 @@ ipcMain.on("deconnexionUser", (event) =>{
         console.log('Le fichier a ete supprime avec succes.');
     });
 
-    mainWindow.loadFile('index.html');
+    mainWindow.loadFile('onglet/index.html');
 
 
 });
@@ -114,7 +114,7 @@ ipcMain.on("connected", async (event, data) => {
     console.log("Connection avec : ", data.userTyroServLoad.pseudo)
 
     // CHARGER LE FICHIER PANEL
-    mainWindow.loadFile('panel.html');
+    mainWindow.loadFile('onglet/panel.html');
 
     // UPDATE DU REACH PRESENCE
     setActivity('Navigue sur le Launcher', data.userTyroServLoad.pseudo);

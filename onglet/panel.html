@@ -8,19 +8,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- EXTENSION -->
-    <link rel="stylesheet" href="extension/iziToast.css">
-    <script type="text/javascript" src="extension/iziToast.js"></script>
-    <link rel="stylesheet" href="extension/remixicon/remixicon.css">
-    <link rel="stylesheet" href="extension/fontawesome/css/all.css">
+    <link rel="stylesheet" href="../extension/iziToast.css">
+    <script type="text/javascript" src="../extension/iziToast.js"></script>
+    <link rel="stylesheet" href="../extension/remixicon/remixicon.css">
+    <link rel="stylesheet" href="../extension/fontawesome/css/all.css">
 
 <!--    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.min.css">-->
 <!--    <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v6.4.2/css/all.css">-->
 
     <!-- CSS -->
-    <link rel="stylesheet" href="css/index.css">
-    <link rel="stylesheet" href="css/navbar.css">
-    <link rel="stylesheet" href="css/panel.css">
-    <link rel="stylesheet" href="css/loadingBar.css">
+    <link rel="stylesheet" href="../css/index.css">
+    <link rel="stylesheet" href="../css/navbar.css">
+    <link rel="stylesheet" href="../css/panel.css">
+    <link rel="stylesheet" href="../css/loadingBar.css">
 
 </head>
 
@@ -28,7 +28,7 @@
 
 <!-- NAVBAR -->
 <nav style="-webkit-app-region: drag">
-    <img src="asset/logo.png" width="20px" style="margin-left: 10px">
+    <img src="../asset/logo.png" width="20px" style="margin-left: 10px">
     <p id="title"></p>
     <div class="nav-buttons">
         <button id="minimize"><i class="fa-solid fa-window-minimize"></i></button>
@@ -77,7 +77,7 @@
         <div id="name-serv" onclick="launchSite('https://tyroserv.fr')">TYROSERV</div>
         <div id="type-serv" >PVP/FACTION</div>
 
-        <img id="img-serv" src="asset/logo3d.png">
+        <img id="img-serv" src="../asset/logo3d.png">
 
     </section>
 
@@ -118,7 +118,7 @@
             <i class="ri-linkedin-box-fill icone-left"></i>
         </div>
 
-        <img id="tyroliumsite" style="cursor: pointer;" onclick="launchSite('https://tyrolium.fr')" src="asset/tyroliumwite.png">
+        <img id="tyroliumsite" style="cursor: pointer;" onclick="launchSite('https://tyrolium.fr')" src="../asset/tyroliumwite.png">
 
     </section>
 
@@ -130,9 +130,9 @@
 
         <div id="backServAll"></div>
 
-        <div id="serv-faction" style="cursor: pointer;" onclick="switchLauncher('faction')"><img src="asset/logo3d.png"></div>
-        <div id="serv-game" style="cursor: pointer;" onclick="switchLauncher('minigame')"><img src="asset/logominigame.png"></div>
-        <div id="serv-vanilla" style="cursor: pointer;" onclick="switchLauncher('vanilla')"><img src="asset/minecraft.png"></div>
+        <div id="serv-faction" style="cursor: pointer;" onclick="switchLauncher('faction')"><img src="../asset/logo3d.png"></div>
+        <div id="serv-game" style="cursor: pointer;" onclick="switchLauncher('minigame')"><img src="../asset/logominigame.png"></div>
+        <div id="serv-vanilla" style="cursor: pointer;" onclick="switchLauncher('vanilla')"><img src="../asset/minecraft.png"></div>
 <!--        <div id="serv-bedrock" onclick="switchLauncher('bedrock')"><img src="asset/minecraft.png"></div>-->
 
     </section>
@@ -183,10 +183,10 @@
 </main>
 
 <!-- MODULE JS -->
-<script src="module/loadingBar.js"></script>
-<script src="module/navbar.js"></script>
-<script src="module/cheatcode.js"></script>
-<script src="module/authUseritium.js"></script>
+<script src="../module/loadingBar.js"></script>
+<script src="../module/navbar.js"></script>
+<script src="../module/cheatcode.js"></script>
+<script src="../module/authUseritium.js"></script>
 
 <!-- MAIN SCRIPT-->
 <script>
@@ -196,13 +196,6 @@
     const ipc = require("electron").ipcRenderer;
 
     let ErreurLaunchControl = 0;
-
-    /*
-    *
-    * AFFICHAGE PAGE
-    *
-    * */
-
 
     /*
     *
@@ -677,9 +670,9 @@
 
     let hereServer = "faction"
 
-    let BackgroundFaction = "url('asset/back/TyroServ \(1920x1080\).png')";
-    let BackgroundMiniGame = "url('asset/back/MiniGame \(1920x1080\).png')";
-    let BackgroundVanilla = "url('asset/back/Vanilla \(1920x1080\).png')";
+    let BackgroundFaction = "url('../asset/back/TyroServ \(1920x1080\).png')";
+    let BackgroundMiniGame = "url('../asset/back/MiniGame \(1920x1080\).png')";
+    let BackgroundVanilla = "url('../asset/back/Vanilla \(1920x1080\).png')";
 
     function switchLauncher(futur){
 
@@ -707,7 +700,7 @@
                 nameServer.innerText = "TYROSERV";
                 typeServer.innerText = "PVP/FACTION";
                 typeServer.style.left = "839px";
-                imgServer.src = "asset/logo3d.png";
+                imgServer.src = "../asset/logo3d.png";
 
                 barChoose.style.top = "280px";
                 barChoose.style.background = "#1400FF";
@@ -733,7 +726,7 @@
                 nameServer.innerText = "TYROSERV";
                 typeServer.innerText = "MINI-JEUX";
                 typeServer.style.left = "897px"
-                imgServer.src = "asset/logominigame.png";
+                imgServer.src = "../asset/logominigame.png";
 
                 barChoose.style.top = "363px";
                 barChoose.style.background = "#FF0000";
@@ -759,7 +752,7 @@
                 nameServer.innerText = "MINECRAFT";
                 typeServer.innerText = "VANILLA";
                 typeServer.style.left = "932px";
-                imgServer.src = "asset/minecraft.png";
+                imgServer.src = "../asset/minecraft.png";
 
                 barChoose.style.top = "446px";
                 barChoose.style.background = "#0ABE06";
