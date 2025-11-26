@@ -80,7 +80,7 @@ function cheatcode(arg) {
         retro = 0;
         // retro = getRandomInt(3)
 
-        BackgroundFaction = "url('asset/back/Retro "+(retro+1)+" (1920x1080).png')"
+        BackgroundFaction = "url('../asset/back/Retro "+(retro+1)+" (1920x1080).png')"
         if (hereServer === "faction") {
             let bodyPanelCheatCode = document.getElementById("panel");
             bodyPanelCheatCode.style.backgroundImage = BackgroundFaction;

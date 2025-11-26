@@ -49,6 +49,10 @@ const FILE_LAUNCH_GAME = "Launch.jar";
 
 /* URL */
 
+const URL_INSTANCE_CLIENT = "http://tyrolium.fr/Download/TyroServS3/instance.zip";
+
+const API_GET_INFO_LAUNCHER = "https://tyrolium.fr/Download/TyroServS3/launcher/index.php";
+
 const PROD_IP_SERVER_MC = "mc.tyroserv.fr";
 const PROD_PORT_SERVER_MC = "";
 const DEV_IP_SERVER_MC = "vps212.tyrolium.fr";
@@ -64,12 +68,14 @@ const PROD_API_GET_TYROSERV_PROTOCOLE = "https://";
 const DEV_API_GET_TYROSERV = "api-minecraft.tyroserv.fr";
 const DEV_API_GET_TYROSERV_PROTOCOLE = "https://";
 
+const SCALE_USERITIUM_SKIN = "20";
+const URL_USERITIUM_SKIN_HEAD = "https://useritium.fr/uploads/skin/headView.php?scale=" + SCALE_USERITIUM_SKIN;
+const URL_OFFICIEL_SKIN_HEAD = "https://minotar.net/helm/";
+
+const URL_USERITIUM_INSCRIPTION = "https://useritium.fr/connect.php";
+const URL_USERITIUM_MDP = "https://useritium.fr/password.php?create=yes"
 const URL_USERITIUM_PP = "https://useritium.fr/uploads/pp/";
 const URL_GENERATE_PP = "https://tyrolium.fr/generate-pp/";
-
-const SKALE_USERITIUM_SKIN = "20";
-const URL_USERITIUM_SKIN_HEAD = "https://useritium.fr/uploads/skin/headView.php?scale=" + SKALE_USERITIUM_SKIN;
-const URL_OFFICIEL_SKIN_HEAD = "https://minotar.net/helm/";
 
 const PROD_URL_TYROSERV_SITEWEB = "tyroserv.fr";
 const PROD_PROTOCOLE_TYROSERV_SITEWEB = "https://";
@@ -78,12 +84,8 @@ const DEV_PROTOCOLE_TYROSERV_SITEWEB = "https://";
 
 const URL_TYROSERV_SITEWEB_PLAYER = (IS_PROD ? PROD_PROTOCOLE_TYROSERV_SITEWEB + PROD_URL_TYROSERV_SITEWEB : DEV_PROTOCOLE_TYROSERV_SITEWEB + DEV_URL_TYROSERV_SITEWEB) + "/player/";
 
-const URL_INSTANCE_CLIENT = "http://tyrolium.fr/Download/TyroServS3/instance.zip";
+const URL_TYROSERV_BOUTIQUE = "https://tyrolium.tebex.io";
 
-const API_GET_INFO_LAUNCHER = "https://tyrolium.fr/Download/TyroServS3/launcher/index.php";
-
-const URL_USERITIUM_INSCRIPTION = "https://useritium.fr/connect.php";
-const URL_USERITIUM_MDP = "https://useritium.fr/password.php?create=yes"
 
 /* REQUEST */
 
@@ -130,10 +132,18 @@ module.exports = {
     IP_SERVER_PING: IS_PROD ? PROD_PROTCOLE_SERVER_PING + PROD_IP_SERVER_PING : DEV_PROTCOLE_SERVER_PING + DEV_IP_SERVER_PING,
     API_GET_TYROSERV: IS_PROD ? PROD_API_GET_TYROSERV_PROTOCOLE + PROD_API_GET_TYROSERV : DEV_API_GET_TYROSERV_PROTOCOLE + DEV_API_GET_TYROSERV,
 
-    URL_TYROSERV_SITEWEB: IS_PROD ? PROD_PROTOCOLE_TYROSERV_SITEWEB + PROD_URL_TYROSERV_SITEWEB : DEV_PROTOCOLE_TYROSERV_SITEWEB + DEV_URL_TYROSERV_SITEWEB,
+    URL_USERITIUM_SKIN_HEAD: URL_USERITIUM_SKIN_HEAD,
+    URL_OFFICIEL_SKIN_HEAD: URL_OFFICIEL_SKIN_HEAD,
 
     URL_USERITIUM_INSCRIPTION: URL_USERITIUM_INSCRIPTION,
     URL_USERITIUM_MDP: URL_USERITIUM_MDP,
+    URL_USERITIUM_PP: URL_USERITIUM_PP,
+    URL_GENERATE_PP: URL_GENERATE_PP,
+
+    URL_TYROSERV_SITEWEB: IS_PROD ? PROD_PROTOCOLE_TYROSERV_SITEWEB + PROD_URL_TYROSERV_SITEWEB : DEV_PROTOCOLE_TYROSERV_SITEWEB + DEV_URL_TYROSERV_SITEWEB,
+    URL_TYROSERV_SITEWEB_PLAYER : URL_TYROSERV_SITEWEB_PLAYER,
+
+    URL_TYROSERV_BOUTIQUE : URL_TYROSERV_BOUTIQUE,
 
     /* REQUEST */
     GET_NB_PLAYER: GET_NB_PLAYER,

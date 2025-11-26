@@ -42,7 +42,7 @@
 <!--  UP LEFT  -->
     <section id="up-left">
 
-        <div id="PP" onclick="launchSite('https://tyroserv.fr/player/')"></div>
+        <div id="PP" onclick="launchSite(window.URL_TYROSERV_SITEWEB_PLAYER)"></div>
 
         <div id="useritium-pseudo"></div>
 
@@ -74,7 +74,7 @@
 <!--  UP RIGHT  -->
     <section id="up-right">
 
-        <div id="name-serv" onclick="launchSite('https://tyroserv.fr')">TYROSERV</div>
+        <div id="name-serv" onclick="launchSite(window.URL_TYROSERV_SITEWEB)">TYROSERV</div>
         <div id="type-serv" >PVP/FACTION</div>
 
         <img id="img-serv" src="../asset/logo3d.png">
@@ -86,7 +86,7 @@
 
     <section id="icone-left">
 
-        <img id="useritium-account" style="cursor: pointer;" onclick="launchSite('https://useritium.fr/connect.php')" src="https://tyrolium.fr/generate-pp/">
+        <img id="useritium-account" style="cursor: pointer;" onclick="launchSite(window.URL_USERITIUM_INSCRIPTION)">
 
         <div id="setting" class="btnleft" onclick="launchOnglet('settings')">
 <!--            <i class="ri-settings-fill icone-left"></i>-->
@@ -95,7 +95,7 @@
 
         <div id="separebar"></div>
 
-        <div id="link" class="btnleft" onclick="launchSite('https://tyroserv.fr')">
+        <div id="link" class="btnleft" onclick="launchSite(window.URL_TYROSERV_SITEWEB)">
 <!--            <i class="ri-global-line icone-left"></i>-->
             <i class="ri-links-line icone-left"></i>
         </div>
@@ -142,8 +142,8 @@
 
         <div id="downbar">
 
-            <h3 id="player" class="btn" onclick="launchSite('https://tyroserv.fr/player/' + userConnected.pseudo)">
-                JOUEURS <div id="joueur" style="display: none"><p><span id="inPlayerInfo">0</span>/<span id="maxPlayerInfo">1000</span></p></div>
+            <h3 id="player" class="btn" onclick="launchSite(window.URL_TYROSERV_SITEWEB_PLAYER)">
+                JOUEURS <div id="joueur" style="display: none"><p><span id="inPlayerInfo"></span>/<span id="maxPlayerInfo"></span></p></div>
             </h3>
             <h3 id="minecraft" style="display: none" class="btn" onclick="launchSite('https://www.minecraft.net/')">
                 MINECRAFT
@@ -168,7 +168,7 @@
                 MODS
             </h3>
 
-            <h3 id="shop" class="btn" onclick="launchSite('https://tyrolium.tebex.io')">
+            <h3 id="shop" class="btn" onclick="launchSite(window.URL_TYROSERV_BOUTIQUE)">
                 BOUTIQUE
             </h3>
 
@@ -196,6 +196,17 @@
     const ipc = require("electron").ipcRenderer;
 
     let ErreurLaunchControl = 0;
+
+    /*
+    *
+    * AFFICHAGE DE BASE
+    *
+    * */
+
+    baseView();
+    function baseView(){
+        document.getElementById("useritium-account").src = window.URL_GENERATE_PP;
+    }
 
     /*
     *
@@ -505,9 +516,9 @@
 
             pseudo.innerText = userConnected.pseudo;
             if (userConnected.useritium.pp){
-                useritium_account.src = "https://useritium.fr/uploads/pp/" + userConnected.useritium.pp;
+                useritium_account.src = window.URL_USERITIUM_PP + userConnected.useritium.pp;
             } else {
-                useritium_account.src = "https://tyrolium.fr/generate-pp/"+ "?l=" + userConnected.pseudo.charAt(0);
+                useritium_account.src = window.URL_GENERATE_PP + "?l=" + userConnected.pseudo.charAt(0);
             }
 
             /* Affichage du nom Useritium*/
@@ -527,9 +538,9 @@
             }
 
             if (userConnected.skin){
-                PP.style.backgroundImage = "url('https://useritium.fr/uploads/skin/headView.php?scale=20"+"&pictureName=" + userConnected.skin + "')";
+                PP.style.backgroundImage = "url('" + window.URL_USERITIUM_SKIN_HEAD+"&pictureName=" + userConnected.skin + "')";
             } else {
-                PP.style.backgroundImage = "url('https://minotar.net/helm/" + userConnected.pseudo + "')";
+                PP.style.backgroundImage = "url('" + window.URL_OFFICIEL_SKIN_HEAD + userConnected.pseudo + "')";
             }
 
             activateLabelPlayer = true;
@@ -848,7 +859,7 @@
     // LANCEMENT DE SITE
     function launchSite(url){
         // shell.openExternal("minecraft://");
-        if (url === "https://tyroserv.fr/player/"){
+        if (url === window.URL_TYROSERV_SITEWEB_PLAYER){
             // userConnected.pseudo
             shell.openExternal(url + userConnected.pseudo);
         } else {
@@ -867,7 +878,7 @@
             ipc.send("launchSettings");
         }
 
-        if (onglet === 'version' && hereServer === "faction"){
+        if (onglet === 'version' && hereServer === "vanilla"){
             ipc.send("launchVersion");
         }
 
