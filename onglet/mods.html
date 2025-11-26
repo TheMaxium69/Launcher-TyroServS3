@@ -27,7 +27,7 @@
 <!--NAVBAR -->
 <nav style="-webkit-app-region: drag">
     <img src="../asset/logo.png" width="20px" style="margin-left: 10px">
-    <p id="title">TyroServ Launcher - Mods</p>
+    <p id="title"></p>
     <div class="nav-buttons">
         <button id="closeOnglet"><i class="fa-solid fa-xmark"></i></button>
     </div>
@@ -36,89 +36,123 @@
 <main class="custom-scrollbar">
 
     <section id="mods-unlock">
-        <h2 class="mods-title"><i class="ri-corner-left-down-line"></i> MODS OPTIONNEL</h2>
-
+        <h2 class="mods-title">
+            <i class="ri-corner-left-down-line"></i>
+            MODS OPTIONNEL
+        </h2>
         <div id="allModsOptionnal">
-
+            <!-- ... -->
         </div>
-
-
     </section>
     <section id="mods-lock">
-
-        <h2 class="mods-title"><i class="ri-corner-left-down-line"></i> MODS OBLIGATOIRE</h2>
-
+        <h2 class="mods-title">
+            <i class="ri-corner-left-down-line"></i>
+            MODS OBLIGATOIRE
+        </h2>
         <div id="allModsLock">
-
+            <!-- ... -->
         </div>
-
-<!--        <article class="article-mods">-->
-<!--            <div class="pp-mod" style="background-image: url('https://media.forgecdn.net/attachments/363/934/2020-03-21_19.png')"></div>-->
-<!--            <div class="info-mod">-->
-
-<!--                <h2 class="mods-name">TyroMod <span>(S3-0.2.0)</span></h2>-->
-<!--                <p><i class="ri-corner-down-right-line"></i> By Maxime Tournier</p>-->
-<!--                <div class="link-mod">-->
-<!--                    <div class="btn-link-mod">CurseForge <i class="ri-external-link-line"></i></div>-->
-<!--                    <div class="btn-link-mod">GitHub <i class="ri-external-link-line"></i></div>-->
-<!--                </div>-->
-
-<!--            </div>-->
-<!--            <div class="btn-mod">-->
-<!--                <div class="socle-btn-mod">-->
-<!--                    <button class="desactive">Désactivé</button>-->
-<!--                    <button class="active">Activé</button>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </article>-->
-
     </section>
-
-
-
 
 </main>
 
 <script>
-    // Navbar
-    document.querySelector("#closeOnglet").addEventListener("click", () => {
-        ipc.send("manualCloseOnglet");
-    });
-
 
     const { shell } = require('electron');
     const { ipcRenderer } = require('electron');
     const ipc = require("electron").ipcRenderer;
 
+    /*
+    *
+    * AFFICHAGE DE BASE
+    *
+    * */
 
-    function changeStateMods(modsID, state){
+    /* NAVBAR*/
+    document.querySelector("#closeOnglet").addEventListener("click", () => {
+        ipc.send("manualCloseOnglet");
+    });
 
-        var btnDesactivé = document.getElementById("mods-desactivate-" + modsID)
-        var btnActivé = document.getElementById("mods-activate-" + modsID);
+    baseView();
+    function baseView(){
 
-        if (state === "desactive"){
-            modsDataOptionnal[modsID-1].activate = false
-
-            btnDesactivé.classList.add("active");
-            btnActivé.classList.remove("active");
-        }
-
-        if (state === "active"){
-            modsDataOptionnal[modsID-1].activate = true
-
-            btnActivé.classList.add("active");
-            btnDesactivé.classList.remove("active");
-        }
-
-        ipcRenderer.send("setModsFile", {newJson: modsDataOptionnal});
-
+        /* Titre Navbar */
+        document.getElementById("title").innerText = window.NAME_LAUNCHER + " - " + window.ONGLET_MOD_NAME;
     }
 
-    // SET MODS
+    /*
+    *
+    * GESTION DES MODS
+    *
+    * */
+
+    // DB MODS
     var modsDataOptionnal = [];
     var modsDataLock = [];
 
+    /* Activation/Desactivation des mods */
+    function changeStateMods(modsID, state) {
+
+        /* Recuperation des BTN*/
+        var btnDesactive = document.getElementById("mods-desactivate-" + modsID)
+        var btnActive = document.getElementById("mods-activate-" + modsID);
+
+        /* Trouver le MOD */
+        let mod = modsDataOptionnal.find(mod => mod.id === modsID);
+
+        if (mod) {
+
+            if (state === "desactive") {
+                mod.activate = false;
+
+                btnDesactive.classList.add("active");
+                btnActive.classList.remove("active");
+            }
+
+            if (state === "active") {
+                mod.activate = true;
+
+                btnActive.classList.add("active");
+                btnDesactive.classList.remove("active");
+            }
+
+            ipcRenderer.send("setModsFile", {newJson: modsDataOptionnal});
+        }
+
+    }
+
+    /* Mise a jour de l'affichage des mods optionnel */
+    function updateActivateMods(modsFileContenu){
+
+        modsFileContenu.forEach(oneMod =>{
+
+            var btnDesactive = document.getElementById("mods-desactivate-" + oneMod.id)
+            var btnActive = document.getElementById("mods-activate-" + oneMod.id);
+
+            if (btnDesactive && btnActive) {
+                if (oneMod.activate === true) {
+                    btnActive.classList.add("active");
+                    btnDesactive.classList.remove("active");
+                } else {
+                    btnDesactive.classList.add("active");
+                    btnActive.classList.remove("active");
+                }
+            }
+
+        });
+
+    }
+
+    /*
+    *
+    * AFFICHAGE DES MODS OPTIONNEL
+    *
+    * */
+
+    /* Recuperation des mods optionnel */
     ipcRenderer.send("getModsOptionnal");
+
+    /* Affichage des mods optionnel */
     ipcRenderer.on("setModsOptionnal", (event, data) => {
         modsDataOptionnal = data;
 
@@ -127,6 +161,7 @@
 
         // Boucle forEach pour générer les articles dynamiquement
         modsDataOptionnal.forEach(function(mod) {
+
             // Créez un nouvel élément d'article
             var nouvelArticle = document.createElement("article");
             nouvelArticle.className = "article-mods";
@@ -172,55 +207,50 @@
                 linkMod.innerHTML =  linkMod.innerHTML + `<div onclick="launchSite('`+ mod.btnInfo.github +`')" class="btn-link-mod">GitHub <i class="ri-external-link-line"></i></div>`;
 
             }
-             infoMod.appendChild(linkMod);
+            infoMod.appendChild(linkMod);
 
             nouvelArticle.appendChild(infoMod);
 
             var btnMod = document.createElement("div");
             btnMod.className = "btn-mod";
-            btnMod.innerHTML = `<div class="socle-btn-mod">
+            if (mod.activate === true){
+                btnMod.innerHTML = `<div class="socle-btn-mod">
+                                    <button id="mods-desactivate-` + mod.id + `" onclick="changeStateMods(`+ mod.id +`, 'desactive')">Désactivé</button>
+                                    <button id="mods-activate-` + mod.id + `" onclick="changeStateMods(`+ mod.id +`, 'active')" class="active">Activé</button>
+                                </div>`;
+            } else {
+                btnMod.innerHTML = `<div class="socle-btn-mod">
                                     <button id="mods-desactivate-` + mod.id + `" onclick="changeStateMods(`+ mod.id +`, 'desactive')" class="active">Désactivé</button>
                                     <button id="mods-activate-` + mod.id + `" onclick="changeStateMods(`+ mod.id +`, 'active')">Activé</button>
                                 </div>`;
+            }
             nouvelArticle.appendChild(btnMod);
 
             // Ajoutez l'article au conteneur
             conteneurMods.appendChild(nouvelArticle);
         });
 
-        // GET SETTING FILE
-        let modsFileContenu;
+        // GET MODS FILE
         ipcRenderer.send("getModsFile");
-        ipcRenderer.on("modsFile", (event, modsFile) => {
-            console.log(modsFile);
-            modsFileContenu = modsFile;
-            updateActivateMods(modsFileContenu);
-        });
 
     });
 
-    function updateActivateMods(modsFileContenu){
+    /* RECUPERATION DU FICHIER MODS*/
+    ipcRenderer.on("modsFile", (event, modsFile) => {
+        console.log(modsFile);
+        updateActivateMods(modsFile);
+    });
 
-        modsFileContenu.forEach(oneMod =>{
+    /*
+    *
+    * AFFICHAGE DES MODS LOCK
+    *
+    * */
 
-            // console.log(oneMod);
-
-            var btnDesactivé = document.getElementById("mods-desactivate-" + oneMod.id)
-            var btnActivé = document.getElementById("mods-activate-" + oneMod.id);
-
-            if (oneMod.activate === true){
-                btnActivé.classList.add("active");
-                btnDesactivé.classList.remove("active");
-            } else {
-                btnDesactivé.classList.add("active");
-                btnActivé.classList.remove("active");
-            }
-
-        });
-
-    }
-
+    /* Recuperation des mods lock */
     ipcRenderer.send("getModsLock");
+
+    /* Affichage des mods lock */
     ipcRenderer.on("setModsLock", (event, data) => {
         modsDataLock = data;
 
@@ -292,6 +322,12 @@
 
     });
 
+    /*
+    *
+    *
+    * UTILITAIRE
+    *
+    * */
 
     // LANCEMENT DE SITE
     function launchSite(url) {

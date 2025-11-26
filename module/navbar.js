@@ -1,20 +1,21 @@
-// const { ipcRenderer } = require("electron");
-// const ipc=ipcRenderer; // just for shortened name
 
-let title = document.getElementById("title");
-title.innerText = window.NAME_LAUNCHER;
+// TITLE NAVBAR
+document.getElementById("title").innerText = window.NAME_LAUNCHER;
 
-let maximizeBTN = document.getElementById("maximize");
-if (window.FIRST_WINDOW_RESIZABLE){
-    maximizeBTN.style.display = "block";
-}
-
+// METTRE EN PETIT L'ONGLET PRINCIPAL
 document.querySelector("#minimize").addEventListener("click", () => {
     ipc.send("manualMinimize");
 });
+
+// MAXIMIZE DE L'ONGLET PRINCIPAL
+if (window.FIRST_WINDOW_RESIZABLE){
+    document.getElementById("maximize").style.display = "block";
+}
 document.querySelector("#maximize").addEventListener("click", () => {
     ipc.send("manualMaximize");
 });
+
+// FERMETURE DE L'ONGLET PRINCIPAL
 document.querySelector("#close").addEventListener("click", () => {
     ipc.send("manualClose");
 });

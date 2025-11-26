@@ -517,6 +517,7 @@ ipcMain.on("launchSettings", () => {
             nodeIntegration: true,
             contextIsolation: false,
             enableRemoteModule: true,
+            preload: path.join(__dirname, 'module/preload.js'),
         }
     })
 
@@ -547,6 +548,7 @@ ipcMain.on("launchMods", () => {
             nodeIntegration: true,
             contextIsolation: false,
             enableRemoteModule: true,
+            preload: path.join(__dirname, 'module/preload.js'),
         }
     })
 
@@ -577,6 +579,7 @@ ipcMain.on("launchVersion", () => {
             nodeIntegration: true,
             contextIsolation: false,
             enableRemoteModule: true,
+            preload: path.join(__dirname, 'module/preload.js'),
         }
     })
 
