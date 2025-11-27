@@ -256,6 +256,9 @@
                 pingValue = pingClientSide + " ms";
                 document.getElementById('pingValue').innerText = pingValue;
 
+                serverState["server-global"] = true;
+                updateServerState();
+
             }).catch(function(error) {
 
             console.log(error);
@@ -307,6 +310,9 @@
                         document.getElementById('maxPlayerInfo').innerText = window.DEFAULT_MAX_PLAYER;
                     }
 
+                    serverState["faction"] = true;
+                    updateServerState();
+
                 } else {
                     serverState["faction"] = false;
                     updateServerState();
@@ -345,6 +351,8 @@
             .then(function(infoServUser) {
                 // console.log(infoServUser);
 
+                serverState["api-mc"] = true;
+                updateServerState();
 
                 var level_div = document.getElementById("level-user");
                 var level_text = document.getElementById("level-user-text");
