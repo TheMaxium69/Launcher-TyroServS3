@@ -237,7 +237,7 @@ ipcMain.on("login", (event, data) => {
         logger.info("Lancement du jeu ...");
 
         if (modsWindow){
-            modsWindow = null;
+            modsWindow.close();
         }
 
         const fs = require('fs');

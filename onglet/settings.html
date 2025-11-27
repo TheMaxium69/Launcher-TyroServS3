@@ -85,22 +85,6 @@
 
         </article>
 
-        <article class="param">
-            <div>
-                <h4 class="param-name"><i class="ri-corner-down-right-fill"></i> Console de Développement</h4>
-                <p class="param-sub-name">Afficher la console de débogage, réservée aux initiés</p>
-            </div>
-
-
-            <div class="btn-param">
-                <div class="socle-btn-param">
-                    <button id="showConsoleFalse" class="active">Caché</button>
-                    <button id="showConsoleTrue" class="">Affiché</button>
-                </div>
-            </div>
-
-        </article>
-
     </section>
 
     <section id="setting-account">
@@ -143,6 +127,22 @@
                 <div class="socle-btn-param">
                     <button id="DiscordFalse" class="">Désactivé</button>
                     <button id="DiscordTrue" class="active">Activé</button>
+                </div>
+            </div>
+
+        </article>
+
+        <article class="param">
+            <div>
+                <h4 class="param-name"><i class="ri-corner-down-right-fill"></i> Console de Développement</h4>
+                <p class="param-sub-name">Afficher la console de débogage, réservée aux initiés</p>
+            </div>
+
+
+            <div class="btn-param">
+                <div class="socle-btn-param">
+                    <button id="showConsoleFalse" class="active">Caché</button>
+                    <button id="showConsoleTrue" class="">Affiché</button>
                 </div>
             </div>
 
@@ -248,6 +248,14 @@
         } else {
             showLauncherTrue.classList.remove("active");
             showLauncherFalse.classList.add("active");
+        }
+
+        if (settingsFile.console === true){
+            showConsoleTrue.classList.add("active");
+            showConsoleFalse.classList.remove("active");
+        } else {
+            showConsoleTrue.classList.remove("active");
+            showConsoleFalse.classList.add("active");
         }
 
         if (settingsFile.discordReachPresence === true){
