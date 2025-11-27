@@ -246,6 +246,8 @@ ipcMain.on("login", (event, data) => {
             instanceChoose = global.DIR_INSTANCE_FACTION;
         }
 
+        logger.info("Lancement de l'instance " + data.hereServer.toUpperCase())
+
         // RECUPERATION DU FICHIER MODS
         const getModsPromise = new Promise((resolve, reject) => {
             let modsFile = path.join(app.getPath("appData"), global.DIR_INSTANCE_LAUNCHER + "Launcher_Mods.json");
