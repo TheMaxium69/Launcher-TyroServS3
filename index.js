@@ -14,7 +14,7 @@ let userConnected = undefined;
 app.whenReady().then(() => {
     logger.info("-----------------------------------------------------------------------------");
     logger.info("Lancement de " + global.NAME_LAUNCHER + " v" + global.VERSION_LAUNCHER);
-    logger.info("Environement : "+ process.env.NODE_ENV);
+    logger.info("Environement : "+ global.ENV_SYS +":"+ process.env.NODE_ENV);
 
     createWindow(); /* Création de l'onglet principal */
 
@@ -153,10 +153,10 @@ ipcMain.on("connected", async (event, data) => {
     });
 
     let settingJsonDefault = {
-        "RamMin":1000,
-        "RamMax":2000,
-        "width": 854,
-        "height": 480,
+        "RamMin":4000,
+        "RamMax":8000,
+        "width": 1318,
+        "height": 710,
         "showLauncher":false,
         "discordReachPresence":true,
         "console":false,
@@ -232,12 +232,16 @@ ipcMain.on("connected", async (event, data) => {
 *
 * */
 
-// LANCEMENT DU JEUX
+// PRE-LANCEMENT DU JEUX
 ipcMain.on("login", (event, data) => {
-        logger.info("Lancement du jeu ...");
+        logger.info("Preparation au lancement du jeu ...");
 
         if (modsWindow){
             modsWindow.close();
+        }
+
+        if (versionWindow){
+            versionWindow.close();
         }
 
         const fs = require('fs');
@@ -318,239 +322,335 @@ ipcMain.on("login", (event, data) => {
 
                     // CREER LE DOSSIER DE L'INSTANCE MC
                     const urlAsCreate = app.getPath("appData") + instanceChoose;
-                    fs.mkdir(urlAsCreate, (err) => {
-                        if (err) {
-                            if (err.code === "EEXIST") {
-                                logger.warn("Le Dossier de l'instance a deja ete cree");
-                            } else {
-                                stopGame(event);
-                                logger.error("Erreur de creation du dossier de l'instance");
-                                logger.fatal(err.stack);
-                            }
-                        } else {
-                            logger.warn("Repertoire de l'instance cree avec succes.");
-                        }
-                    });
-
-                    // CREER LES FICHIER TOKEN D'USERITIUM
-                    if (data.hereServer !== "vanilla") {
-                        let usercachetyroservFile = path.join(app.getPath("appData"), instanceChoose + "usercachetyroserv.json");
-                        let usercachetyroserva2fFile = path.join(app.getPath("appData"), instanceChoose + "usercachetyroserva2f.json");
-
-                        fs.writeFileSync(usercachetyroservFile, data.token_tyroserv);
-                        fs.writeFileSync(usercachetyroserva2fFile, data.token_tyroserv_a2f);
-                    }
-
-                    // CREER L'USER MC
-                    let UserTest = {
-                        access_token: '',
-                        client_token: '',
-                        uuid: data.uuid_tyroserv,
-                        name: data.username_tyroserv,
-                        user_properties: '{}',
-                        meta: {
-                            // type: "msa",
-                            type: "mojang",
-                            demo: false,
-                            xuid: '',
-                            clientId: ''
-                        }
-                    }
-
-
-                    // CREER LES OPTIONS MC
-                    let options = {
-                        clientPackage: "http://tyrolium.fr/Download/TyroServS3/instance.zip", //null,
-                        authorization: UserTest,
-                        // https://wiki.vg/Launching_the_game
-                        customLaunchArgs: [
-                            "--useritiumTokenPrivate ",
-                            data.token_tyroserv,
-                            "--useritiumTokenA2F ",
-                            data.token_tyroserv_a2f,
-                            "--width",
-                            settingsContenu.width,
-                            "--height",
-                            settingsContenu.height,
-                            "--server",
-                            "vps212.tyrolium.fr",
-                            "--port",
-                            "25566"
-                        ],
-                        root: path.join(app.getPath("appData"), instanceChoose),
-                        javaPath: `C:/Users/mxmto/AppData/Roaming/.TyroServBeta/TyroServ-Faction/runtime/jre-legacy/windows/bin/javaw.exe`,
-                        version: {
-                            number: "1.12.2",
-                            type: "release",
-                            // custom: "Forge 1.12.2"
-                        },
-                        forge:path.join(app.getPath("appData"), instanceChoose + "Launch.jar"),
-                        memory: {
-                            max: settingsContenu.RamMax + "M",
-                            min: settingsContenu.RamMin + "M",
-                        },
-                    }
-
-                    launcher = new Client();
-
-                    launcher.launch(options);
-
-                    launcher.on('debug', (e) => {
-                        console.log("debug", e)
-                        event.sender.send("lancement", e)
-
-                        // UPDATE DU REACH PRESENCE
-                        if (e === "[MCLC]: Set launch options") {
-                            if (data.hereServer === "minigame"){
-                                setActivity('Joue à TyroServ Mini-Jeux', data.username_tyroserv);
-                            } else if (data.hereServer === "vanilla"){
-                                setActivity('Joue à Minecraft Vanilla', data.username_tyroserv);
-                            } else {
-                                setActivity('Joue à TyroServ PVP/Faction', data.username_tyroserv);
-                            }
-                        }
-                    });
-                    launcher.on('data', (e) => {
-                        if (consoleWindow){
-                            consoleWindow.send("consoleMC", "[MC] " + e);
-                        }
-                        console.log("data", e)
-
-                        if (settingsContenu.showLauncher === false){
-                            mainWindow.hide();
-                        }
-                    });
-                    launcher.on('progress', (e) => {
-                        console.log("progress", e);
-                        if (consoleWindow){
-                            consoleWindow.send("consoleMC", "[PROGRESS] " + JSON.stringify(e));
-                        }
-                        event.sender.send("progression", e)
-                    });
-                    launcher.on('arguments', (e) => {
-                        console.log("arguments", e)
-                    });
-                    launcher.on('close', (e) => {
-                        console.log("close", e)
-                        if (consoleWindow){
-                            consoleWindow.send("consoleMC", "[CLOSE] " + e);
-                        }
-
-                        //vider l'instance de minecraft
-                        launcher = null;
-
-                        mainWindow.show();
-                        event.sender.send("stopping")
-
-                        // UPDATE DU REACH PRESENCE
-                        setActivity('Navigue sur le Launcher', data.username_tyroserv);
-                    });
-                    launcher.on('package-extract', (e) => {
-                        console.log("package-extract", e)
-
-                        if (e.toString() === "true"){
-
-                            // BONNE SELECTION DES MODS
-                            modsFile.forEach(modsOne => {
-
-                                let modsFileJar = path.join(app.getPath("appData"),  instanceChoose + "/mods/" + modsOne.jar + ".jar");
-                                let modsFileDeJar = path.join(app.getPath("appData"),  instanceChoose + "/mods/" + modsOne.jar + ".dejar");
-                                if (!fs.existsSync(modsFileJar) && fs.existsSync(modsFileDeJar) && modsOne.activate === true) {
-                                    // SWITCH VERS .jar
-                                    fs.rename(modsFileDeJar, modsFileJar, (err) => {
-                                        if (err) {
-                                            console.error('Erreur lors du renommage du fichier :', err);
-                                        } else {
-                                            console.log('Le fichier a ete renomme avec succes.');
-                                        }
-                                    });
-
-                                    if (modsOne.dependence){
-
-                                        modsOne.dependence.forEach(dependence => {
-                                            let dependenceFileJar = path.join(app.getPath("appData"),  instanceChoose + "/mods/" + dependence.jar + ".jar");
-                                            let dependenceFileDeJar = path.join(app.getPath("appData"),  instanceChoose + "/mods/" + dependence.jar + ".dejar");
-
-                                            fs.rename(dependenceFileDeJar, dependenceFileJar, (err) => {
-                                                if (err) {
-                                                    console.error('Erreur lors du renommage du fichier :', err);
-                                                } else {
-                                                    console.log('Le fichier a ete renomme avec succes.');
-                                                }
-                                            });
-
-                                        })
-                                    }
-                                } else if (fs.existsSync(modsFileJar) && !fs.existsSync(modsFileDeJar) && modsOne.activate === false){
-                                    // SWITCH VERS .dejar
-                                    fs.rename(modsFileJar, modsFileDeJar, (err) => {
-                                        if (err) {
-                                            console.error('Erreur lors du renommage du fichier :', err);
-                                        } else {
-                                            console.log('Le fichier a ete renomme avec succes.');
-                                        }
-                                    });
-
-                                    if (modsOne.dependence){
-
-                                        modsOne.dependence.forEach(dependence => {
-                                            let dependenceFileJar = path.join(app.getPath("appData"),  instanceChoose + "/mods/" + dependence + ".jar");
-                                            let dependenceFileDeJar = path.join(app.getPath("appData"),  instanceChoose + "/mods/" + dependence + ".dejar");
-
-                                            fs.rename(dependenceFileJar, dependenceFileDeJar, (err) => {
-                                                if (err) {
-                                                    console.error('Erreur lors du renommage du fichier :', err);
-                                                } else {
-                                                    console.log('Le fichier a ete renomme avec succes.');
-                                                }
-                                            });
-
-                                        })
-                                    }
+                    const verifInstanceDIR = new Promise((resolve, reject) => {
+                        fs.mkdir(urlAsCreate, (err) => {
+                            if (err) {
+                                if (err.code === "EEXIST") {
+                                    logger.warn("Le Dossier de l'instance a deja ete cree");
+                                    resolve();
+                                } else {
+                                    reject(err);
                                 }
+                            } else {
+                                logger.warn("Repertoire de l'instance cree avec succes.");
+                                resolve();
+                            }
+                        });
+                    });
 
+                    verifInstanceDIR.then(() => {
+
+                        // CREER LES FICHIER TOKEN D'USERITIUM
+                        if (data.hereServer !== "vanilla") {
+
+                            let usercachetyroservFile = path.join(app.getPath("appData"), instanceChoose + global.FILE_USER_TYROSERV);
+                            let usercachetyroserva2fFile = path.join(app.getPath("appData"), instanceChoose + global.FILE_USER_TYROSERV_A2F);
+
+                            const writeTokenPromise = new Promise((resolve, reject) => {
+                                try {
+                                    fs.writeFileSync(usercachetyroservFile, data.token_tyroserv);
+                                    fs.writeFileSync(usercachetyroserva2fFile, data.token_tyroserv_a2f);
+                                    resolve();
+                                } catch (err) {
+                                    reject(err);
+                                }
                             });
+
+                            writeTokenPromise.then(() => {
+                                launchGame(event, data, instanceChoose, settingsContenu, modsFile)
+                            }).catch((error) => {
+                                stopGame(event, true);
+                                logger.error("Erreur de creation des fichiers de securite");
+                                logger.fatal(error.stack);
+                            });
+                        } else {
+                            launchGame(event, data, instanceChoose, settingsContenu, modsFile)
                         }
 
+                    }).catch((error) => {
+                        stopGame(event, true);
+                        logger.error("Erreur de creation du dossier de l'instance");
+                        logger.fatal(error.stack);
                     });
-                    launcher.on('download', (e) => {
-                        console.log("download", e)
-                    });
-                    launcher.on('download-status', (e) => {
-                        console.log("download-status", e)
-                        event.sender.send("progressionDownload", e)
-                    });
-
-                    // Launch -> Del All Mod -> Install Instance -> DeJar & Jar (activate) -> Launch Game
-
 
                 }).catch((error) => {
-                    stopGame(event);
+                    stopGame(event, true);
                     logger.error("Erreur de lecture du fichier '"+global.FILE_SETTINGS+"'");
                     logger.fatal(error.stack)
                 });
 
-
             }).catch((error) => {
-                stopGame(event);
+                stopGame(event, true);
                 logger.error("Erreur avec le dossier '"+global.DIR_INSTANCE_MOD+"'");
                 logger.fatal(error.stack)
             });
 
         }).catch((error) => {
-            stopGame(event);
+            stopGame(event, true);
             logger.error("Erreur de lecture du fichier '"+global.FILE_MODS+"'");
             logger.fatal(error.stack)
         });
 })
 
+// LANCEMENT DU JEUX
+let firstDownloadStatus = false;
+let firstProgress = false;
+function launchGame(event, data, instanceChoose, settingsContenu, modsFile){
+
+    logger.info("Lancement du jeu ...");
+
+    // CREER L'USER MC
+    let TyroServUser = {
+        access_token: '',
+        client_token: '',
+        uuid: data.uuid_tyroserv,
+        name: data.username_tyroserv,
+        user_properties: '{}',
+        meta: {
+            // type: "msa",
+            type: "mojang",
+            demo: false,
+            xuid: '',
+            clientId: ''
+        }
+    }
+
+    /*
+    * VARIABLE DE LANCMENT
+    * */
+
+    // MAIN JAR
+    let instanceLaunch = path.join(app.getPath("appData"), instanceChoose)
+    let mainJar = instanceLaunch + global.FILE_LAUNCH_GAME;
+    logger.debug("Lancement de : "+mainJar);
+
+    // PATH JAVA
+    let javaPathCustom = instanceLaunch + global.DIR_JAVA_RUNTIME_WINDOWS;
+    if (global.ENV_SYS === "linux"){
+        javaPathCustom = instanceLaunch + global.DIR_JAVA_RUNTIME_LINUX;
+    } else if (global.ENV_SYS === "mac"){
+        javaPathCustom = instanceLaunch + global.DIR_JAVA_RUNTIME_MACOS;
+    }
+    logger.debug("Java Runtime : "+javaPathCustom);
+
+    logger.info("Memoire utilise : " + settingsContenu.RamMin + "MB" + " / " + settingsContenu.RamMax + "MB")
+
+    // CREER LES OPTIONS MC
+    let options = {
+        clientPackage: global.URL_INSTANCE_CLIENT, //null,
+        authorization: TyroServUser,
+        customLaunchArgs: [
+            "--useritiumTokenPrivate ",
+            data.token_tyroserv,
+            "--useritiumTokenA2F ",
+            data.token_tyroserv_a2f,
+            "--width",
+            settingsContenu.width,
+            "--height",
+            settingsContenu.height,
+            // "--server",
+            // "vps212.tyrolium.fr",
+            // "--port",
+            // "25566"
+        ],
+        root: instanceLaunch,
+        javaPath: javaPathCustom,
+        version: {
+            number: "1.12.2",
+            type: "release",
+            // custom: "Forge 1.12.2"
+        },
+        forge:mainJar,
+        memory: {
+            max: settingsContenu.RamMax + "M",
+            min: settingsContenu.RamMin + "M",
+        },
+    }
+
+    launcher = new Client();
+    launcher.launch(options);
+
+    // Info de MCLC
+    launcher.on('debug', (e) => {
+        logMC("debug", e)
+
+        if (e === "[MCLC]: Failed to start due to Error: Invalid or unsupported zip format. No END header found, closing...") {
+            logger.error("Erreur avec le Fichier zip : 'clientPackage.zip'");
+            logger.fatal(e);
+            stopGame(event, true);
+        }
+        if (e === "[MCLC]: Downloaded assets") {
+            logger.warn("Fin du telechargement des Assets Minecraft")
+        }
+    });
+
+    // Information sur la progression du téléchargement
+    launcher.on('download-status', (e) => {
+        logMC("download-status", JSON.stringify(e))
+
+        if (firstDownloadStatus === false){
+            firstDownloadStatus = true;
+            logger.warn("Demarrage du Telegargement de 'clientPackage.zip'");
+        }
+
+        event.sender.send("progressionDownload", e)
+    });
+
+    // Information sur ce qu'il télécharge
+    launcher.on('download', (e) => {
+        logMC("download", e)
+
+        if (e === "clientPackage.zip") {
+            logger.warn("Fin du telechargement de 'clientPackage.zip'")
+        }
+
+    });
+
+    // Information sur ce qu'il extrait
+    launcher.on('package-extract', (e) => {
+        logMC("package-extract", e)
+
+        // Gestion des mods
+        if (e.toString() === "true"){
+            logger.warn("Extraction de 'clientPackage.zip'")
+
+            // BONNE SELECTION DES MODS
+            modsFile.forEach(modsOne => {
+
+                let modsFileJar = path.join(app.getPath("appData"),  instanceChoose + "/mods/" + modsOne.jar + ".jar");
+                let modsFileDeJar = path.join(app.getPath("appData"),  instanceChoose + "/mods/" + modsOne.jar + ".dejar");
+                if (!fs.existsSync(modsFileJar) && fs.existsSync(modsFileDeJar) && modsOne.activate === true) {
+                    // SWITCH VERS .jar
+                    fs.rename(modsFileDeJar, modsFileJar, (err) => {
+                        if (err) {
+                            console.error('Erreur lors du renommage du fichier :', err);
+                        } else {
+                            console.log('Le fichier a ete renomme avec succes.');
+                        }
+                    });
+
+                    if (modsOne.dependence){
+
+                        modsOne.dependence.forEach(dependence => {
+                            let dependenceFileJar = path.join(app.getPath("appData"),  instanceChoose + "/mods/" + dependence.jar + ".jar");
+                            let dependenceFileDeJar = path.join(app.getPath("appData"),  instanceChoose + "/mods/" + dependence.jar + ".dejar");
+
+                            fs.rename(dependenceFileDeJar, dependenceFileJar, (err) => {
+                                if (err) {
+                                    console.error('Erreur lors du renommage du fichier :', err);
+                                } else {
+                                    console.log('Le fichier a ete renomme avec succes.');
+                                }
+                            });
+
+                        })
+                    }
+                } else if (fs.existsSync(modsFileJar) && !fs.existsSync(modsFileDeJar) && modsOne.activate === false){
+                    // SWITCH VERS .dejar
+                    fs.rename(modsFileJar, modsFileDeJar, (err) => {
+                        if (err) {
+                            console.error('Erreur lors du renommage du fichier :', err);
+                        } else {
+                            console.log('Le fichier a ete renomme avec succes.');
+                        }
+                    });
+
+                    if (modsOne.dependence){
+
+                        modsOne.dependence.forEach(dependence => {
+                            let dependenceFileJar = path.join(app.getPath("appData"),  instanceChoose + "/mods/" + dependence + ".jar");
+                            let dependenceFileDeJar = path.join(app.getPath("appData"),  instanceChoose + "/mods/" + dependence + ".dejar");
+
+                            fs.rename(dependenceFileJar, dependenceFileDeJar, (err) => {
+                                if (err) {
+                                    console.error('Erreur lors du renommage du fichier :', err);
+                                } else {
+                                    console.log('Le fichier a ete renomme avec succes.');
+                                }
+                            });
+
+                        })
+                    }
+                }
+
+            });
+        }
+
+    });
+
+    // Donwload Assets MC
+    launcher.on('progress', (e) => {
+        logMC("progress", JSON.stringify(e))
+
+        if (firstProgress === false){
+            firstProgress = true;
+            logger.warn("Demarrage du telegargement des Classes & Assets Minecraft");
+        }
+
+        event.sender.send("progression", e)
+    });
+
+    // Argument dès que le jeu ce lance
+    launcher.on('arguments', (e) => {
+        logMC("arguments", e)
+
+        /*
+        *
+        * JEU LANCER
+        *
+        * */
+
+        logger.info("Le launcher a correctement lance le jeu");
+
+        // Front
+        event.sender.send("startMC");
+
+        // Caché le launcher si demander
+        if (settingsContenu.showLauncher === false){ mainWindow.hide(); }
+
+        // UPDATE DU REACH PRESENCE
+        if (data.hereServer === "minigame"){
+            setActivity('Joue à TyroServ Mini-Jeux', data.username_tyroserv);
+        } else if (data.hereServer === "vanilla"){
+            setActivity('Joue à Minecraft Vanilla', data.username_tyroserv);
+        } else {
+            setActivity('Joue à TyroServ PVP/Faction', data.username_tyroserv);
+        }
+
+    });
+
+    // Contenu concret de Minecraft
+    launcher.on('data', (e) => {
+        logMC("data", e)
+    });
+
+    // Fermeture du jeu
+    launcher.on('close', (e) => {
+        logMC("close", e)
+        stopGame(event, false);
+    });
+
+    // Launch -> Del All Mod -> Install Instance -> DeJar & Jar (activate) -> Launch Game
+}
+
 // Stop Game
-function stopGame(event){
+function stopGame(event, isCrash = true){
 
+    // Log
+    if (isCrash){
+        logger.error("Erreur lors du lancement du jeu")
+    } else {
+        logger.info("Jeu fermer correctement");
+    }
+
+    // Vidé la variable
     launcher = null;
+    firstProgress = false;
+    firstDownloadStatus = false;
 
+    // Front
     mainWindow.show();
-    event.sender.send("stopping", {crash:true});
+    event.sender.send("stopping", {crash:isCrash});
 
     // UPDATE DU REACH PRESENCE
     setActivity('Navigue sur le Launcher', userConnected.username_tyroserv);
@@ -1047,6 +1147,14 @@ ipcMain.on('log-message', (event, data) => {
         logger.warn(`Tentative de log avec un niveau inconnu: ${level}`);
     }
 });
+
+// Log MCLC (Minecraft-launcher-core)
+function logMC(type, message){
+    logger.silly("["+type+"] " + message)
+    if (consoleWindow){
+        consoleWindow.send("consoleMC", "["+type+"] " + message);
+    }
+}
 
 /* CrashFatal */
 function crashFatal(content = null, err = null, killapp = false){

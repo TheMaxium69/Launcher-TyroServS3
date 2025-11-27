@@ -2,6 +2,7 @@
 /* GLOBAL */
 
 const IS_PROD = (process.env.NODE_ENV === 'prod' || process.env.ELECTRON_ENV === 'prod');
+const ENV_SYS = "win" /* win or linux or mac */
 
 const NAME_LAUNCHER = "TyroServ Launcher"
 const VERSION_LAUNCHER = "0.1.9";
@@ -26,6 +27,8 @@ const DEFAULT_MAX_PLAYER = 1000;
 
 const DISCORD_CLIENT_ID = "849915439844687893";
 
+/* DEBUG */
+const DEBUG_VIEW_MCLOG = false
 
 /* DIR & FILE */
 
@@ -39,6 +42,10 @@ const DIR_INSTANCE_VANILLA = (IS_PROD ? PROD_DIR_INSTANCE : DEV_DIR_INSTANCE) + 
 
 const DIR_INSTANCE_LOG = "/logs/";
 const DIR_INSTANCE_MOD = "/mods";
+
+const DIR_JAVA_RUNTIME_WINDOWS = "runtime/jre-legacy/windows/bin/javaw.exe"
+const DIR_JAVA_RUNTIME_LINUX = "runtime/jre-legacy/linux/bin/javaw.exe"
+const DIR_JAVA_RUNTIME_MACOS = "runtime/jre-legacy/macos/bin/javaw.exe"
 
 const FILE_CACHE = "Launcher_Cache.json";
 const FILE_SETTINGS = "Launcher_Setting.json";
@@ -100,6 +107,7 @@ module.exports = {
 
     /* GLOBAL */
     IS_PROD: IS_PROD,
+    ENV_SYS: ENV_SYS,
 
     NAME_LAUNCHER: NAME_LAUNCHER,
     VERSION_LAUNCHER: VERSION_LAUNCHER,
@@ -127,6 +135,9 @@ module.exports = {
 
     DISCORD_CLIENT_ID: DISCORD_CLIENT_ID,
 
+    /* DEBUG */
+    DEBUG_VIEW_MCLOG:DEBUG_VIEW_MCLOG,
+
     /* DIR & FILE */
 
     DIR_INSTANCE: IS_PROD ? PROD_DIR_INSTANCE : DEV_DIR_INSTANCE,
@@ -137,6 +148,11 @@ module.exports = {
 
     DIR_INSTANCE_LOG:DIR_INSTANCE_LOG,
     DIR_INSTANCE_MOD:DIR_INSTANCE_MOD,
+
+    DIR_JAVA_RUNTIME_WINDOWS:DIR_JAVA_RUNTIME_WINDOWS,
+    DIR_JAVA_RUNTIME_LINUX:DIR_JAVA_RUNTIME_LINUX,
+    DIR_JAVA_RUNTIME_MACOS:DIR_JAVA_RUNTIME_MACOS,
+
 
     FILE_CACHE:FILE_CACHE,
     FILE_SETTINGS:FILE_SETTINGS,

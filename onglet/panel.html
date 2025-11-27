@@ -613,50 +613,21 @@
     });
 
     // BAR AU LANCEMENT
-    ipcRenderer.on('lancement', (event, data) => {
+    ipcRenderer.on('startMC', (event, data) => {
+        var btnPlay = document.getElementById("play");
 
-        if (data === "[MCLC]: Set launch options"){
+        btnPlay.innerText = "EN COURS";
 
-            var btnPlay = document.getElementById("play");
+        const progressBar = document.getElementById('progressBar');
+        progressBar.innerHTML = null;
 
-            btnPlay.innerText = "EN COURS";
-
-            const progressBar = document.getElementById('progressBar');
-            progressBar.innerHTML = null;
-
-            var bar = document.querySelector('.bar');
-            bar.classList.remove('show');
-            var downpanel = document.getElementById('down-panel');
-            downpanel.classList.remove('up');
-            var arrow = document.getElementById('arrow');
-            arrow.classList.add('ri-arrow-up-s-line');
-            arrow.classList.remove('ri-arrow-down-s-line');
-
-        }
-
-        if (data === "[MCLC]: Failed to start due to Error: Invalid or unsupported zip format. No END header found, closing..." && ErreurLaunchControl === 0) {
-
-            const progressBar = document.getElementById('progressBar');
-            progressBar.innerHTML = "<p> </p>"
-
-            playbtn.innerText = "JOUER";
-
-            var bar = document.querySelector('.bar');
-            bar.classList.remove('show');
-            var downpanel = document.getElementById('down-panel');
-            downpanel.classList.remove('up');
-            var arrow = document.getElementById('arrow');
-            arrow.classList.add('ri-arrow-up-s-line');
-            arrow.classList.remove('ri-arrow-down-s-line');
-
-
-            notif("err", "Votre jeu n'a pas réussi à se lancer. Veuillez recommencer.");
-
-            ErreurLaunchControl += 1;
-
-
-        }
-
+        var bar = document.querySelector('.bar');
+        bar.classList.remove('show');
+        var downpanel = document.getElementById('down-panel');
+        downpanel.classList.remove('up');
+        var arrow = document.getElementById('arrow');
+        arrow.classList.add('ri-arrow-up-s-line');
+        arrow.classList.remove('ri-arrow-down-s-line');
     });
 
     /* CALCULE DE LA BAR */
@@ -672,12 +643,11 @@
 
     // ARRET DU JEUX (RETOUR A LA NORMAL)
     ipcRenderer.on('stopping', (event, data) => {
-        
         if (data && data.crash === true){
             notif("err", "Le jeu c'est arrêté de manière inattendue, veuillez réessayer.");
         }
-        
-        
+
+        // Graph retour à la normal
         const progressBar = document.getElementById('progressBar');
         progressBar.innerHTML = "<p> </p>"
 
@@ -691,62 +661,8 @@
         arrow.classList.add('ri-arrow-up-s-line');
         arrow.classList.remove('ri-arrow-down-s-line');
 
-        getInfoServer(userConnected.pseudo)
-            .then(function(infoServUser) {
-                console.log(infoServUser);
-
-
-                var level_div = document.getElementById("level-user");
-                var level_text = document.getElementById("level-user-text");
-
-                // VERIFICATION DE L'EXISTANCE DE L'UTILISATEUR
-                if (infoServUser['result']['player'] !== "no player"){
-
-                    // FACTION
-                    if (infoServUser['result']['roles'] !== "no roles"){
-                        var grade_div = document.getElementById("grade-user");
-                        grade_div.classList.add("show-tag");
-
-                        var grade_text = document.getElementById("grade-user-text");
-                        grade_text.innerText = null
-
-                        let allRoles = infoServUser['result']['roles'];
-                        allRoles.forEach(oneRoles =>{
-
-                            if (oneRoles['name'] !== "default"){
-                                grade_text.innerText +=  oneRoles['displayName'];
-                            }
-
-                        })
-
-                    }
-
-                    // FACTION
-                    if (infoServUser['result']['faction']['id'] !== "0"){
-                        var faction_div = document.getElementById("faction-user");
-                        faction_div.classList.add("show-tag");
-                        var faction_text = document.getElementById("faction-user-text");
-                        faction_text.innerText = "Faction : " + infoServUser['result']['faction']['name'];
-                    }
-
-                    // MONEY
-                    var money_div = document.getElementById("money-user");
-                    money_div.classList.add("show-tag");
-                    var money_text = document.getElementById("money-user-text");
-                    money_text.innerText = infoServUser['result']['money']['wallet'] + " $";
-
-                } else {
-
-                    level_div.classList.add("show-tag");
-                    level_text.innerText = "Première connexion";
-
-
-                }
-
-            })
-            .catch(function(error) {
-                console.log(error);
-            });
+        // Mise à jour des label
+        labelPlayer();
 
     });
 
