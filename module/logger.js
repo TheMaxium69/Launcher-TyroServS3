@@ -60,11 +60,12 @@ const excludeFatalFilter = winston.format((info, opts) => {
 
 // Transport pour tous les logs (global)
 const globalTransport = new DailyRotateFile({
-    filename: path.join(logPath, 'global-%DATE%.log'), // Utilisez %DATE%
+    filename: path.join(logPath, 'global/global-%DATE%'), // Utilisez %DATE%
     datePattern: 'DD-MM-YYYY',
-    zippedArchive: false,
-    maxSize: false,
+    zippedArchive: true,
+    maxSize: "20m",
     maxFiles: false,
+    extension: '.log',
     format: winston.format.combine(
         excludeFatalFilter(), // <-- Filtre qui retire FATAL
         logFormat
@@ -81,11 +82,12 @@ const globalTransport = new DailyRotateFile({
 // Transport pour les erreurs
 const errorTransport = new DailyRotateFile({
     level: 'error',
-    filename: path.join(logPath, 'error-%DATE%.log'), // Utilisez %DATE% pour l'horodatage
+    filename: path.join(logPath, 'error/error-%DATE%'), // Utilisez %DATE% pour l'horodatage
     datePattern: 'DD-MM-YYYY', // Le format de date désiré (Ex: 27-11-2025)
-    zippedArchive: false,      // N'archive pas les anciens fichiers
-    maxSize: false,            // PAS de limite de taille de fichier
+    zippedArchive: true,      // N'archive pas les anciens fichiers
+    maxSize: "20m",            // PAS de limite de taille de fichier
     maxFiles: false,           // PAS de limite de nombre de fichiers (jamais de suppression)
+    extension: '.log',
     format: logFormat, // Utilise le format de contenu défini plus haut
 });
 
@@ -111,11 +113,12 @@ const onlyMCFilter = winston.format((info, opts) => {
 // Transport pour les minecraft
 const minecraftTransport = new DailyRotateFile({
     level: 'silly',
-    filename: path.join(logPath, 'mclc-%DATE%.log'), // Utilisez %DATE% pour l'horodatage
+    filename: path.join(logPath, 'mclc/mclc-%DATE%'), // Utilisez %DATE% pour l'horodatage
     datePattern: 'DD-MM-YYYY', // Le format de date désiré (Ex: 27-11-2025)
-    zippedArchive: false,      // N'archive pas les anciens fichiers
-    maxSize: false,            // PAS de limite de taille de fichier
+    zippedArchive: true,      // N'archive pas les anciens fichiers
+    maxSize: "20m",            // PAS de limite de taille de fichier
     maxFiles: false,           // PAS de limite de nombre de fichiers (jamais de suppression)
+    extension: '.log',
     format: winston.format.combine(
         onlyMCFilter(), // <-- Filtre qui retire FATAL
         logFormatMC

@@ -7,6 +7,7 @@ const global = require('./module/global.js');
 const logger = require('./module/logger.js');
 
 let launcher = null;
+let gameProcess = null;
 let mainWindow;
 let userConnected = undefined;
 
@@ -473,7 +474,16 @@ function launchGame(event, data, instanceChoose, settingsContenu, modsFile){
     }
 
     launcher = new Client();
-    launcher.launch(options);
+    launcher.launch(options).then(minecraftProcess => {
+        gameProcess = minecraftProcess;
+        logger.info(gameProcess ? "Processus active" : "Processus inexistant")
+
+        if (pleaseStopGame){
+            logger.error("Processus tuer");
+            gameProcess.kill('SIGKILL');
+            stopGame(event, true, pleaseStopGame)
+        }
+    });
 
     // Info de MCLC
     launcher.on('debug', (e) => {
@@ -523,29 +533,33 @@ function launchGame(event, data, instanceChoose, settingsContenu, modsFile){
             // BONNE SELECTION DES MODS
             modsFile.forEach(modsOne => {
 
-                let modsFileJar = path.join(app.getPath("appData"),  instanceChoose + "/mods/" + modsOne.jar + ".jar");
-                let modsFileDeJar = path.join(app.getPath("appData"),  instanceChoose + "/mods/" + modsOne.jar + ".dejar");
+                let modsFileJar = path.join(app.getPath("appData"),  instanceChoose + global.DIR_INSTANCE_MOD + "/" + modsOne.jar + ".jar");
+                let modsFileDeJar = path.join(app.getPath("appData"),  instanceChoose + global.DIR_INSTANCE_MOD + "/" + modsOne.jar + ".dejar");
                 if (!fs.existsSync(modsFileJar) && fs.existsSync(modsFileDeJar) && modsOne.activate === true) {
                     // SWITCH VERS .jar
                     fs.rename(modsFileDeJar, modsFileJar, (err) => {
                         if (err) {
-                            console.error('Erreur lors du renommage du fichier :', err);
+                            logger.error("Erreur lors du renommage du fichier '"+modsOne.jar+"' (dejar -> jar)");
+                            logger.fatal(err.stack);
+                            pleaseStopGame= "Problème avec le mod "+modsOne.nom;
                         } else {
-                            console.log('Le fichier a ete renomme avec succes.');
+                            logger.info("Le fichier '"+modsOne.jar+"' a ete renomme avec succes. (dejar -> jar)");
                         }
                     });
 
                     if (modsOne.dependence){
 
                         modsOne.dependence.forEach(dependence => {
-                            let dependenceFileJar = path.join(app.getPath("appData"),  instanceChoose + "/mods/" + dependence.jar + ".jar");
-                            let dependenceFileDeJar = path.join(app.getPath("appData"),  instanceChoose + "/mods/" + dependence.jar + ".dejar");
+                            let dependenceFileJar = path.join(app.getPath("appData"),  instanceChoose + global.DIR_INSTANCE_MOD + "/" + dependence.jar + ".jar");
+                            let dependenceFileDeJar = path.join(app.getPath("appData"),  instanceChoose + global.DIR_INSTANCE_MOD + "/" + dependence.jar + ".dejar");
 
                             fs.rename(dependenceFileDeJar, dependenceFileJar, (err) => {
                                 if (err) {
-                                    console.error('Erreur lors du renommage du fichier :', err);
+                                    logger.error("Erreur lors du renommage du fichier '"+dependence.jar+"' (dejar -> jar)");
+                                    logger.fatal(err.stack);
+                                    pleaseStopGame = "Problème avec le mod "+dependence.nom;
                                 } else {
-                                    console.log('Le fichier a ete renomme avec succes.');
+                                    logger.info("Le fichier '"+dependence.jar+"' a ete renomme avec succes. (dejar -> jar)");
                                 }
                             });
 
@@ -555,23 +569,27 @@ function launchGame(event, data, instanceChoose, settingsContenu, modsFile){
                     // SWITCH VERS .dejar
                     fs.rename(modsFileJar, modsFileDeJar, (err) => {
                         if (err) {
-                            console.error('Erreur lors du renommage du fichier :', err);
+                            logger.error("Erreur lors du renommage du fichier '"+modsOne.jar+"' (jar -> dejar)");
+                            logger.fatal(err.stack);
+                            pleaseStopGame = "Problème avec le mod "+modsOne.nom;
                         } else {
-                            console.log('Le fichier a ete renomme avec succes.');
+                            logger.info("Le fichier '"+modsOne.jar+"' a ete renomme avec succes. (jar -> dejar)");
                         }
                     });
 
                     if (modsOne.dependence){
 
                         modsOne.dependence.forEach(dependence => {
-                            let dependenceFileJar = path.join(app.getPath("appData"),  instanceChoose + "/mods/" + dependence + ".jar");
-                            let dependenceFileDeJar = path.join(app.getPath("appData"),  instanceChoose + "/mods/" + dependence + ".dejar");
+                            let dependenceFileJar = path.join(app.getPath("appData"),  instanceChoose + global.DIR_INSTANCE_MOD + "/" + dependence.jar + ".jar");
+                            let dependenceFileDeJar = path.join(app.getPath("appData"),  instanceChoose + global.DIR_INSTANCE_MOD + "/" + dependence.jar + ".dejar");
 
                             fs.rename(dependenceFileJar, dependenceFileDeJar, (err) => {
                                 if (err) {
-                                    console.error('Erreur lors du renommage du fichier :', err);
+                                    logger.error("Erreur lors du renommage du fichier '"+dependence.jar+"' (jar -> dejar)");
+                                    logger.fatal(err.stack);
+                                    pleaseStopGame = "Problème avec le mod "+dependence.nom;
                                 } else {
-                                    console.log('Le fichier a ete renomme avec succes.');
+                                    logger.info("Le fichier '"+dependence.jar+"' a ete renomme avec succes. (jar -> dejar)");
                                 }
                             });
 
@@ -605,22 +623,23 @@ function launchGame(event, data, instanceChoose, settingsContenu, modsFile){
         * JEU LANCER
         *
         * */
+        if (!pleaseStopGame){
+            logger.info("Le launcher a correctement lance le jeu");
 
-        logger.info("Le launcher a correctement lance le jeu");
+            // Front
+            event.sender.send("startMC");
 
-        // Front
-        event.sender.send("startMC");
+            // Caché le launcher si demander
+            if (settingsContenu.showLauncher === false){ mainWindow.hide(); }
 
-        // Caché le launcher si demander
-        if (settingsContenu.showLauncher === false){ mainWindow.hide(); }
-
-        // UPDATE DU REACH PRESENCE
-        if (data.hereServer === "minigame"){
-            setActivity('Joue à TyroServ Mini-Jeux', data.username_tyroserv);
-        } else if (data.hereServer === "vanilla"){
-            setActivity('Joue à Minecraft Vanilla', data.username_tyroserv);
-        } else {
-            setActivity('Joue à TyroServ PVP/Faction', data.username_tyroserv);
+            // UPDATE DU REACH PRESENCE
+            if (data.hereServer === "minigame"){
+                setActivity('Joue à TyroServ Mini-Jeux', data.username_tyroserv);
+            } else if (data.hereServer === "vanilla"){
+                setActivity('Joue à Minecraft Vanilla', data.username_tyroserv);
+            } else {
+                setActivity('Joue à TyroServ PVP/Faction', data.username_tyroserv);
+            }
         }
 
     });
@@ -633,37 +652,42 @@ function launchGame(event, data, instanceChoose, settingsContenu, modsFile){
     // Fermeture du jeu
     launcher.on('close', (e) => {
         logMC("close", e)
-        if (e.toString() === "0"){
-            stopGame(event, false)
-        } else {
+
+        if (e){
             stopGame(event, true, "nomsg");
+        } else {
+            stopGame(event, false)
         }
+
     });
 
     // Launch -> Del All Mod -> Install Instance -> DeJar & Jar (activate) -> Launch Game
 }
 
 // Stop Game
+let pleaseStopGame = null
 function stopGame(event, isCrash = true, why = null){
 
-        // Log
-        if (isCrash){
-            logger.error("Erreur lors du lancement du jeu")
-        } else {
-            logger.info("Jeu fermer correctement");
-        }
+    // Log
+    if (isCrash){
+        logger.error("Erreur lors du lancement du jeu")
+    } else {
+        logger.info("Jeu fermer correctement");
+    }
 
-        // Vidé la variable
-        launcher = null;
-        firstProgress = false;
-        firstDownloadStatus = false;
+    // Vidé la variable
+    pleaseStopGame = null
+    launcher = null;
+    gameProcess = null;
+    firstProgress = false;
+    firstDownloadStatus = false;
 
-        // Front
-        mainWindow.show();
-        event.sender.send("stopping", {crash:isCrash,why:why});
+    // Front
+    mainWindow.show();
+    event.sender.send("stopping", {crash:isCrash,why:why});
 
-        // UPDATE DU REACH PRESENCE
-        setActivity('Navigue sur le Launcher', userConnected.username_tyroserv);
+    // UPDATE DU REACH PRESENCE
+    setActivity('Navigue sur le Launcher', userConnected.username_tyroserv);
 
 }
 
