@@ -236,6 +236,10 @@ ipcMain.on("connected", async (event, data) => {
 ipcMain.on("login", (event, data) => {
         logger.info("Lancement du jeu ...");
 
+        if (modsWindow){
+            modsWindow = null;
+        }
+
         const fs = require('fs');
 
         // SET L'URL DE L'INSTANCE MC
