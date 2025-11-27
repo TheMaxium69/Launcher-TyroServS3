@@ -499,11 +499,7 @@ function launchGame(event, data, instanceChoose, settingsContenu, modsFile){
     // Information sur ce qu'il télécharge
     launcher.on('download', (e) => {
         logMC("download", e)
-
-        if (e === "clientPackage.zip") {
-            logger.warn("Fin du telechargement de 'clientPackage.zip'")
-        }
-
+        logger.warn("Fin du telechargement de '"+ e +"'");
     });
 
     // Information sur ce qu'il extrait
