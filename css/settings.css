@@ -23,6 +23,10 @@ h3.sub-title{
     margin: 0 0 25px;
 }
 
+button{
+    cursor: pointer;
+}
+
 /******************
       PARAM
 *******************/
