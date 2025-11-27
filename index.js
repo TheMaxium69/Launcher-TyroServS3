@@ -233,6 +233,7 @@ ipcMain.on("connected", async (event, data) => {
 
 // LANCEMENT DU JEUX
 ipcMain.on("login", (event, data) => {
+        logger.info("Lancement du jeu ...");
 
         const fs = require('fs');
 
@@ -246,7 +247,7 @@ ipcMain.on("login", (event, data) => {
             instanceChoose = global.DIR_INSTANCE_FACTION;
         }
 
-        logger.info("Lancement de l'instance " + data.hereServer.toUpperCase())
+        logger.info("Instance choisi : " + data.hereServer.toUpperCase());
 
         // RECUPERATION DU FICHIER MODS
         const getModsPromise = new Promise((resolve, reject) => {
