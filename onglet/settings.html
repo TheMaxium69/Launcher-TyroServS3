@@ -44,14 +44,14 @@
         <article class="param-block">
             <div>
                 <h4 class="param-name"><i class="ri-corner-down-right-fill"></i> Mémoire du jeux </h4>
-                <p class="param-sub-name">Combien de ram pour votre instance Minecraft (MégaOctet)</p>
+                <p class="param-sub-name">Combien de ram pour votre instance Minecraft (GigaOctet)</p>
             </div>
 
             <div class="btn-param subligne">
                 <div class="ram-info">min :</div>
-                <input id="RamMin" style="width: 73px;" type="text" class="champ-btn-param" placeholder="1000" value="1000">
+                <input id="RamMin" style="width: 73px;" type="text" class="champ-btn-param" placeholder="4" value="4">
                 <div class="ram-info">max :</div>
-                <input id="RamMax" style="width: 73px;" type="text" class="champ-btn-param" placeholder="2000" value="2000">
+                <input id="RamMax" style="width: 73px;" type="text" class="champ-btn-param" placeholder="8" value="8">
             </div>
         </article>
 
@@ -134,7 +134,7 @@
 
         <article class="param">
             <div>
-                <h4 class="param-name"><i class="ri-corner-down-right-fill"></i> Console de Développement</h4>
+                <h4 class="param-name"><i class="ri-corner-down-right-fill"></i> Console de Développement <i id="openConsole" style="color: white" class="ri-external-link-line"></i></h4>
                 <p class="param-sub-name">Afficher la console de débogage, réservée aux initiés</p>
             </div>
 
@@ -190,7 +190,7 @@
 
     /* NAVBAR*/
     document.querySelector("#closeOnglet").addEventListener("click", () => {
-        ipc.send("manualCloseOnglet");
+        ipc.send("manualCloseOngletSettings");
     });
 
     baseView();
@@ -216,6 +216,7 @@
     var showLauncherTrue = document.getElementById("showLauncherTrue")
     var DiscordFalse = document.getElementById("DiscordFalse")
     var DiscordTrue = document.getElementById("DiscordTrue")
+    var openConsole = document.getElementById("openConsole")
 
     /*
     *
@@ -403,6 +404,17 @@
 
     });
 
+    /*
+    * 
+    * OPEN CONSOLE
+    * 
+    * */
+
+    openConsole.addEventListener("click", () => {
+        ipcRenderer.send("launchConsole");
+    });
+    
+    
     /*
     *
     * UTILITAIRE

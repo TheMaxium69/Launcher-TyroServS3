@@ -154,8 +154,8 @@ ipcMain.on("connected", async (event, data) => {
     });
 
     let settingJsonDefault = {
-        "RamMin":4000,
-        "RamMax":8000,
+        "RamMin":4,
+        "RamMax":8,
         "width": 1318,
         "height": 710,
         "showLauncher":false,
@@ -439,7 +439,7 @@ function launchGame(event, data, instanceChoose, settingsContenu, modsFile){
     }
     logger.debug("Java Runtime : "+javaPathCustom);
 
-    logger.info("Memoire utilise : " + settingsContenu.RamMin + "MB" + " / " + settingsContenu.RamMax + "MB")
+    logger.info("Memoire utilise : " + settingsContenu.RamMin + "GB" + " / " + settingsContenu.RamMax + "GB")
 
     // CREER LES OPTIONS MC
     let options = {
@@ -468,8 +468,8 @@ function launchGame(event, data, instanceChoose, settingsContenu, modsFile){
         },
         forge:mainJar,
         memory: {
-            max: settingsContenu.RamMax + "M",
-            min: settingsContenu.RamMin + "M",
+            max: settingsContenu.RamMax + "G",
+            min: settingsContenu.RamMin + "G",
         },
     }
 
@@ -728,7 +728,7 @@ function launchConsole(){
         consoleWindow = null;
     });
 
-    ipcMain.on("manualCloseOnglet", () => {
+    ipcMain.on("manualCloseOngletConsole", () => {
         if (consoleWindow) {
             consoleWindow.close();
         }
@@ -760,7 +760,7 @@ ipcMain.on("launchSettings", () => {
         settingsWindow = null;
     });
 
-    ipcMain.on("manualCloseOnglet", () => {
+    ipcMain.on("manualCloseOngletSettings", () => {
         if (settingsWindow) {
             settingsWindow.close();
         }
@@ -792,7 +792,7 @@ ipcMain.on("launchMods", () => {
         modsWindow = null;
     });
 
-    ipcMain.on("manualCloseOnglet", () => {
+    ipcMain.on("manualCloseOngletMod", () => {
         if (modsWindow) {
             modsWindow.close();
         }
@@ -824,7 +824,7 @@ ipcMain.on("launchVersion", () => {
         versionWindow = null;
     });
 
-    ipcMain.on("manualCloseOnglet", () => {
+    ipcMain.on("manualCloseOngletVersion", () => {
         if (versionWindow) {
             versionWindow.close();
         }
