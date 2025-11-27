@@ -380,9 +380,14 @@ ipcMain.on("login", (event, data) => {
                 });
 
             }).catch((error) => {
-                stopGame(event, true);
-                logger.error("Erreur avec le dossier '"+global.DIR_INSTANCE_MOD+"'");
-                logger.fatal(error.stack)
+                if (error.code === "EBUSY"){
+                    stopGame(event, true, "Le jeu est déjà en cours d'execution");
+                    logger.error("Le jeu est deja en cours d'execution");
+                } else {
+                    stopGame(event, true);
+                    logger.error("Erreur avec le dossier '"+global.DIR_INSTANCE_MOD+"'");
+                    logger.fatal(error.stack)
+                }
             });
 
         }).catch((error) => {
@@ -474,6 +479,11 @@ function launchGame(event, data, instanceChoose, settingsContenu, modsFile){
     launcher.on('debug', (e) => {
         logMC("debug", e)
 
+        if (e.startsWith("[MCLC]: Couldn't start Minecraft due to")) {
+            logger.error("Erreur avec JAVA");
+            logger.fatal(e);
+            stopGame(event, true, "Erreur avec JAVA");
+        }
         if (e === "[MCLC]: Failed to start due to Error: Invalid or unsupported zip format. No END header found, closing...") {
             logger.error("Erreur avec le Fichier zip : 'clientPackage.zip'");
             logger.fatal(e);
@@ -499,7 +509,7 @@ function launchGame(event, data, instanceChoose, settingsContenu, modsFile){
     // Information sur ce qu'il télécharge
     launcher.on('download', (e) => {
         logMC("download", e)
-        logger.warn("Fin du telechargement de '"+ e +"'");
+        logger.warn("'"+ e +"' a ete telecharge");
     });
 
     // Information sur ce qu'il extrait
@@ -508,7 +518,7 @@ function launchGame(event, data, instanceChoose, settingsContenu, modsFile){
 
         // Gestion des mods
         if (e.toString() === "true"){
-            logger.warn("Extraction de 'clientPackage.zip'")
+            logger.warn("'clientPackage.zip' a ete extrait")
 
             // BONNE SELECTION DES MODS
             modsFile.forEach(modsOne => {
@@ -623,33 +633,38 @@ function launchGame(event, data, instanceChoose, settingsContenu, modsFile){
     // Fermeture du jeu
     launcher.on('close', (e) => {
         logMC("close", e)
-        stopGame(event, false);
+        if (e.toString() === "0"){
+            stopGame(event, false)
+        } else {
+            stopGame(event, true, "nomsg");
+        }
     });
 
     // Launch -> Del All Mod -> Install Instance -> DeJar & Jar (activate) -> Launch Game
 }
 
 // Stop Game
-function stopGame(event, isCrash = true){
+function stopGame(event, isCrash = true, why = null){
 
-    // Log
-    if (isCrash){
-        logger.error("Erreur lors du lancement du jeu")
-    } else {
-        logger.info("Jeu fermer correctement");
-    }
+        // Log
+        if (isCrash){
+            logger.error("Erreur lors du lancement du jeu")
+        } else {
+            logger.info("Jeu fermer correctement");
+        }
 
-    // Vidé la variable
-    launcher = null;
-    firstProgress = false;
-    firstDownloadStatus = false;
+        // Vidé la variable
+        launcher = null;
+        firstProgress = false;
+        firstDownloadStatus = false;
 
-    // Front
-    mainWindow.show();
-    event.sender.send("stopping", {crash:isCrash});
+        // Front
+        mainWindow.show();
+        event.sender.send("stopping", {crash:isCrash,why:why});
 
-    // UPDATE DU REACH PRESENCE
-    setActivity('Navigue sur le Launcher', userConnected.username_tyroserv);
+        // UPDATE DU REACH PRESENCE
+        setActivity('Navigue sur le Launcher', userConnected.username_tyroserv);
+
 }
 
 

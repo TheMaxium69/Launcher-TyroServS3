@@ -614,6 +614,12 @@
 
     // BAR AU LANCEMENT
     ipcRenderer.on('startMC', (event, data) => {
+
+        // Informé l'utilisateur
+        message = "Votre jeux ce lance avec le pseudo "+userConnected.pseudo+" !"
+        notif("true", message);
+
+        // Etat en cours
         var btnPlay = document.getElementById("play");
 
         btnPlay.innerText = "EN COURS";
@@ -643,8 +649,14 @@
 
     // ARRET DU JEUX (RETOUR A LA NORMAL)
     ipcRenderer.on('stopping', (event, data) => {
-        if (data && data.crash === true){
-            notif("err", "Le jeu c'est arrêté de manière inattendue, veuillez réessayer.");
+
+        // Message d'erreur
+        if (data && data.crash === true && data.why !== "nomsg"){
+            if (data.why){
+                notif("err", data.why);
+            } else {
+                notif("err", "Le jeu c'est arrêté de manière inattendue, veuillez réessayer.");
+            }
         }
 
         // Graph retour à la normal

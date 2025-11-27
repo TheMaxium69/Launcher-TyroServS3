@@ -77,10 +77,6 @@ function isConnect (reponse, email, mdp){
 }
 
 function startMinecraft (userTyroServLoad, hereServer){
-  
-  message = "Votre jeux ce lance avec le pseudo "+userTyroServLoad['pseudo']+" !"
-
-  notif("true", message);
 
   let uuid_tyroserv = "00000000-0000-0000-0000-000000000000"
   ipc.send("login", {hereServer: hereServer, username_tyroserv: userTyroServLoad['pseudo'], uuid_tyroserv: uuid_tyroserv, token_tyroserv: userTyroServLoad['token'], token_tyroserv_a2f: userTyroServLoad['tokenTwo']})
