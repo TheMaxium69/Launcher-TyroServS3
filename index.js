@@ -4,6 +4,7 @@ const { Client, Authenticator } = require('minecraft-launcher-core');
 const request = require('request');
 const fs = require("fs");
 const global = require('./module/global.js');
+const logger = require('./module/logger.js');
 
 let launcher = null;
 let mainWindow;
@@ -11,7 +12,9 @@ let userConnected = undefined;
 
 // LANCEMENT DU LAUNCHER
 app.whenReady().then(() => {
-    console.log("ENV : ", process.env.NODE_ENV);
+    logger.info("-----------------------------------------------------------------------------");
+    logger.info("Lancement de " + global.NAME_LAUNCHER + " v" + global.VERSION_LAUNCHER);
+    logger.info("Environement : "+ process.env.NODE_ENV);
 
     createWindow(); /* Création de l'onglet principal */
 
@@ -91,7 +94,7 @@ ipcMain.on('getUserConnected', (event) => {
 ipcMain.on("deconnexionUser", (event) =>{
 
     setActivity('IDK', null);
-    let cacheFile = path.join(app.getPath("appData"), global.DIR_INSTANCE_LAUNCHER + "Launcher_Cache.json");
+    let cacheFile = path.join(app.getPath("appData"), global.DIR_INSTANCE_LAUNCHER + global.FILE_CACHE);
 
     fs.unlink(cacheFile, (err) => {
         if (err) {
@@ -150,7 +153,7 @@ ipcMain.on("connected", async (event, data) => {
         "discordReachPresence":true
     }
 
-    let settingFile = path.join(app.getPath("appData"), global.DIR_INSTANCE_LAUNCHER + "Launcher_Setting.json");
+    let settingFile = path.join(app.getPath("appData"), global.DIR_INSTANCE_LAUNCHER + global.FILE_SETTINGS);
 
     if (!fs.existsSync(settingFile)) {
         fs.appendFile(settingFile, JSON.stringify(settingJsonDefault), function (err) {
@@ -170,7 +173,7 @@ ipcMain.on("connected", async (event, data) => {
         "token": data.userTyroServLoad.token
     }
 
-    let cacheFile = path.join(app.getPath("appData"), global.DIR_INSTANCE_LAUNCHER + "Launcher_Cache.json");
+    let cacheFile = path.join(app.getPath("appData"), global.DIR_INSTANCE_LAUNCHER + global.FILE_CACHE);
 
     if (!fs.existsSync(cacheFile)) {
         fs.appendFile(cacheFile, JSON.stringify(saveLauncher), function (err) {
@@ -186,7 +189,7 @@ ipcMain.on("connected", async (event, data) => {
     /* GESTION DU FICHIER MODS */
 
     await (async () => {
-        let modsFile = path.join(app.getPath("appData"), global.DIR_INSTANCE_LAUNCHER + "Launcher_Mods.json");
+        let modsFile = path.join(app.getPath("appData"), global.DIR_INSTANCE_LAUNCHER + global.FILE_MODS);
 
         // Vérifie d'abord si le fichier existe
         if (fs.existsSync(modsFile)) {
