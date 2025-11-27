@@ -1,0 +1,18 @@
+
+body {
+    background-color: #282c34;
+}
+
+#minecraftConsole {
+    color: #abb2bf;
+    font-family: 'Consolas', 'Monospace';
+    height: calc(100vh - 51px);
+    width: 100%;
+    overflow-y: scroll;
+    white-space: pre-wrap;
+    box-sizing: border-box;
+    line-height: 1.5;
+    font-size: 12px;
+    margin: 0;
+    margin-bottom: 5px;
+}

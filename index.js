@@ -103,7 +103,7 @@ ipcMain.on("deconnexionUser", (event) =>{
         if (err) {
             crashFatal('Erreur lors de la suppression du fichier '+global.FILE_CACHE, err, true);
         }
-        logger.debug('Le fichier '+global.FILE_CACHE+' a ete supprime avec succes.');
+        logger.warn('Le fichier '+global.FILE_CACHE+' a ete supprime avec succes.');
     });
 
     mainWindow.loadFile('onglet/index.html');
@@ -130,12 +130,12 @@ ipcMain.on("connected", async (event, data) => {
     fs.mkdir(UrlInstanceMC, (err) => {
         if (err) {
             if (err.code === "EEXIST"){
-                logger.debug("Le Dossier '"+ global.DIR_INSTANCE +"' a deja ete cree");
+                logger.warn("Le Dossier '"+ global.DIR_INSTANCE +"' a deja ete cree");
             } else {
-                crashFatal("Erreur de création de '"+ global.DIR_INSTANCE +"'", err, true);
+                crashFatal("Erreur de creation de '"+ global.DIR_INSTANCE +"'", err, true);
             }
         } else {
-            logger.debug("Repertoire '"+ global.DIR_INSTANCE +"' cree avec succes.");
+            logger.warn("Repertoire '"+ global.DIR_INSTANCE +"' cree avec succes.");
         }
     });
 
@@ -143,12 +143,12 @@ ipcMain.on("connected", async (event, data) => {
     fs.mkdir(app.getPath("appData") + global.DIR_INSTANCE_LAUNCHER, (err) => {
         if (err) {
             if (err.code === "EEXIST"){
-                logger.debug("Le Dossier 'Launcher/' a deja ete cree");
+                logger.warn("Le Dossier 'Launcher/' a deja ete cree");
             } else {
-                crashFatal( "Erreur de création de 'Launcher/'", err, true)
+                crashFatal( "Erreur de creation de 'Launcher/'", err, true)
             }
         } else {
-            logger.debug("Repertoire 'Launcher/' cree avec succes.");
+            logger.warn("Repertoire 'Launcher/' cree avec succes.");
         }
     });
 
@@ -158,7 +158,8 @@ ipcMain.on("connected", async (event, data) => {
         "width": 854,
         "height": 480,
         "showLauncher":false,
-        "discordReachPresence":true
+        "discordReachPresence":true,
+        "console":false,
     }
 
     let settingFile = path.join(app.getPath("appData"), global.DIR_INSTANCE_LAUNCHER + global.FILE_SETTINGS);
@@ -166,13 +167,13 @@ ipcMain.on("connected", async (event, data) => {
     if (!fs.existsSync(settingFile)) {
         fs.appendFile(settingFile, JSON.stringify(settingJsonDefault), function (err) {
             if (err) {
-                crashFatal("Erreur de création de '"+ global.FILE_SETTINGS +"'", err , true);
+                crashFatal("Erreur de creation de '"+ global.FILE_SETTINGS +"'", err , true);
             } else {
-                logger.debug("Fichier '"+ global.FILE_SETTINGS +"' cree avec succes.");
+                logger.warn("Fichier '"+ global.FILE_SETTINGS +"' cree avec succes.");
             }
         });
     } else {
-        logger.debug("Le fichier '"+ global.FILE_SETTINGS +"' existe deja.");
+        logger.warn("Le fichier '"+ global.FILE_SETTINGS +"' existe deja.");
     }
 
     /* GESTION DU FICHIER CACHE */
@@ -188,13 +189,13 @@ ipcMain.on("connected", async (event, data) => {
     if (!fs.existsSync(cacheFile)) {
         fs.appendFile(cacheFile, JSON.stringify(saveLauncher), function (err) {
             if (err) {
-                crashFatal("Erreur de création de '"+ global.FILE_CACHE +"'", err , true);
+                crashFatal("Erreur de creation de '"+ global.FILE_CACHE +"'", err , true);
             } else {
-                logger.debug("Fichier '"+ global.FILE_CACHE +"' cree avec succes.");
+                logger.warn("Fichier '"+ global.FILE_CACHE +"' cree avec succes.");
             }
         });
     } else {
-        logger.debug("Le fichier '"+ global.FILE_CACHE +"' existe deja.");
+        logger.warn("Le fichier '"+ global.FILE_CACHE +"' existe deja.");
     }
 
 
@@ -205,7 +206,7 @@ ipcMain.on("connected", async (event, data) => {
 
         // Vérifie d'abord si le fichier existe
         if (fs.existsSync(modsFile)) {
-            logger.debug("Le fichier '"+ global.FILE_MODS +"' existe deja.");
+            logger.warn("Le fichier '"+ global.FILE_MODS +"' existe deja.");
             return; // Pas besoin de continuer
         }
 
@@ -215,9 +216,9 @@ ipcMain.on("connected", async (event, data) => {
             let optionnalMods = await fetchOptionnalMods();
 
             fs.writeFileSync(modsFile, JSON.stringify(optionnalMods, null, 2));
-            logger.debug("Fichier '"+ global.FILE_MODS +"' cree avec succes.");
+            logger.warn("Fichier '"+ global.FILE_MODS +"' cree avec succes.");
         } catch (err) {
-            crashFatal("Erreur de création de '"+ global.FILE_MODS +"'", err , true);
+            crashFatal("Erreur de creation de '"+ global.FILE_MODS +"'", err , true);
         }
     })();
 
@@ -251,10 +252,10 @@ ipcMain.on("login", (event, data) => {
 
         // RECUPERATION DU FICHIER MODS
         const getModsPromise = new Promise((resolve, reject) => {
-            let modsFile = path.join(app.getPath("appData"), global.DIR_INSTANCE_LAUNCHER + "Launcher_Mods.json");
+            let modsFile = path.join(app.getPath("appData"), global.DIR_INSTANCE_LAUNCHER + global.FILE_MODS);
             fs.readFile(modsFile, 'utf8', (err, data) => {
                 if (err) {
-                    reject(new Error("ERREUR AVEC LE FICHIER"))
+                    reject(err)
                     return;
                 }
                 resolve(JSON.parse(data));
@@ -262,11 +263,11 @@ ipcMain.on("login", (event, data) => {
         });
 
         getModsPromise.then((modsFile) => {
-            console.log(modsFile);
+            logger.debug("Contenu du fichier "+global.FILE_MODS+" : "+JSON.stringify(modsFile));
 
             // Vider le dossier mods avant de démarré
             const clearModsFolder = new Promise((resolve, reject) => {
-                const modsFolderPath = path.join(app.getPath("appData"), instanceChoose + "/mods");
+                const modsFolderPath = path.join(app.getPath("appData"), instanceChoose + global.DIR_INSTANCE_MOD);
                 if (fs.existsSync(modsFolderPath)) {
                     const files = fs.readdirSync(modsFolderPath);
                     for (const file of files) {
@@ -274,15 +275,15 @@ ipcMain.on("login", (event, data) => {
                         try {
                             fs.unlinkSync(curPath);
                         } catch (err) {
-                            reject(new Error("Instance deja en cours d'execution. Impossible de vider les mods."));
-                            return; // ← arrête ici et empêche le resolve
+                            reject(err);
+                            return;
                         }
                     }
-                    console.log("Dossier mods vide.");
+                    logger.warn("Dossier mods vide.");
                     resolve();
                 } else {
                     fs.mkdirSync(modsFolderPath, { recursive: true });
-                    console.log("Dossier mods cree.");
+                    logger.warn("Dossier mods cree.");
                     resolve();
                 }
             });
@@ -292,10 +293,10 @@ ipcMain.on("login", (event, data) => {
                 // RECUPERATION DU FICHIER SETTINGS
                 let settingsContenu;
                 const getSettingsPromise = new Promise((resolve, reject) => {
-                    let settingFile = path.join(app.getPath("appData"), global.DIR_INSTANCE_LAUNCHER + "Launcher_Setting.json");
+                    let settingFile = path.join(app.getPath("appData"), global.DIR_INSTANCE_LAUNCHER + global.FILE_SETTINGS);
                     fs.readFile(settingFile, 'utf8', (err, data) => {
                         if (err) {
-                            reject(new Error("ERREUR AVEC LE FICHIER"))
+                            reject(err)
                             return;
                         }
                         resolve(JSON.parse(data));
@@ -304,16 +305,26 @@ ipcMain.on("login", (event, data) => {
 
                 getSettingsPromise.then((settingsFile) => {
                     settingsContenu = settingsFile;
-                    console.log(settingsFile);
+                    logger.debug("Contenu du fichier "+global.FILE_SETTINGS+" : "+JSON.stringify(settingsContenu));
+
+
+                    if (settingsContenu.console === true && !consoleWindow){
+                        launchConsole();
+                    }
 
                     // CREER LE DOSSIER DE L'INSTANCE MC
                     const urlAsCreate = app.getPath("appData") + instanceChoose;
                     fs.mkdir(urlAsCreate, (err) => {
                         if (err) {
-                            if (err.code === "EEXIST")
-                                console.log("Le Dossier 'Launcher' a deja ete cree");
+                            if (err.code === "EEXIST") {
+                                logger.warn("Le Dossier de l'instance a deja ete cree");
+                            } else {
+                                stopGame(event);
+                                logger.error("Erreur de creation du dossier de l'instance");
+                                logger.fatal(err.stack);
+                            }
                         } else {
-                            console.log("Repertoire 'Launcher' cree avec succes.");
+                            logger.warn("Repertoire de l'instance cree avec succes.");
                         }
                     });
 
@@ -357,12 +368,13 @@ ipcMain.on("login", (event, data) => {
                             settingsContenu.width,
                             "--height",
                             settingsContenu.height,
-                            // "--server",
-                            // "vps207.tyrolium.fr"
+                            "--server",
+                            "vps212.tyrolium.fr",
+                            "--port",
+                            "25566"
                         ],
                         root: path.join(app.getPath("appData"), instanceChoose),
-                        // javaPath: `C:/Users/mxmto/AppData/Roaming/.minecraft/runtime/jre-legacy/windows/jre-legacy/bin/javaw.exe`,
-                        // javaPath: `C:/Users/mxmto/AppData/Roaming/.minecraft/runtime/java-runtime-gamma/windows/java-runtime-gamma/bin/javaw.exe`,
+                        javaPath: `C:/Users/mxmto/AppData/Roaming/.TyroServBeta/TyroServ-Faction/runtime/jre-legacy/windows/bin/javaw.exe`,
                         version: {
                             number: "1.12.2",
                             type: "release",
@@ -395,6 +407,9 @@ ipcMain.on("login", (event, data) => {
                         }
                     });
                     launcher.on('data', (e) => {
+                        if (consoleWindow){
+                            consoleWindow.send("consoleMC", "[MC] " + e);
+                        }
                         console.log("data", e)
 
                         if (settingsContenu.showLauncher === false){
@@ -403,6 +418,9 @@ ipcMain.on("login", (event, data) => {
                     });
                     launcher.on('progress', (e) => {
                         console.log("progress", e);
+                        if (consoleWindow){
+                            consoleWindow.send("consoleMC", "[PROGRESS] " + JSON.stringify(e));
+                        }
                         event.sender.send("progression", e)
                     });
                     launcher.on('arguments', (e) => {
@@ -410,6 +428,9 @@ ipcMain.on("login", (event, data) => {
                     });
                     launcher.on('close', (e) => {
                         console.log("close", e)
+                        if (consoleWindow){
+                            consoleWindow.send("consoleMC", "[CLOSE] " + e);
+                        }
 
                         //vider l'instance de minecraft
                         launcher = null;
@@ -500,18 +521,36 @@ ipcMain.on("login", (event, data) => {
 
 
                 }).catch((error) => {
-                    console.error(error);
+                    stopGame(event);
+                    logger.error("Erreur de lecture du fichier '"+global.FILE_SETTINGS+"'");
+                    logger.fatal(error.stack)
                 });
 
 
             }).catch((error) => {
-                console.error(error);
+                stopGame(event);
+                logger.error("Erreur avec le dossier '"+global.DIR_INSTANCE_MOD+"'");
+                logger.fatal(error.stack)
             });
 
         }).catch((error) => {
-            console.error(error);
+            stopGame(event);
+            logger.error("Erreur de lecture du fichier '"+global.FILE_MODS+"'");
+            logger.fatal(error.stack)
         });
 })
+
+// Stop Game
+function stopGame(event){
+
+    launcher = null;
+
+    mainWindow.show();
+    event.sender.send("stopping", {crash:true});
+
+    // UPDATE DU REACH PRESENCE
+    setActivity('Navigue sur le Launcher', userConnected.username_tyroserv);
+}
 
 
 /*
@@ -521,10 +560,47 @@ ipcMain.on("login", (event, data) => {
 * */
 
 
+// ONGLET CONSOLE
+let consoleWindow
+ipcMain.on("launchConsole", () => {
+    launchConsole();
+})
+function launchConsole(){
+    consoleWindow = new BrowserWindow({
+        frame: false,
+        title: global.TITLE_ONGLET + "CONSOLE",
+        width: 854,
+        height: 480,
+        minWidth: 854,
+        minHeight: 480,
+        resizable: true,
+        icon: path.join(__dirname, "/asset/logo.png"),
+        webPreferences: {
+            nodeIntegration: true,
+            contextIsolation: false,
+            enableRemoteModule: true,
+            preload: path.join(__dirname, 'module/preload.js'),
+        }
+    })
+
+    consoleWindow.loadFile('onglet/console.html');
+
+    consoleWindow.on('closed', () => {
+        consoleWindow = null;
+    });
+
+    ipcMain.on("manualCloseOnglet", () => {
+        if (consoleWindow) {
+            consoleWindow.close();
+        }
+    });
+}
+
 // ONGLET SETTINGS
+let settingsWindow;
 ipcMain.on("launchSettings", () => {
 
-    let settingsWindow = new BrowserWindow({
+    settingsWindow = new BrowserWindow({
         frame: false,
         title: global.TITLE_ONGLET + "Paramètres",
         width: global.ONGLET_WIDHT,
@@ -553,9 +629,10 @@ ipcMain.on("launchSettings", () => {
 })
 
 // ONGLET MODS
+let modsWindow;
 ipcMain.on("launchMods", () => {
 
-    let modsWindow = new BrowserWindow({
+    modsWindow = new BrowserWindow({
         frame: false,
         title: global.TITLE_ONGLET + "MODS",
         width: global.ONGLET_WIDHT,
@@ -584,9 +661,10 @@ ipcMain.on("launchMods", () => {
 })
 
 // ONGLET VERSION
+let versionWindow;
 ipcMain.on("launchVersion", () => {
 
-    let versionWindow = new BrowserWindow({
+    versionWindow = new BrowserWindow({
         frame: false,
         title: global.TITLE_ONGLET + "Version",
         width: global.ONGLET_WIDHT,
@@ -848,7 +926,7 @@ async function connectDiscord(reConnexion = false) {
 
         // Déclencher l'activité une fois connecté
         if (reConnexion){
-            setActivity('Navigue sur le Launcher', userConnected.pseudo)
+            setActivity('Navigue sur le Launcher', userConnected.username_tyroserv)
         } else {
             setActivity('IDK', null);
         }

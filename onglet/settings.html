@@ -85,6 +85,22 @@
 
         </article>
 
+        <article class="param">
+            <div>
+                <h4 class="param-name"><i class="ri-corner-down-right-fill"></i> Console de Développement</h4>
+                <p class="param-sub-name">Afficher la console de débogage, réservée aux initiés</p>
+            </div>
+
+
+            <div class="btn-param">
+                <div class="socle-btn-param">
+                    <button id="showConsoleFalse" class="active">Caché</button>
+                    <button id="showConsoleTrue" class="">Affiché</button>
+                </div>
+            </div>
+
+        </article>
+
     </section>
 
     <section id="setting-account">
@@ -194,6 +210,8 @@
     var RamMax = document.getElementById("RamMax")
     var ResoWidth = document.getElementById("ResoWidth")
     var ResoHeight = document.getElementById("ResoHeight")
+    var showConsoleFalse = document.getElementById("showConsoleFalse")
+    var showConsoleTrue = document.getElementById("showConsoleTrue")
     var showLauncherFalse = document.getElementById("showLauncherFalse")
     var showLauncherTrue = document.getElementById("showLauncherTrue")
     var DiscordFalse = document.getElementById("DiscordFalse")
@@ -286,6 +304,22 @@
         showLauncherTrue.classList.add("active");
         showLauncherFalse.classList.remove("active");
         settingsContenu.showLauncher = true;
+        ipcRenderer.send("setSettingsFile", {newJson: settingsContenu});
+    });
+
+    // showConsole FALSE
+    showConsoleFalse.addEventListener("click", () => {
+        showConsoleTrue.classList.remove("active");
+        showConsoleFalse.classList.add("active");
+        settingsContenu.console = false;
+        ipcRenderer.send("setSettingsFile", {newJson: settingsContenu});
+    });
+
+    // showConsole TRUE
+    showConsoleTrue.addEventListener("click", () => {
+        showConsoleTrue.classList.add("active");
+        showConsoleFalse.classList.remove("active");
+        settingsContenu.console = true;
         ipcRenderer.send("setSettingsFile", {newJson: settingsContenu});
     });
 

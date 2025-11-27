@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+    <!--Create By Maxime Tournier-->
+<head>
+
+    <!-- BASE -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- EXTENSION -->
+    <link rel="stylesheet" href="../extension/iziToast.css">
+    <script type="text/javascript" src="../extension/iziToast.js"></script>
+    <link rel="stylesheet" href="../extension/remixicon/remixicon.css">
+    <link rel="stylesheet" href="../extension/fontawesome/css/all.css">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="../css/index.css">
+    <link rel="stylesheet" href="../css/console.css">
+    <link rel="stylesheet" href="../css/navbar.css">
+    <link rel="stylesheet" href="../css/scrollOnglet.css">
+
+</head>
+<body>
+
+<!--NAVBAR -->
+<nav style="-webkit-app-region: drag">
+    <img src="../asset/logo.png" width="20px" style="margin-left: 10px">
+    <p id="title"></p>
+    <div class="nav-buttons">
+        <button id="closeOnglet"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+</nav>
+
+<!-- CONSOLE -->
+<pre id="minecraftConsole" class="custom-scrollbar">[INIT] Console chargée. En attente des logs du processus principal...
+</pre>
+
+<!-- MAIN SCRIPT-->
+<script>
+
+    const { ipcRenderer } = require('electron');
+    const ipc = require("electron").ipcRenderer;
+
+    /*
+    *
+    * AFFICHAGE DE BASE
+    *
+    * */
+
+    /* NAVBAR*/
+    document.querySelector("#closeOnglet").addEventListener("click", () => {
+        ipc.send("manualCloseOnglet");
+    });
+
+    baseView();
+    function baseView(){
+
+        /* Titre Navbar */
+        document.getElementById("title").innerText = window.NAME_LAUNCHER + " - " + window.ONGLET_SETTING_NAME;
+    }
+
+    /*
+    *
+    * AFFICHAGE DE LA CONSOLE
+    *
+    * */
+
+    const consoleElement = document.getElementById('minecraftConsole');
+    let logBuffer = []; // Le tampon pour stocker temporairement les messages
+    let updateTimeout = null;
+    const UPDATE_INTERVAL = 50; // Mettre à jour la console toutes les 50ms (ajustez si besoin)
+
+    // Fonction pour mettre à jour réellement le DOM avec le contenu du tampon
+    function updateConsole() {
+        if (logBuffer.length === 0) return;
+
+        // 1. Joindre tous les messages accumulés dans le tampon
+        const newLogs = logBuffer.join('\n') + '\n';
+
+        // 2. Mettre à jour le DOM une seule fois (plus rapide)
+        consoleElement.textContent += newLogs;
+
+        // 3. Faire défiler vers le bas
+        consoleElement.scrollTop = consoleElement.scrollHeight;
+
+        // 4. Réinitialiser le tampon
+        logBuffer = [];
+        updateTimeout = null;
+    }
+
+    // Fonction appelée par l'IPC
+    function appendLogToBuffer(message) {
+        logBuffer.push(message);
+
+        // Si le minuteur n'est pas actif, le lancer
+        if (!updateTimeout) {
+            updateTimeout = setTimeout(updateConsole, UPDATE_INTERVAL);
+        }
+    }
+
+    // Écoute IPC sur "consoleMC"
+    ipcRenderer.on("consoleMC", (event, logMessage) => {
+        appendLogToBuffer(logMessage);
+    });
+
+</script>
+</body>
+</html>
