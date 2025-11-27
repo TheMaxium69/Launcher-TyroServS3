@@ -74,6 +74,7 @@ ipcMain.on("manualMaximize", () => {
 // FERMETURE DE L'ONGLET PRINCIPAL
 ipcMain.on("manualClose", () => {
     app.quit();
+    logger.info("Fermeture du Launcher");
 //   if (process.platform !== 'darwin') app.quit()
 });
 
@@ -93,15 +94,16 @@ ipcMain.on('getUserConnected', (event) => {
 // Deconnexion User
 ipcMain.on("deconnexionUser", (event) =>{
 
+    logger.info("Deconnexion de l'utilisateur")
+
     setActivity('IDK', null);
     let cacheFile = path.join(app.getPath("appData"), global.DIR_INSTANCE_LAUNCHER + global.FILE_CACHE);
 
     fs.unlink(cacheFile, (err) => {
         if (err) {
-            console.error('Erreur lors de la suppression du fichier :', err);
-            return;
+            crashFatal('Erreur lors de la suppression du fichier '+global.FILE_CACHE, err, true);
         }
-        console.log('Le fichier a ete supprime avec succes.');
+        logger.debug('Le fichier '+global.FILE_CACHE+' a ete supprime avec succes.');
     });
 
     mainWindow.loadFile('onglet/index.html');
@@ -114,7 +116,7 @@ ipcMain.on("connected", async (event, data) => {
 
     // SET LA VARIABLE UTILISATEUR
     userConnected = data.userTyroServLoad;
-    console.log("Connection avec : ", data.userTyroServLoad.pseudo)
+    logger.info("Connection avec "+ data.userTyroServLoad.pseudo);
 
     // CHARGER LE FICHIER PANEL
     mainWindow.loadFile('onglet/panel.html');
@@ -127,20 +129,26 @@ ipcMain.on("connected", async (event, data) => {
 
     fs.mkdir(UrlInstanceMC, (err) => {
         if (err) {
-            if (err.code === "EEXIST")
-                console.log("Le Dossier '.TyroServ' a deja ete cree");
+            if (err.code === "EEXIST"){
+                logger.debug("Le Dossier '"+ global.DIR_INSTANCE +"' a deja ete cree");
+            } else {
+                crashFatal("Erreur de création de '"+ global.DIR_INSTANCE +"'", err, true);
+            }
         } else {
-            console.log("Repertoire '.TyroServ' cree avec succes.");
+            logger.debug("Repertoire '"+ global.DIR_INSTANCE +"' cree avec succes.");
         }
     });
 
     /* GESTION DU FICHIER SETTINGS */
     fs.mkdir(app.getPath("appData") + global.DIR_INSTANCE_LAUNCHER, (err) => {
         if (err) {
-            if (err.code === "EEXIST")
-                console.log("Le Dossier 'Launcher' a deja ete cree");
+            if (err.code === "EEXIST"){
+                logger.debug("Le Dossier 'Launcher/' a deja ete cree");
+            } else {
+                crashFatal( "Erreur de création de 'Launcher/'", err, true)
+            }
         } else {
-            console.log("Repertoire 'Launcher' cree avec succes.");
+            logger.debug("Repertoire 'Launcher/' cree avec succes.");
         }
     });
 
@@ -157,12 +165,14 @@ ipcMain.on("connected", async (event, data) => {
 
     if (!fs.existsSync(settingFile)) {
         fs.appendFile(settingFile, JSON.stringify(settingJsonDefault), function (err) {
-            if (err)
-                throw err;
-            console.log('Fichier Launcher_Setting.json cree !');
+            if (err) {
+                crashFatal("Erreur de création de '"+ global.FILE_SETTINGS +"'", err , true);
+            } else {
+                logger.debug("Fichier '"+ global.FILE_SETTINGS +"' cree avec succes.");
+            }
         });
     } else {
-        console.log('Le fichier Launcher_Setting.json existe deja.');
+        logger.debug("Le fichier '"+ global.FILE_SETTINGS +"' existe deja.");
     }
 
     /* GESTION DU FICHIER CACHE */
@@ -177,12 +187,14 @@ ipcMain.on("connected", async (event, data) => {
 
     if (!fs.existsSync(cacheFile)) {
         fs.appendFile(cacheFile, JSON.stringify(saveLauncher), function (err) {
-            if (err)
-                throw err;
-            console.log('Fichier Launcher_Cache.json cree !');
+            if (err) {
+                crashFatal("Erreur de création de '"+ global.FILE_CACHE +"'", err , true);
+            } else {
+                logger.debug("Fichier '"+ global.FILE_CACHE +"' cree avec succes.");
+            }
         });
     } else {
-        console.log('Le fichier Launcher_Cache.json existe deja.');
+        logger.debug("Le fichier '"+ global.FILE_CACHE +"' existe deja.");
     }
 
 
@@ -193,7 +205,7 @@ ipcMain.on("connected", async (event, data) => {
 
         // Vérifie d'abord si le fichier existe
         if (fs.existsSync(modsFile)) {
-            console.log('Le fichier Launcher_Mods.json existe deja.');
+            logger.debug("Le fichier '"+ global.FILE_MODS +"' existe deja.");
             return; // Pas besoin de continuer
         }
 
@@ -203,9 +215,9 @@ ipcMain.on("connected", async (event, data) => {
             let optionnalMods = await fetchOptionnalMods();
 
             fs.writeFileSync(modsFile, JSON.stringify(optionnalMods, null, 2));
-            console.log('Fichier Launcher_Mods.json cree !');
+            logger.debug("Fichier '"+ global.FILE_MODS +"' cree avec succes.");
         } catch (err) {
-            console.error("Erreur lors de la creation des Launcher_Mods.json :", err);
+            crashFatal("Erreur de création de '"+ global.FILE_MODS +"'", err , true);
         }
     })();
 
@@ -931,3 +943,42 @@ ipcMain.on("updateDiscord", (event, data) =>{
         connectDiscord(true);
     }
 });
+
+
+/*
+*
+* LOGGER & CRASH
+*
+* */
+
+// Log Front
+ipcMain.on('log-message', (event, data) => {
+    const level = data.level || 'info';
+    const message = `[FRONT] ${data.message}`;
+
+    if (logger[level]) {
+        logger[level](message);
+    } else {
+        logger.warn(`Tentative de log avec un niveau inconnu: ${level}`);
+    }
+});
+
+/* CrashFatal */
+function crashFatal(content = null, err = null, killapp = false){
+    if (!err){
+        err = new Error("ERREUR INCONNUE") /* SI VIDE */
+    }
+
+    if (!content){
+        content = "ERREUR INCONNUE";
+    }
+
+    logger.error(content) /* LOG */
+    logger.fatal(err.stack) /* LOG */
+    dialog.showErrorBox("ERREUR FATAL", content); /* MESSAGE USER */
+    if (killapp){
+        app.quit();
+    }
+    throw err; /* COUPER TOUT */
+
+}

@@ -1,4 +1,30 @@
 const global = require('../module/global.js');
+const { ipcRenderer } = require('electron');
+
+/* LOGGER */
+window.logger = {
+    log: (level, message) => {
+        ipcRenderer.send('log-message', { level, message });
+    },
+    info: (message) => {
+        ipcRenderer.send('log-message', { level: "info", message });
+    },
+    warn: (message) => {
+        ipcRenderer.send('log-message', { level: "warn", message });
+    },
+    error: (message) => {
+        ipcRenderer.send('log-message', { level: "error", message });
+    },
+    fatal: (message) => {
+        ipcRenderer.send('log-message', { level: "fatal", message });
+    },
+    silly: (message) => {
+        ipcRenderer.send('log-message', { level: "silly", message });
+    },
+    debug: (message) => {
+        ipcRenderer.send('log-message', { level: "debug", message });
+    }
+};
 
 /* GLOBAL */
 window.NAME_LAUNCHER = global.NAME_LAUNCHER;
